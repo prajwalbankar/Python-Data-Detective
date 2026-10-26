@@ -23,6 +23,15 @@ class TestCaseReport(unittest.TestCase):
         self.assertEqual([format_stat(v) for v in (1.0, 100.5, 24.13, 2.0)],
                          ["1", "100.5", "24.1", "2"])
 
+    def test_format_stat_keeps_numbers_honest(self):
+        cases = {88.95: "89.0", 2.04: "2.0", 1204.0: "1,204", 0.0: "0",
+                 0.035: "0.035", -0.01: "-0.01", 2e300: "2e+300",
+                 1e30: "1e+30"}
+        for value, shown in cases.items():
+            self.assertEqual(format_stat(value), shown, value)
+        text = report_for("p\n2.04\n88.95\n").to_text()
+        self.assertIn("min 2.0  max 89.0", text)
+
     def test_sample_report_lines(self):
         text = report_for(SAMPLE_TEXT).to_text()
         for line in ["[EVIDENCE]", "  10 rows x 2 columns  (delimiter ',')",

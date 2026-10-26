@@ -29,11 +29,18 @@ def shorten(text: str, width: int) -> str:
 
 
 def format_stat(value: float) -> str:
-    """Show a number to 1 decimal place, dropping a trailing '.0'."""
-    text = f"{value:,.1f}"
-    if text.endswith(".0"):
-        text = text[:-2]
-    return text
+    """Show a number readably: '1,204', '24.1', '0.035' or '2e+300'.
+
+    Whole numbers have no decimals, and other numbers get one decimal
+    place. Very small and very large numbers use 3 significant figures
+    so they don't round to 0 or print as a wall of digits.
+    """
+    size = abs(value)
+    if size >= 1e15 or 0 < size < 0.1:
+        return f"{value:.3g}"
+    if value.is_integer():
+        return f"{value:,.0f}"
+    return f"{value:,.1f}"
 
 
 def flatten(value: str) -> str:
