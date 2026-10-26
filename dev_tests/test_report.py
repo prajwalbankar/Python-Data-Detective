@@ -98,6 +98,14 @@ class TestCaseReport(unittest.TestCase):
         latin = make_dataset("name\ncafé\n", encoding="latin-1")
         self.assertIn("Encoding: latin-1", Report.evidence_text(latin))
 
+    def test_unclosed_quote_warning(self):
+        ds = make_dataset('a,b\n1,"oops\n2,3\n4,5\n')
+        warning = "WARNING: a quote opened on line 2 is never closed"
+        self.assertIn(warning, Report(Investigator(ds).investigate()).to_text())
+        self.assertIn(warning, Report.evidence_text(ds))
+        clean = report_for("a,b\n1,2\n").to_text()
+        self.assertNotIn("WARNING", clean)
+
     def test_line_breaks_in_values_are_flattened(self):
         ds = make_dataset('id,note\n1,"top\nbottom"\n2,"top\nbottom"\n')
         self.assertIn("top bottom", Report.evidence_text(ds))

@@ -73,6 +73,14 @@ class TestDatasetLoading(unittest.TestCase):
         self.assertEqual(ds.encoding, "latin-1")
         self.assertEqual(ds.rows[0][0], "café")
 
+    def test_unclosed_quote_is_detected(self):
+        # The forgiving reader swallows everything after the stray quote.
+        ds = make_dataset('a,b\n1,"oops\n2,3\n4,5\n')
+        self.assertEqual(ds.unclosed_quote_line, 2)
+        self.assertIsNone(make_dataset("a,b\n1,2\n").unclosed_quote_line)
+        self.assertIsNone(
+            make_dataset('a,b\n1,"two\nlines"\n').unclosed_quote_line)
+
     def test_column_values_and_preview(self):
         ds = make_dataset("a,b\n1,x\n2,y\n3,z\n")
         self.assertEqual(ds.column_values(1), ["x", "y", "z"])

@@ -7,6 +7,7 @@ header, so the investigator can treat the data as a neat grid.
 import csv
 import io
 import os
+from typing import Optional
 
 from errors import EmptyDatasetError, UnreadableFileError
 
@@ -34,10 +35,13 @@ class Dataset:
         self.line_numbers: list[int] = []
         self.malformed_rows: list[tuple[int, int]] = []
         self.blank_lines_skipped = 0
+        # Line where a quote opens and is never closed, if there is one.
+        self.unclosed_quote_line: Optional[int] = None
 
         text = self._read_text()
         self.delimiter = self._detect_delimiter(text)
         self._parse(text)
+        self.unclosed_quote_line = self._find_unclosed_quote(text)
 
     def num_rows(self) -> int:
         """Return the number of data rows (the header isn't counted)."""
@@ -131,6 +135,24 @@ class Dataset:
             raise EmptyDatasetError("file is empty")
         if not self.rows:
             raise EmptyDatasetError("file has a header but no data rows")
+
+    def _find_unclosed_quote(self, text: str) -> Optional[int]:
+        """Return the line where a never-closed quote starts, if any.
+
+        The normal, forgiving reader quietly treats everything after such
+        a quote as one value. A strict second read reports "unexpected
+        end of data" in exactly that case, so we can warn the user.
+        """
+        reader = csv.reader(io.StringIO(text, newline=""),
+                            delimiter=self.delimiter, strict=True)
+        previous_end = 0
+        try:
+            for _ in reader:
+                previous_end = reader.line_num
+        except csv.Error as err:
+            if "unexpected end of data" in str(err):
+                return previous_end + 1
+        return None
 
     @staticmethod
     def _is_blank(fields: list[str]) -> bool:

@@ -89,6 +89,15 @@ def name_column(name: str) -> str:
     return shorten(flatten(name), NAME_WIDTH - 1).ljust(NAME_WIDTH)
 
 
+def quote_warning(dataset: Dataset) -> list[str]:
+    """Return the warning lines for a quote that is never closed."""
+    if dataset.unclosed_quote_line is None:
+        return []
+    return [f"  WARNING: a quote opened on line "
+            f"{dataset.unclosed_quote_line} is never closed,",
+            "  so everything after it was read as a single value."]
+
+
 def board_row(rank: str, name: str, rows: str, score: str,
               verdict: str) -> str:
     """Lay out one row of the leaderboard in fixed-width columns."""
@@ -134,6 +143,7 @@ class Report:
                  f"  Delimiter: {DELIMITER_NAMES[dataset.delimiter]}   "
                  f"Encoding: {dataset.encoding}   "
                  f"Blank lines skipped: {dataset.blank_lines_skipped:,}"]
+        lines += quote_warning(dataset)
         # Every name but the last gets a trailing comma.
         names = [flatten(name) + "," for name in dataset.header[:-1]]
         names.append(flatten(dataset.header[-1]))
@@ -230,7 +240,7 @@ class Report:
             lines.append(size + "  " + detail_text)
         else:
             lines += [size, "  " + detail_text]
-        return lines + [""]
+        return lines + quote_warning(dataset) + [""]
 
     def _suspect_lines(self) -> list[str]:
         """Return the columns with missing or invalid values."""
