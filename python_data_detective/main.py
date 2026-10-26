@@ -15,9 +15,10 @@ flow. The other modules do the real work:
 """
 import os
 import sys
+import textwrap
 from typing import Optional
 
-from dataset import Dataset
+from dataset import Dataset, plural
 from errors import DatasetError
 from investigator import Findings, Investigator
 from report import DELIMITER_NAMES, WIDTH, Report, shorten
@@ -34,6 +35,12 @@ MENU = [("1", "Open a case", "choose a dataset"),
         ("4", "Save the case report", "writes a .txt file"),
         ("5", "Investigate ALL", "leaderboard of every dataset"),
         ("0", "Close the office", "quit")]
+
+
+def say(message: str) -> None:
+    """Print a message wrapped to WIDTH (it may quote a long path)."""
+    print(textwrap.fill(message, width=WIDTH, subsequent_indent="  ",
+                        break_on_hyphens=False))
 
 
 def list_csv_files(folder: str) -> list[str]:
@@ -73,10 +80,11 @@ def open_case(path: str) -> Optional[Dataset]:
     try:
         dataset = Dataset(path)
     except DatasetError as err:
-        print(f"Could not open case: {err}")
+        say(f"Could not open case: {err}")
         return None
-    details = (f"({dataset.num_rows():,} rows x {dataset.num_columns():,} "
-               f"columns, delimiter {DELIMITER_NAMES[dataset.delimiter]})")
+    details = (f"({plural(dataset.num_rows(), 'row')} x "
+               f"{plural(dataset.num_columns(), 'column')}, "
+               f"delimiter {DELIMITER_NAMES[dataset.delimiter]})")
     line = f"Opening case... {dataset.name} {details}"
     if len(line) <= WIDTH:
         print(line)
@@ -141,9 +149,9 @@ def save_report(findings: Findings) -> None:
     try:
         path, replaced = Report(findings).save(REPORTS_DIR)
     except OSError as err:
-        print(f"Could not save report: {err}")
+        say(f"Could not save report: {err}")
         return
-    print(f"Report saved to {shown_path(path)}")
+    say(f"Report saved to {shown_path(path)}")
     if replaced:
         print("  (replaced the previous report)")
 
@@ -181,10 +189,10 @@ def save_all(findings_list: list[Findings], board: str) -> None:
                   encoding="utf-8") as file:
             file.write(board)
     except OSError as err:
-        print(f"Could not save report: {err}")
+        say(f"Could not save report: {err}")
         return
-    print(f"Saved {len(findings_list)} case reports and leaderboard.txt "
-          f"to {shown_path(REPORTS_DIR)}")
+    say(f"Saved {plural(len(findings_list), 'case report')} and "
+        f"leaderboard.txt to {shown_path(REPORTS_DIR)}")
 
 
 def handle_case_option(choice: str, current: Optional[Dataset],

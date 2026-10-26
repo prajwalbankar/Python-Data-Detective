@@ -119,6 +119,14 @@ class TestMenu(MenuTestCase):
                 self.assertIn("Could not open case:", out)
                 self.assertTrue(out.rstrip().endswith(GOODBYE))
 
+    def test_long_messages_fit_width(self):
+        path = os.path.join(tempfile.mkdtemp(), "a_very_long_folder_name",
+                            "and_an_even_longer_file_name_for_testing.csv")
+        out = self.run_main(["1", "P", path, "0"])
+        self.assertIn("Could not open case:", out)
+        for line in out.splitlines():
+            self.assertLessEqual(len(line), 64, line)
+
     def test_empty_locker(self):
         os.remove(os.path.join(self.datasets, "t.csv"))
         out = self.run_main(["1", "B", "0"])
@@ -161,6 +169,10 @@ class TestInvestigateAll(MenuTestCase):
         self.assertEqual(self.report_files(),
                          ["good_report.txt", "leaderboard.txt",
                           "t_report.txt"])
+
+    def test_all_saved_message_is_singular(self):
+        out = self.run_main(["5", "y", "0"])
+        self.assertIn("Saved 1 case report and leaderboard.txt", out)
 
     def test_all_no_save(self):
         out = self.run_main(["5", "n", "0"])

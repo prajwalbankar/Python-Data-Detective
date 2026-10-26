@@ -18,6 +18,13 @@ SNIFF_SAMPLE_SIZE = 4096
 DELIMITERS = ",;\t|"
 
 
+def plural(count: int, word: str) -> str:
+    """Return e.g. '1 row' or '3 rows'."""
+    if count == 1:
+        return f"{count:,} {word}"
+    return f"{count:,} {word}s"
+
+
 class Dataset:
     """A CSV file loaded into memory as a header and a list of rows."""
 
@@ -68,8 +75,8 @@ class Dataset:
 
     def __str__(self) -> str:
         """Describe the dataset, e.g. 'sales.csv (200 rows x 6 columns)'."""
-        return (f"{self.name} ({self.num_rows():,} rows x "
-                f"{self.num_columns()} columns)")
+        return (f"{self.name} ({plural(self.num_rows(), 'row')} x "
+                f"{plural(self.num_columns(), 'column')})")
 
     def _read_text(self) -> str:
         """Read the whole file and decode it into text."""

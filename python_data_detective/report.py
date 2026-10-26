@@ -7,7 +7,7 @@ so it displays properly in any terminal and on a projector.
 """
 import os
 
-from dataset import Dataset
+from dataset import Dataset, plural
 from investigator import Findings
 
 WIDTH = 64            # widest line we ever print
@@ -35,6 +35,7 @@ def format_stat(value: float) -> str:
     place. Very small and very large numbers use 3 significant figures
     so they don't round to 0 or print as a wall of digits.
     """
+    value += 0.0    # turns -0.0 into 0.0, so it never prints as "-0"
     size = abs(value)
     if size >= 1e15 or 0 < size < 0.1:
         return f"{value:.3g}"
@@ -51,13 +52,6 @@ def flatten(value: str) -> str:
 def quote_value(value: str) -> str:
     """Show a data value in quotes, flattened and cut to VALUE_WIDTH."""
     return f"'{shorten(flatten(value), VALUE_WIDTH)}'"
-
-
-def plural(count: int, word: str) -> str:
-    """Return e.g. '1 duplicate row' or '3 duplicate rows'."""
-    if count == 1:
-        return f"{count:,} {word}"
-    return f"{count:,} {word}s"
 
 
 def wrap_parts(parts: list[str], first_prefix: str, indent: int,
@@ -236,8 +230,8 @@ class Report:
             details.append(f"encoding {dataset.encoding}")
         if dataset.trailing_delimiters:
             details.append("trailing delimiters ignored")
-        size = (f"  {dataset.num_rows():,} rows x "
-                f"{dataset.num_columns():,} columns  ")
+        size = (f"  {plural(dataset.num_rows(), 'row')} x "
+                f"{plural(dataset.num_columns(), 'column')}  ")
         # "(a, b, c)" as separate parts, so a long list can wrap.
         parts = [detail + "," for detail in details]
         parts[0] = "(" + parts[0]
@@ -353,7 +347,7 @@ class Report:
         ]
         lines = ["[SUB-SCORES]  100 - 5 points per 1% of problem data"]
         for label, score, note in scores:
-            lines += wrap_parts(note.split(), f"  {label:<14}{score:.1f}  ",
+            lines += wrap_parts(note.split(), f"  {label:<14}{score:5.1f}  ",
                                 DETAIL_INDENT, separator=" ")
         return lines + ["=" * WIDTH,
                         f"VERDICT: {f.overall}/100  -  {f.verdict}",

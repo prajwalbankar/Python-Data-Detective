@@ -24,6 +24,8 @@ class TestCaseReport(unittest.TestCase):
                          ["1", "100.5", "24.1", "2"])
 
     def test_format_stat_keeps_numbers_honest(self):
+        # -0.0 needs its own check: as a dict key it equals 0.0.
+        self.assertEqual(format_stat(-0.0), "0")
         cases = {88.95: "89.0", 2.04: "2.0", 1204.0: "1,204", 0.0: "0",
                  0.035: "0.035", -0.01: "-0.01", 2e300: "2e+300",
                  1e30: "1e+30"}
@@ -40,9 +42,9 @@ class TestCaseReport(unittest.TestCase):
                      "  line 11 duplicates line 2",
                      "[MALFORMED ROWS]  none found", "[COLUMN PROFILES]",
                      "[SUB-SCORES]  100 - 5 points per 1% of problem data",
-                     "  Completeness  50.0  (10.0% of cells missing)",
-                     "  Uniqueness    50.0  (10.0% of rows duplicated)",
-                     "  Validity      44.4  (11.1% of numbers invalid)",
+                     "  Completeness   50.0  (10.0% of cells missing)",
+                     "  Uniqueness     50.0  (10.0% of rows duplicated)",
+                     "  Validity       44.4  (11.1% of numbers invalid)",
                      "VERDICT: 48/100  -  "
                      "Unreliable evidence - investigate before use"]:
             self.assertIn(line, text.splitlines())
@@ -105,6 +107,12 @@ class TestCaseReport(unittest.TestCase):
         self.assertIn(warning, Report.evidence_text(ds))
         clean = report_for("a,b\n1,2\n").to_text()
         self.assertNotIn("WARNING", clean)
+
+    def test_singular_rows_and_columns(self):
+        ds = make_dataset("a\n1\n")
+        self.assertEqual(str(ds), "t.csv (1 row x 1 column)")
+        text = Report(Investigator(ds).investigate()).to_text()
+        self.assertIn("  1 row x 1 column  (delimiter ',')", text.splitlines())
 
     def test_structure_problems_are_reported(self):
         text = report_for("# exported by tool v2\nid,name,score\n"
