@@ -116,7 +116,12 @@ Builds itself from a path and raises a `DatasetError` subclass if the file can't
 **Methods:** `num_rows()`, `num_columns()`, `column_values(index) -> list[str]`, `preview(n=5) -> list[list[str]]`, and `__str__`, which gives `"messy_sales.csv (200 rows x 6 columns)"`.
 
 **Loading steps**
-1. Open with `encoding="utf-8-sig"` and `newline=""`, then read the whole text. If that raises `UnicodeDecodeError`, re-read with `latin-1`. `utf-8-sig` removes Excel's BOM.
+1. Read the raw bytes, but only from a regular file. A device such as Windows' `CON` would wait for keyboard input forever, so it gets "no file at". Then decode, trying each in turn:
+   - UTF-16, recognised by its BOM, or by zero bytes in every other position when there's no BOM;
+   - `utf-8-sig`, which also removes Excel's BOM;
+   - `latin-1`, which is switched to `cp1252` when the text contains characters 0x80–0x9F (Excel's curly quotes, dashes and €).
+
+   *(Extended in the robustness pass.)*
 2. If the text contains a null character (`\x00`), raise `UnreadableFileError("doesn't look like a plain text CSV")`.
 3. Detect the delimiter with `csv.Sniffer().sniff(sample, delimiters=",;\t|")` on the first 4096 characters. If that raises `csv.Error`, use `","`.
 4. Parse with `csv.reader(io.StringIO(text, newline=""), delimiter=...)`. A `csv.Error` while parsing becomes `UnreadableFileError("couldn't be read as CSV: ...")`.
@@ -125,6 +130,9 @@ Builds itself from a path and raises a `DatasetError` subclass if the file can't
 7. A row with too many fields is trimmed (extra fields are dropped and not analysed). A row with too few is padded with `""`. Either way, `(line, field_count)` is recorded.
 8. `FileNotFoundError`, `IsADirectoryError` and `PermissionError` become `UnreadableFileError` with a plain message such as `"no file at 'x.csv'"`. **Any other `OSError`** (e.g. Windows "Invalid argument" for a name containing `?`, `*` or a stray `"`) becomes `UnreadableFileError("couldn't open '<path>' (<reason>)")`. *(Added after the final review.)*
 9. **Unclosed quotes.** A quote that opens and is never closed makes the forgiving reader treat the rest of the file as one value. A strict second read detects this ("unexpected end of data") and records `unclosed_quote_line`. The report's EVIDENCE section and the evidence screen then show a WARNING. *(Added after the final review.)*
+10. **Trailing delimiters and structure warnings.** These were added in the robustness pass.
+    - An unnamed header column that is empty in every row (from `a,b,` / `1,2,`) is dropped, and extra fields that are all empty are trimmed without counting the row as malformed. The report notes "trailing delimiters ignored".
+    - `Dataset.warnings` flags three things: a quote that is never closed; a header where at least half the names are numbers (the file probably has no header row); and most rows being longer than the header (the first line is probably a title).
 
 ### 4.6 `investigator.py`
 
@@ -184,7 +192,7 @@ Builds itself from a path and raises a `DatasetError` subclass if the file can't
 - **Invalid number:** a filled cell in a numeric column that isn't number-like. Text columns never have invalid values.
 - **Duplicate row:** every cell equal to an earlier row's cell after removing surrounding spaces. The comparison is case-sensitive (`North` and `north` differ). The first occurrence is the original, and each later copy counts as one duplicate. Detection uses a `dict` that maps each row (as a tuple) to the line where it first appeared.
 - **All rows are analysed**, duplicates included, for the missing and invalid counts.
-- **Malformed rows** appear as a warning and don't lower the score directly. Blanks added by padding count as missing.
+- **Malformed rows** are listed in the report and count against Validity (see §5.2). Blanks added by padding also count as missing. *(Changed in the robustness pass: previously they didn't affect the score, so a file whose every row was malformed could score 100.)*
 
 ### 5.2 Scores
 ```
@@ -195,12 +203,12 @@ invalid %    = 100 x invalid_cells / numeric_cells            = 0 if numeric_cel
 sub-score    = 100 - 5 x problem %, never below 0             (PENALTY_PER_PERCENT = 5)
 completeness = sub-score(missing %)
 uniqueness   = sub-score(duplicate %)
-validity     = sub-score(invalid %)
+validity     = sub-score(invalid % + malformed %)     malformed % = 100 x malformed_rows / rows
 
 overall      = 0.4 x completeness + 0.3 x uniqueness + 0.3 x validity
                rounded to a whole number (halves round up)
 ```
-**Changed on 26 Oct 2026 (calibration, approved by the user).** The first version used plain percentages (e.g. completeness = % of cells not missing). With that formula even `messy_sales.csv` (40 missing values, 10 duplicates, 16 invalid numbers) scored 97, "Case closed". With the penalty, **every 1% of problem data costs 5 points**, so the scores spread from 27 to 99 and the verdicts match the findings. The bands below are unchanged.
+**Changed on 26 Oct 2026 (calibration, approved by the user).** The first version used plain percentages (e.g. completeness = % of cells not missing). With that formula even `messy_sales.csv` (40 missing values, 10 duplicates, 16 invalid numbers) scored 97, "Case closed". With the penalty, **every 1% of problem data costs 5 points**, so the scores spread from 13 to 99 and the verdicts match the findings. The bands below are unchanged.
 The verdict comes from `VERDICT_BANDS`, using `overall`. The short form is used on the leaderboard:
 
 | Overall | Full verdict (report) | Short verdict (leaderboard) |
@@ -210,7 +218,7 @@ The verdict comes from `VERDICT_BANDS`, using `overall`. The short form is used 
 | 70–84 | Significant cleaning needed | Needs cleaning |
 | 0–69 | Unreliable evidence - investigate before use | Unreliable |
 
-**Calibration step (done):** with all datasets in place, the scores are penguins 99, student_grades 98, iris 97, tricky_addresses 95 (all Case closed); old_export_latin1 92 (Minor clean-up); messy_sales 83 (Needs cleaning); broken_rows 27 (Unreliable).
+**Calibration step (done):** with all datasets in place, the scores are penguins 99, student_grades 98, iris 97, tricky_addresses 95 (all Case closed); old_export_latin1 92 (Minor clean-up); messy_sales 83 (Needs cleaning); broken_rows 13 (Unreliable). broken_rows was 27 before malformed rows counted against Validity.
 
 ---
 
@@ -368,7 +376,7 @@ Save a report for every dataset? (y/n):
 | 4 | `messy_sales.csv` | AI-generated | every missing marker, duplicates, `twelve`, `$15`, `5 stars`, blank lines, CRLF line endings | 83 Needs cleaning |
 | 5 | `tricky_addresses.csv` | AI-generated | `;` delimiter, UTF-8 BOM, quoted commas, line break inside a quoted field | 95 Case closed; parses correctly |
 | 6 | `old_export_latin1.csv` | AI-generated | latin-1 encoding (`café`, `José`) | 92 Minor clean-up; parses using the fallback |
-| 7 | `broken_rows.csv` | AI-generated | ragged rows, many duplicates, a blank column name | 27 Unreliable |
+| 7 | `broken_rows.csv` | AI-generated | ragged rows, many duplicates, a blank column name | 13 Unreliable |
 | 8 | `empty.csv` | AI-generated | 0 bytes | Could not open |
 | 9 | `not_really_a_csv.csv` | AI-generated | binary bytes, including null bytes | Could not open |
 

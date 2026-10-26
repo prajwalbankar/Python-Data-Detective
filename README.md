@@ -10,7 +10,7 @@ dataset out of 100 and writes a detective-themed case report.
 
 ![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-3776AB?logo=python&logoColor=white)
 ![No dependencies](https://img.shields.io/badge/dependencies-none-success)
-![Tests](https://img.shields.io/badge/tests-77%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-99%20passing-brightgreen)
 ![Platforms](https://img.shields.io/badge/runs%20on-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
 ![COMP9001](https://img.shields.io/badge/COMP9001-University%20of%20Sydney-E64626)
 
@@ -33,7 +33,7 @@ Option 5 puts every dataset in the evidence locker on trial at once:
   4     tricky_addresses.csv      80     95  Case closed
   5     old_export_latin1.csv     30     92  Minor clean-up
   6     messy_sales.csv          200     83  Needs cleaning
-  7     broken_rows.csv           60     27  Unreliable
+  7     broken_rows.csv           60     13  Unreliable
   --    empty.csv                  -      -  Could not open
   --    not_really_a_csv.csv       -      -  Could not open
 ----------------------------------------------------------------
@@ -81,9 +81,9 @@ Opened  : 26 Oct 2026, 14:51
   ...
 
 [SUB-SCORES]  100 - 5 points per 1% of problem data
-  Completeness  83.3  (3.3% of cells missing)
-  Uniqueness    75.0  (5.0% of rows duplicated)
-  Validity      89.6  (2.1% of numbers invalid)
+  Completeness   83.3  (3.3% of cells missing)
+  Uniqueness     75.0  (5.0% of rows duplicated)
+  Validity       89.6  (2.1% of numbers invalid)
 ================================================================
 VERDICT: 83/100  -  Significant cleaning needed
 ================================================================
@@ -103,10 +103,12 @@ Option 4 saves exactly this text to `reports/messy_sales_report.txt`.
 
 It reads real-world CSVs without crashing:
 - **Delimiters:** detects `,` `;` tab and `|` automatically.
-- **Encodings:** strips Excel's UTF-8 BOM, and falls back to latin-1 for old exports.
+- **Encodings:** UTF-8 (including Excel's BOM), UTF-16 (PowerShell, Excel "Unicode Text"), Windows cp1252 (Excel's curly quotes and €) and latin-1 for old exports.
+- **Export quirks:** ignores trailing delimiters (`a,b,` / `1,2,`) instead of inventing an empty column.
+- **Suspicious structure:** warns when the "header" looks like data (a file with no header row) or when a title line sits above the real header.
 - **Awkward files:** handles quoted commas, line breaks inside quoted values, Windows line endings and blank lines.
 - **Corrupted quoting:** warns when a quote is opened and never closed, instead of silently reading the rest of the file as one value.
-- **Bad input:** refuses empty or binary files, and odd paths such as `?` or a stray `"`, with a friendly message instead of a traceback.
+- **Bad input:** refuses empty or binary files, device names such as `CON`, and odd paths such as `?` or a stray `"`, with a friendly message instead of a traceback. It also accepts `~` and paths dragged into a macOS terminal.
 
 ## 🧮 How the score works
 
@@ -116,7 +118,7 @@ Each sub-score starts at **100** and loses **5 points for every 1% of the data w
 |---|---|---|
 | Completeness | 40% | cells that are missing |
 | Uniqueness | 30% | rows that repeat an earlier row |
-| Validity | 30% | non-numbers inside numeric columns |
+| Validity | 30% | non-numbers inside numeric columns, plus rows with the wrong number of fields |
 
 | Overall | Verdict |
 |---|---|
@@ -160,7 +162,7 @@ Nine sample datasets, from spotless to sabotaged:
 | `tricky_addresses.csv` | AI-generated | `;` delimiter, Excel BOM, quoted commas and line breaks | 95 |
 | `old_export_latin1.csv` | AI-generated | latin-1 encoding (`José`, `São Paulo`) | 92 |
 | `messy_sales.csv` | AI-generated | every missing marker, invalid numbers, duplicates, CRLF | 83 |
-| `broken_rows.csv` | AI-generated | ragged rows, 25% duplicates, a blank column name | 27 |
+| `broken_rows.csv` | AI-generated | ragged rows, 25% duplicates, a blank column name | 13 |
 | `empty.csv` | AI-generated | an empty file | refused |
 | `not_really_a_csv.csv` | AI-generated | binary data in disguise | refused |
 
@@ -210,7 +212,9 @@ python_data_detective/
 python -m unittest discover -s dev_tests -v
 ```
 
-There are **77 tests** in [`dev_tests/`](dev_tests). They include:
+There are **99 tests** in [`dev_tests/`](dev_tests). They include:
+- **Robustness fuzzing:** 400 randomly generated broken CSV files (mixed delimiters, encodings, ragged rows, stray quotes, NUL bytes, emoji) and 150 random typing sessions at every prompt. Nothing may end in a traceback or print a line wider than 64 characters.
+- **An edge-case matrix** of 34 awkward files, from 300 columns and 200 KB fields to CR-only line endings and UTF-16.
 - **An answer-key integration test:** the generator injects a known number of each problem, and the detective must report exactly those counts and line numbers.
 - **Real-data checks:** Iris and Penguins against hand-counted duplicates and missing values.
 - **Situations a marker might actually hit:** running from another folder, Windows paths with spaces pasted in quotes, CRLF files, single-column CSVs, and Ctrl+C or Ctrl+D at every prompt.
@@ -220,7 +224,7 @@ There are **77 tests** in [`dev_tests/`](dev_tests). They include:
 
 **From COMP9001:** classes and objects (instance and static methods, class variables, `__str__`), file I/O, exception handling (a custom exception hierarchy, `raise`, `try/except/finally`), advanced flow control (`break`, `continue`, early `return`, multiple return values), containers, functions and modules.
 
-**Beyond the lectures:** the `csv` module's `Sniffer`, `io.StringIO`, encodings (`utf-8-sig`, latin-1), `collections.Counter`, `statistics`, `math.isfinite`, `datetime` formatting, `sorted(key=lambda ...)`, tuples as dictionary keys, f-string format specs, `__file__`-relative paths, `@staticmethod`, `typing.Optional`, and `unittest` with `mock` and `subprocess`.
+**Beyond the lectures:** the `csv` module's `Sniffer`, `io.StringIO`, encodings (`utf-8-sig`, UTF-16 via `codecs` BOMs, cp1252, latin-1), `textwrap`, `collections.Counter`, `statistics`, `math.isfinite`, `datetime` formatting, `sorted(key=lambda ...)`, tuples as dictionary keys, f-string format specs, `__file__`-relative paths, `@staticmethod`, `typing.Optional`, and `unittest` with `mock` and `subprocess`.
 
 ## 📖 Design documents
 

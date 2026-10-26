@@ -59,7 +59,8 @@ Three sub-scores each start at 100 and lose 5 points for every 1% of the
 data with that problem (never going below 0):
     Completeness  - cells that are missing (blank, NA, N/A, null, ...)
     Uniqueness    - rows that repeat an earlier row
-    Validity      - non-numbers inside a numeric column (e.g. "twelve")
+    Validity      - non-numbers inside a numeric column (e.g. "twelve"),
+                    plus rows with the wrong number of fields
 Overall = 40% Completeness + 30% Uniqueness + 30% Validity, rounded.
 
     95-100  Case closed - ready for analysis
@@ -70,6 +71,11 @@ Overall = 40% Completeness + 30% Uniqueness + 30% Validity, rounded.
 A column counts as numeric when at least 80% of its filled cells are
 numbers. Rows with too many or too few fields are reported, then
 trimmed or padded with blanks (the blanks count as missing).
+Trailing delimiters at the ends of lines ("a,b," / "1,2,") are ignored.
+
+The program reads UTF-8, UTF-16, Windows cp1252 and latin-1 files. It
+warns about a quote that is never closed, a header row that looks like
+data (a file with no header), and a title line above the header.
 
 
 DATASETS AND SOURCES
@@ -117,8 +123,11 @@ CONCEPTS BEYOND THE LECTURES
     csv module (reader, writer, Sniffer)  - parses quoted commas and line
                                             breaks; detects , ; tab |
     io.StringIO                           - parse text already in memory
-    with open(..., encoding=, newline="") - safe file handling, the Excel
-                                            BOM (utf-8-sig) and latin-1
+    with open(..., "rb") and bytes.decode - safe file handling; UTF-8
+                                            (and Excel's BOM), UTF-16,
+                                            cp1252 and latin-1
+    codecs (BOM constants)                - recognise UTF-16 files
+    textwrap                              - wrap long messages to fit
     Custom exceptions via inheritance     - DatasetError and subclasses
     Tuples as dict keys                   - fast duplicate-row detection
     collections.Counter                   - most common value in a column
