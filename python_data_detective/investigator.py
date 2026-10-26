@@ -7,6 +7,7 @@ it all into three sub-scores and an overall quality score.
 import math
 import statistics
 from collections import Counter
+from datetime import datetime
 from typing import Optional
 
 from dataset import Dataset
@@ -26,6 +27,28 @@ class ColumnProfile:
         self.stats: Optional[tuple[float, float, float, float]] = None
         self.unique_count = 0
         self.most_common: Optional[tuple[str, int]] = None
+
+
+class Findings:
+    """Everything the investigation found out about one dataset."""
+
+    def __init__(self, dataset: Dataset) -> None:
+        """Start with empty results; Investigator.investigate fills them."""
+        self.dataset = dataset
+        self.profiles: list[ColumnProfile] = []
+        # (line of the copy, line of the original) for each duplicate row.
+        self.duplicates: list[tuple[int, int]] = []
+        self.total_cells = 0
+        self.missing_cells = 0
+        self.numeric_cells = 0      # filled cells in numeric columns
+        self.invalid_cells = 0
+        self.completeness = 0.0     # sub-scores, 0-100, one decimal place
+        self.uniqueness = 0.0
+        self.validity = 0.0
+        self.overall = 0            # weighted overall score, 0-100
+        self.verdict = ""
+        self.short_verdict = ""
+        self.investigated_at = datetime.now()
 
 
 class Investigator:
@@ -73,6 +96,61 @@ class Investigator:
                 return short, full
         # Scores can't be negative; treat one like the lowest band.
         return Investigator.VERDICT_BANDS[-1][1:]
+
+    def investigate(self) -> Findings:
+        """Run every check on the dataset and return the findings."""
+        findings = Findings(self.dataset)
+        rows = self.dataset.num_rows()
+        for index in range(self.dataset.num_columns()):
+            profile = self._profile_column(index)
+            findings.profiles.append(profile)
+            findings.missing_cells += profile.missing
+            findings.invalid_cells += profile.invalid
+            if profile.kind == "numeric":
+                findings.numeric_cells += rows - profile.missing
+        findings.total_cells = rows * self.dataset.num_columns()
+        findings.duplicates = self._find_duplicates()
+        self._score(findings)
+        findings.investigated_at = datetime.now()
+        return findings
+
+    def _find_duplicates(self) -> list[tuple[int, int]]:
+        """Return (copy line, original line) for every repeated row."""
+        first_seen = {}  # row as a tuple of stripped cells -> its line
+        duplicates = []
+        for row, line in zip(self.dataset.rows, self.dataset.line_numbers):
+            # Tuples can't change, so they can be used as dict keys.
+            key = tuple([cell.strip() for cell in row])
+            if key in first_seen:
+                duplicates.append((line, first_seen[key]))
+            else:
+                first_seen[key] = line
+        return duplicates
+
+    def _score(self, findings: Findings) -> None:
+        """Work out the three sub-scores, the overall score and verdict."""
+        completeness = 100 * (1 - findings.missing_cells
+                              / findings.total_cells)
+        uniqueness = 100 * (1 - len(findings.duplicates)
+                            / self.dataset.num_rows())
+        if findings.numeric_cells == 0:
+            validity = 100.0    # nothing could be an invalid number
+        else:
+            validity = 100 * (1 - findings.invalid_cells
+                              / findings.numeric_cells)
+
+        complete_weight, unique_weight, valid_weight = Investigator.WEIGHTS
+        overall = (complete_weight * completeness
+                   + unique_weight * uniqueness
+                   + valid_weight * validity)
+
+        findings.completeness = round(completeness, 1)
+        findings.uniqueness = round(uniqueness, 1)
+        findings.validity = round(validity, 1)
+        # Round halves up (round() would send 98.5 down to 98).
+        findings.overall = math.floor(overall + 0.5)
+        findings.short_verdict, findings.verdict = self.verdict_for(
+            findings.overall)
 
     def _profile_column(self, index: int) -> ColumnProfile:
         """Work out the type, problems and summary of one column."""

@@ -1,7 +1,8 @@
 """Tests for the investigator's rules, column profiles and scores."""
+import datetime
 import unittest
 
-from context import make_dataset
+from context import SAMPLE_TEXT, make_dataset
 from investigator import Investigator
 
 
@@ -78,6 +79,42 @@ class TestColumnProfile(unittest.TestCase):
         p = profile(["North", "South", "North", " North "])
         self.assertEqual(p.unique_count, 2)
         self.assertEqual(p.most_common, ("North", 3))
+
+
+class TestInvestigate(unittest.TestCase):
+
+    def test_sample_scores(self):
+        f = Investigator(make_dataset(SAMPLE_TEXT)).investigate()
+        self.assertEqual((f.total_cells, f.missing_cells), (20, 2))
+        self.assertEqual((f.numeric_cells, f.invalid_cells), (9, 1))
+        self.assertEqual(f.duplicates, [(11, 2)])
+        self.assertEqual((f.completeness, f.uniqueness, f.validity),
+                         (90.0, 90.0, 88.9))
+        self.assertEqual(f.overall, 90)
+        self.assertEqual(f.short_verdict, "Minor clean-up")
+        self.assertEqual(f.verdict, "Minor clean-up needed")
+        self.assertIsInstance(f.investigated_at, datetime.datetime)
+        self.assertEqual(len(f.profiles), 2)
+
+    def test_duplicates_ignore_spaces_but_not_case(self):
+        f = Investigator(make_dataset(
+            "a,b\n1,x\nNorth,1\n 1 , x \nnorth,1\n")).investigate()
+        self.assertEqual(f.duplicates, [(4, 2)])
+
+    def test_validity_100_without_numeric_columns(self):
+        f = Investigator(make_dataset("name\nAnn\nBob\n")).investigate()
+        self.assertEqual((f.numeric_cells, f.validity), (0, 100.0))
+
+    def test_overall_rounds_half_up(self):
+        # 20 unique rows, 1 invalid number -> 40 + 30 + 28.5 = 98.5 -> 99
+        text = ("n,id\n" + "".join(f"{i},r{i}\n" for i in range(19))
+                + "oops,r19\n")
+        f = Investigator(make_dataset(text)).investigate()
+        self.assertEqual(f.overall, 99)
+
+    def test_padded_cells_count_as_missing(self):
+        f = Investigator(make_dataset("a,b,c\n1,2\n3,4,5\n")).investigate()
+        self.assertEqual(f.missing_cells, 1)
 
 
 if __name__ == "__main__":
