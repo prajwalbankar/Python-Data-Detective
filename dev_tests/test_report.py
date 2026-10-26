@@ -30,10 +30,12 @@ class TestCaseReport(unittest.TestCase):
                      "[DUPLICATES]  1 duplicate row",
                      "  line 11 duplicates line 2",
                      "[MALFORMED ROWS]  none found", "[COLUMN PROFILES]",
-                     "  Completeness  90.0%  (2 of 20 cells missing)",
-                     "  Uniqueness    90.0%  (1 of 10 rows duplicated)",
-                     "  Validity      88.9%  (1 of 9 numeric values invalid)",
-                     "VERDICT: 90/100  -  Minor clean-up needed"]:
+                     "[SUB-SCORES]  100 - 5 points per 1% of problem data",
+                     "  Completeness  50.0  (10.0% of cells missing)",
+                     "  Uniqueness    50.0  (10.0% of rows duplicated)",
+                     "  Validity      44.4  (11.1% of numbers invalid)",
+                     "VERDICT: 48/100  -  "
+                     "Unreliable evidence - investigate before use"]:
             self.assertIn(line, text.splitlines())
         self.assertIn("'bad' (line 9)", text)
         self.assertRegex(text, r"CASE FILE #\d{8}-\d{4}")

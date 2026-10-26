@@ -88,11 +88,13 @@ class TestInvestigate(unittest.TestCase):
         self.assertEqual((f.total_cells, f.missing_cells), (20, 2))
         self.assertEqual((f.numeric_cells, f.invalid_cells), (9, 1))
         self.assertEqual(f.duplicates, [(11, 2)])
+        # 10% missing, 10% duplicated, 11.1% invalid; each 1% costs 5.
         self.assertEqual((f.completeness, f.uniqueness, f.validity),
-                         (90.0, 90.0, 88.9))
-        self.assertEqual(f.overall, 90)
-        self.assertEqual(f.short_verdict, "Minor clean-up")
-        self.assertEqual(f.verdict, "Minor clean-up needed")
+                         (50.0, 50.0, 44.4))
+        self.assertEqual(f.overall, 48)
+        self.assertEqual(f.short_verdict, "Unreliable")
+        self.assertEqual(f.verdict,
+                         "Unreliable evidence - investigate before use")
         self.assertIsInstance(f.investigated_at, datetime.datetime)
         self.assertEqual(len(f.profiles), 2)
 
@@ -106,11 +108,19 @@ class TestInvestigate(unittest.TestCase):
         self.assertEqual((f.numeric_cells, f.validity), (0, 100.0))
 
     def test_overall_rounds_half_up(self):
-        # 20 unique rows, 1 invalid number -> 40 + 30 + 28.5 = 98.5 -> 99
+        # 20 unique rows, 1 invalid number (5%) -> validity 75
+        # -> 40 + 30 + 22.5 = 92.5 -> 93
         text = ("n,id\n" + "".join(f"{i},r{i}\n" for i in range(19))
                 + "oops,r19\n")
         f = Investigator(make_dataset(text)).investigate()
-        self.assertEqual(f.overall, 99)
+        self.assertEqual(f.validity, 75.0)
+        self.assertEqual(f.overall, 93)
+
+    def test_sub_scores_never_below_zero(self):
+        # 2 of 3 rows are duplicates (66.7%) -> 100 - 333 -> 0
+        f = Investigator(make_dataset("a,b\n1,x\n1,x\n1,x\n")).investigate()
+        self.assertEqual(f.uniqueness, 0.0)
+        self.assertEqual(f.overall, 70)
 
     def test_padded_cells_count_as_missing(self):
         f = Investigator(make_dataset("a,b,c\n1,2\n3,4,5\n")).investigate()

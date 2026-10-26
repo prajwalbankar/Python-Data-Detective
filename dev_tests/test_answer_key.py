@@ -34,6 +34,22 @@ class TestAnswerKey(unittest.TestCase):
                     got["duplicate_lines"] = f.duplicates
                 self.assertEqual(got, key)
 
+    def test_real_datasets_load(self):
+        # Expected values were counted by hand from the downloaded files
+        # (sort | uniq -d, grep NA), not with the app.
+        folder = os.path.join(APP_DIR, "datasets")
+        iris = Dataset(os.path.join(folder, "iris.csv"))
+        self.assertEqual((iris.num_rows(), iris.num_columns()), (150, 5))
+        self.assertEqual(iris.blank_lines_skipped, 1)
+        self.assertEqual(Investigator(iris).investigate().duplicates,
+                         [(36, 11), (39, 11), (144, 103)])
+        penguins = Dataset(os.path.join(folder, "penguins.csv"))
+        self.assertEqual((penguins.num_rows(), penguins.num_columns()),
+                         (344, 8))
+        found = Investigator(penguins).investigate()
+        self.assertEqual(found.missing_cells, 19)
+        self.assertEqual(found.duplicates, [])
+
     def test_generator_is_deterministic(self):
         a, b = tempfile.mkdtemp(), tempfile.mkdtemp()
         make_datasets.build_datasets(a)

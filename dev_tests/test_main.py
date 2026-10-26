@@ -81,7 +81,7 @@ class TestMenu(MenuTestCase):
         self.assertIn(
             "Opening case... t.csv (10 rows x 2 columns, delimiter ',')", out)
         self.assertIn("Current case: t.csv (10 rows x 2 columns)", out)
-        self.assertIn("VERDICT: 90/100", out)
+        self.assertIn("VERDICT: 48/100", out)
         self.assertIn("Report saved to", out)
         self.assertIn("(replaced the previous report)", out)
         self.assertEqual(self.report_files(), ["t_report.txt"])

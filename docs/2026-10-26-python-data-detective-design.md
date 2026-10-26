@@ -50,7 +50,7 @@ Python Data Detective is a menu-driven terminal program. It loads a CSV file, ch
 | Extras | Per-column profile; investigate-all leaderboard |
 | Left out | Exporting a cleaned CSV; automated test file in the submission |
 | Theme | Light touch: themed headings (CASE FILE, EVIDENCE, SUSPECTS, VERDICT) with plain findings underneath |
-| Score | Three sub-scores combined as Completeness 40%, Uniqueness 30%, Validity 30% |
+| Score | Three sub-scores combined as Completeness 40%, Uniqueness 30%, Validity 30%. After calibration, each sub-score is 100 minus 5 points per 1% of problem data (see §5.2) |
 | Structure | Option A: one class per job |
 
 ---
@@ -138,7 +138,7 @@ Builds itself from a path and raises a `DatasetError` subclass if the file can't
 | `stats` | for numeric columns: `(min, max, mean, median)` over valid numbers only, or `None` if there are none |
 | `unique_count`, `most_common` | for text columns: number of distinct filled values, and `(value, count)` |
 
-**`Findings`**: everything about one investigated dataset. It holds the `Dataset`; `profiles`; `duplicates` (a list of `(line, original_line)`); `total_cells`, `missing_cells`, `numeric_cells` (filled cells in numeric columns), `invalid_cells`; `completeness`, `uniqueness`, `validity` (each 0–100, one decimal place); `overall` (an int from 0–100); `verdict` and `short_verdict` (str); and `investigated_at` (datetime).
+**`Findings`**: everything about one investigated dataset. It holds the `Dataset`; `profiles`; `duplicates` (a list of `(line, original_line)`); `total_cells`, `missing_cells`, `numeric_cells` (filled cells in numeric columns), `invalid_cells`; `missing_percent`, `duplicate_percent`, `invalid_percent`; `completeness`, `uniqueness`, `validity` (each 0–100, one decimal place); `overall` (an int from 0–100); `verdict` and `short_verdict` (str); and `investigated_at` (datetime).
 
 **`Investigator`**
 - **Class variables** (each rule is one line to change):
@@ -187,12 +187,19 @@ Builds itself from a path and raises a `DatasetError` subclass if the file can't
 
 ### 5.2 Scores
 ```
-completeness = 100 x (1 - missing_cells / total_cells)        total_cells = rows x columns
-uniqueness   = 100 x (1 - duplicate_rows / rows)
-validity     = 100 x (1 - invalid_cells / numeric_cells)      = 100 if numeric_cells == 0
+missing %    = 100 x missing_cells / total_cells              total_cells = rows x columns
+duplicate %  = 100 x duplicate_rows / rows
+invalid %    = 100 x invalid_cells / numeric_cells            = 0 if numeric_cells == 0
+
+sub-score    = 100 - 5 x problem %, never below 0             (PENALTY_PER_PERCENT = 5)
+completeness = sub-score(missing %)
+uniqueness   = sub-score(duplicate %)
+validity     = sub-score(invalid %)
+
 overall      = 0.4 x completeness + 0.3 x uniqueness + 0.3 x validity
                rounded to a whole number (halves round up)
 ```
+**Changed on 26 Oct 2026 (calibration, approved by the user).** The first version used plain percentages (e.g. completeness = % of cells not missing). With that formula even `messy_sales.csv` (40 missing values, 10 duplicates, 16 invalid numbers) scored 97, "Case closed". With the penalty, **every 1% of problem data costs 5 points**, so the scores spread from 27 to 99 and the verdicts match the findings. The bands below are unchanged.
 The verdict comes from `VERDICT_BANDS`, using `overall`. The short form is used on the leaderboard:
 
 | Overall | Full verdict (report) | Short verdict (leaderboard) |
@@ -202,7 +209,7 @@ The verdict comes from `VERDICT_BANDS`, using `overall`. The short form is used 
 | 70–84 | Significant cleaning needed | Needs cleaning |
 | 0–69 | Unreliable evidence - investigate before use | Unreliable |
 
-**Calibration step:** once all datasets exist, check that the messy ones land in sensible bands. If they don't, propose new cut-offs to the user before changing them.
+**Calibration step (done):** with all datasets in place, the scores are penguins 99, student_grades 98, iris 97, tricky_addresses 95 (all Case closed); old_export_latin1 92 (Minor clean-up); messy_sales 83 (Needs cleaning); broken_rows 27 (Unreliable).
 
 ---
 
@@ -283,12 +290,12 @@ Opened  : 26 Oct 2026, 14:32
             4 unique, most common 'North' (61)
   ...
 
-[SUB-SCORES]
-  Completeness  92.0%  (96 of 1,200 cells missing)
-  Uniqueness    95.0%  (10 of 200 rows duplicated)
-  Validity      96.1%  (28 of 726 numeric values invalid)
+[SUB-SCORES]  100 - 5 points per 1% of problem data
+  Completeness  83.3  (3.3% of cells missing)
+  Uniqueness    75.0  (5.0% of rows duplicated)
+  Validity      89.6  (2.1% of numbers invalid)
 ================================================================
-VERDICT: 94/100  -  Minor clean-up needed
+VERDICT: 83/100  -  Significant cleaning needed
 ================================================================
 ```
 - The mockup is shortened with `...` in places. The real report lists every entry up to the limits below.
@@ -352,15 +359,15 @@ Save a report for every dataset? (y/n):
 
 ## 8. Datasets
 
-| # | File | Source | Shows | Expected |
+| # | File | Source | Shows | Actual score |
 |---|---|---|---|---|
-| 1 | `iris.csv` | Real: UCI Iris, CC BY 4.0 (header row added) | a clean dataset; reportedly has one duplicate row, which would make a nice real-world finding (to confirm) | about 100 |
-| 2 | `penguins.csv` | Real: Palmer Penguins, CC0 | genuine `NA` missing values | high 90s |
-| 3 | `student_grades.csv` | AI-generated | a few blanks, 1 duplicate | high 90s |
-| 4 | `messy_sales.csv` | AI-generated | every missing marker, duplicates, `twelve`, `$15`, `5 stars`, blank lines | low–mid 90s |
-| 5 | `tricky_addresses.csv` | AI-generated | `;` delimiter, UTF-8 BOM, quoted commas, line break inside a quoted field | high; must parse correctly |
-| 6 | `old_export_latin1.csv` | AI-generated | latin-1 encoding (`café`, `José`) | parses using the fallback |
-| 7 | `broken_rows.csv` | AI-generated | ragged rows, many duplicates, a blank column name | low |
+| 1 | `iris.csv` | Real: UCI Iris, CC BY 4.0 (header row added) | a famous "clean" dataset that actually has **3 duplicate rows** (lines 36 and 39 copy line 11; line 144 copies line 103), plus a trailing blank line: a real-world finding | 97 Case closed |
+| 2 | `penguins.csv` | Real: Palmer Penguins, CC0 | 19 genuine `NA` missing values | 99 Case closed |
+| 3 | `student_grades.csv` | AI-generated | a few blanks, 1 duplicate | 98 Case closed |
+| 4 | `messy_sales.csv` | AI-generated | every missing marker, duplicates, `twelve`, `$15`, `5 stars`, blank lines, CRLF line endings | 83 Needs cleaning |
+| 5 | `tricky_addresses.csv` | AI-generated | `;` delimiter, UTF-8 BOM, quoted commas, line break inside a quoted field | 95 Case closed; parses correctly |
+| 6 | `old_export_latin1.csv` | AI-generated | latin-1 encoding (`café`, `José`) | 92 Minor clean-up; parses using the fallback |
+| 7 | `broken_rows.csv` | AI-generated | ragged rows, many duplicates, a blank column name | 27 Unreliable |
 | 8 | `empty.csv` | AI-generated | 0 bytes | Could not open |
 | 9 | `not_really_a_csv.csv` | AI-generated | binary bytes, including null bytes | Could not open |
 

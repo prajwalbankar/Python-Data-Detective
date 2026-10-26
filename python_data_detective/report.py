@@ -312,22 +312,20 @@ class Report:
     def _score_lines(self) -> list[str]:
         """Return the three sub-scores and the verdict."""
         f = self.findings
-        rows = f.dataset.num_rows()
         if f.numeric_cells == 0:
             validity_note = "(no numeric columns)"
         else:
-            validity_note = (f"({f.invalid_cells:,} of {f.numeric_cells:,} "
-                             "numeric values invalid)")
+            validity_note = f"({f.invalid_percent:.1f}% of numbers invalid)"
         scores = [
             ("Completeness", f.completeness,
-             f"({f.missing_cells:,} of {f.total_cells:,} cells missing)"),
+             f"({f.missing_percent:.1f}% of cells missing)"),
             ("Uniqueness", f.uniqueness,
-             f"({len(f.duplicates):,} of {rows:,} rows duplicated)"),
+             f"({f.duplicate_percent:.1f}% of rows duplicated)"),
             ("Validity", f.validity, validity_note),
         ]
-        lines = ["[SUB-SCORES]"]
+        lines = ["[SUB-SCORES]  100 - 5 points per 1% of problem data"]
         for label, score, note in scores:
-            line = f"  {label:<14}{score:.1f}%"
+            line = f"  {label:<14}{score:.1f}"
             if len(line) + 2 + len(note) <= WIDTH:
                 lines.append(line + "  " + note)
             else:

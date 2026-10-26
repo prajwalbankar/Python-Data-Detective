@@ -42,6 +42,10 @@ class Findings:
         self.missing_cells = 0
         self.numeric_cells = 0      # filled cells in numeric columns
         self.invalid_cells = 0
+        # Share of the data with each kind of problem, as a percentage.
+        self.missing_percent = 0.0
+        self.duplicate_percent = 0.0
+        self.invalid_percent = 0.0
         self.completeness = 0.0     # sub-scores, 0-100, one decimal place
         self.uniqueness = 0.0
         self.validity = 0.0
@@ -61,6 +65,8 @@ class Investigator:
     NUMERIC_THRESHOLD = 0.8
     # Weights of completeness, uniqueness and validity in the overall.
     WEIGHTS = (0.4, 0.3, 0.3)
+    # Points a sub-score loses for every 1% of the data with a problem.
+    PENALTY_PER_PERCENT = 5
     # (minimum score, short verdict, full verdict), highest band first.
     VERDICT_BANDS = [
         (95, "Case closed", "Case closed - ready for analysis"),
@@ -127,17 +133,26 @@ class Investigator:
                 first_seen[key] = line
         return duplicates
 
+    @staticmethod
+    def sub_score(problem_percent: float) -> float:
+        """Return 100 minus 5 points per 1% of problems, never below 0."""
+        return max(0.0, 100 - Investigator.PENALTY_PER_PERCENT
+                   * problem_percent)
+
     def _score(self, findings: Findings) -> None:
         """Work out the three sub-scores, the overall score and verdict."""
-        completeness = 100 * (1 - findings.missing_cells
-                              / findings.total_cells)
-        uniqueness = 100 * (1 - len(findings.duplicates)
-                            / self.dataset.num_rows())
-        if findings.numeric_cells == 0:
-            validity = 100.0    # nothing could be an invalid number
-        else:
-            validity = 100 * (1 - findings.invalid_cells
-                              / findings.numeric_cells)
+        findings.missing_percent = (100 * findings.missing_cells
+                                    / findings.total_cells)
+        findings.duplicate_percent = (100 * len(findings.duplicates)
+                                      / self.dataset.num_rows())
+        if findings.numeric_cells > 0:
+            findings.invalid_percent = (100 * findings.invalid_cells
+                                        / findings.numeric_cells)
+        # With no numeric columns nothing can be invalid: 0% problems.
+
+        completeness = self.sub_score(findings.missing_percent)
+        uniqueness = self.sub_score(findings.duplicate_percent)
+        validity = self.sub_score(findings.invalid_percent)
 
         complete_weight, unique_weight, valid_weight = Investigator.WEIGHTS
         overall = (complete_weight * completeness
