@@ -119,6 +119,16 @@ class TestMenu(MenuTestCase):
         out = self.run_main([KeyboardInterrupt()])
         self.assertTrue(out.rstrip().endswith(GOODBYE))
 
+    def test_ctrl_c_at_path_prompt(self):
+        out = self.run_main(["1", "P", KeyboardInterrupt()])
+        self.assertTrue(out.rstrip().endswith(GOODBYE))
+
+    def test_ctrl_c_at_yes_no_prompt(self):
+        out = self.run_main(["5", KeyboardInterrupt()])
+        self.assertIn("CASE BOARD", out)
+        self.assertTrue(out.rstrip().endswith(GOODBYE))
+        self.assertEqual(self.report_files(), [])
+
     def test_save_error_reported(self):
         self.reports = write_file("not a folder", "reports_file")
         out = self.run_main(["1", "1", "4", "0"])
