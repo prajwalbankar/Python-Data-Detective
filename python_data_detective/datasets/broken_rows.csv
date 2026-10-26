@@ -1,0 +1,61 @@
+sensor_id,,reading,unit,status
+S001,Basement,26.4,C,ok
+S002,Roof,-,C,ok
+S003,Roof,24.2,C,ok
+S004,Basement,16.0,nan,nan
+S005,Basement,33.3,C,ok
+S006,Lab B,27.3,C,warn
+S007,Lab A,30.9,C,ok
+S008,Roof,17.2,C,ok,EXTRA
+S009,Lab A,18.4,C,warn
+S010,NA,27.0,C,ok
+S011,Lab A,19.5
+S012,Lab B,30.6,C,ok,EXTRA
+S013,null,15.3,C,-
+S014,Lab A,34.0
+S015,Lab A,22.5,C,ok
+S016,N/A,24.8,-,-
+S003,Roof,24.2,C,ok
+S017,Basement,26.6,C,ok
+S018,-,25.7,C,None
+S019,Lab A,--,C,ok
+S020,Lab B,high,N/A,ok
+S021,Roof,33.6,C,warn
+S007,Lab A,30.9,C,ok
+S022,Basement,17.3,C,ok
+S023,Lab B,16.2,C,ok
+S024,Roof,23.6,C,ok,EXTRA
+S025,Lab A,16.9,C,ok
+S026,Basement,18.9
+S027,Lab A,30.2
+S025,Lab A,16.9,C,ok
+S028,?,25.8,N/A,?
+S022,Basement,17.3,C,ok
+S029,Lab A,15.9,C,ok
+S030,Lab B,,N/A,ok
+S022,Basement,17.3,C,ok
+S031,Roof,29.7,C,ok,EXTRA
+S032,Lab A,31.8
+S033,Roof,ERR,C,N/A
+S022,Basement,17.3,C,ok
+S034,?,null,C,ok
+S035,,ERR,nan,NA
+S036,Roof,22.4,C,ok
+S037,Basement,27.3,C,warn
+S007,Lab A,30.9,C,ok
+S038,Roof,20.4,C,ok,EXTRA
+S039,Lab B,--,C,warn
+S040,Lab A,,null,ok
+S041,Basement,29.0,C,ok
+S042,Roof,31.3,C,warn,EXTRA
+S029,Lab A,15.9,C,ok
+S029,Lab A,15.9,C,ok
+S041,Basement,29.0,C,ok
+S036,Roof,22.4,C,ok
+S041,Basement,29.0,C,ok
+S025,Lab A,16.9,C,ok
+S043,nan,high,C,warn
+S015,Lab A,22.5,C,ok
+S044,N/A,N/A,-,ok
+S041,Basement,29.0,C,ok
+S045,-,25.3,C,warn

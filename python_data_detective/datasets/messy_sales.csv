@@ -1,0 +1,203 @@
+order_id,region,product,price,qty,rating
+1,East,Mug,63.06,10,4
+2,East,Stapler,83.09,20,2
+3,North,Headphones,11.63,15,1
+4,East,Water bottle,4.96,19,2
+5,South,Backpack,62.01,2,3
+6,West,Water bottle,67.69,7,5
+7,North,Notebook,20.39,15,5
+8,East,Backpack,62.73,19,1
+9,North,USB cable,69.37,4,4
+10,North,Stapler,51.89,3,2
+11,South,Backpack,twelve,9,1
+12,West,Backpack,50.05,19,5
+13,East,Desk lamp,81.70,3,2
+14,North,Mug,10.41,10,2
+15,North,USB cable,8.88,11,5
+16,West,Desk lamp,$15,12,5
+17,North,USB cable,41.68,12,1
+18,East,Mug,66.66,10,2
+19,South,Stapler,18.94,13,2
+20,South,Headphones,59.47,10,1
+21,South,Desk lamp,None,14,1
+22,East,Water bottle,37.78,6,5
+23,North,Notebook,None,18,2
+24,West,Notebook,84.63,1,1
+25,North,USB cable,24.92,8,4
+26,North,Notebook,58.72,16,5
+27,South,Mug,55.83,9,3
+28,East,Headphones,71.78,9,4
+29,South,USB cable,28.35,20,5
+30,East,Water bottle,48.69,8,5
+31,West,USB cable,N/A,9,4
+32,East,USB cable,18.06,8,2
+33,North,Mug,10.59,13,5
+34,West,Mug,71.99,7,1
+35,West,Backpack,60.74,11,1
+36,East,Mug,64.62,15,4
+37,South,Notebook,19.09,11,3
+38,North,Headphones,88.56,11,1
+39,West,USB cable,21.44,4,2
+40,East,Water bottle,13.83,4,N.A.
+41,South,Headphones,46.61,15,2
+42,South,Desk lamp,87.72,13,4
+43,South,Mug,40.18,2,None
+44,North,USB cable,12.92,12,3
+45,East,Mug,55.36,5,2
+46,North,USB cable,80.43,14,2
+47,North,Water bottle,28.70,18,1
+48,North,USB cable,31.48,17,3
+49,South,Desk lamp,NA,17,4
+50,East,Notebook,21.64,10,4
+
+51,North,Desk lamp,52.29,6,2
+52,East,Backpack,63.06,9,3
+53,-,USB cable,62.84,20,4
+54,East,Stapler,69.20,15,2
+55,East,Desk lamp,34.16,18,4
+56,West,Notebook,47.96,11,1
+57,East,Desk lamp,,3,**
+58,North,Desk lamp,27.68,10,2
+59,West,Headphones,2.86,12,5
+60,South,Mug,69.02,N/A,5
+61,West,Backpack,31.81,11,5
+62,East,Desk lamp,88.45,1,4
+63,West,Stapler,51.14,9,3
+64,West,Headphones,66.48,13,1
+65,East,Notebook,36.94,13,4
+66,South,Backpack,null,1,**
+67,East,Desk lamp,30.75,17,5
+68,West,Backpack,nan,4,1
+69,East,USB cable,3.60,10,4
+70,West,Stapler,25.35,12,4
+71,North,Headphones,85.56,18,3
+72,East,Headphones,7.84,5,3
+73,East,Notebook,15.00 AUD,11,2
+74,South,Headphones,15.53,12,4
+75,East,USB cable,53.48,19,5
+76,North,Headphones,34.58,8,3
+50,East,Notebook,21.64,10,4
+77,East,USB cable,57.86,10,1
+78,West,Stapler,25.92,12,3
+79,South,Desk lamp,33.45,16,N/A
+80,North,Backpack,38.58,null,2
+81,East,Notebook,52.33,10,1
+82,South,Headphones,78.67,16,3
+83,West,Headphones,4.93,11,2
+84,South,Stapler,33.04,4,1
+85,North,Notebook,"1,204",17,4
+86,South,Notebook,38.26,13,3
+87,South,Water bottle,39.14,16,
+88,North,Notebook,88.95,20,5
+89,NA,Headphones,4.36,14,2
+90,South,Notebook,81.37,10,four
+91,North,USB cable,21.74,1,3
+92,?,Headphones,42.89,6,1
+93,North,Desk lamp,72.63,14,4
+94,West,Water bottle,2.57,7,?
+95,South,Notebook,67.26,nan,2
+96,West,Notebook,54.88,12,4
+97,East,USB cable,-,6,2
+98,South,Water bottle,23.37,6,4
+99,East,Water bottle,29.74,11,5
+100,North,Stapler,81.20,4,4
+101,South,Mug,49.34,20,2
+102,South,USB cable,42.30,20,1
+103,North,Stapler,79.99,18,3
+104,East,USB cable,5.05,8,3
+105,South,Backpack,36.77,5,-
+106,South,Water bottle,15.00 AUD,11,1
+107,West,Headphones,$15,11,1
+108,North,Headphones,5.86,18,nan
+109,North,Backpack,18.34,7,4
+110,East,Headphones,22.38,17,5
+111,South,Stapler,N/A,4,1
+112,South,Mug,62.87,10,2
+113,North,Headphones,29.17,?,3
+114,South,Headphones,28.86,10,3
+115,East,Notebook,86.36,4,2
+116,South,Backpack,38.42,16,3
+117,West,Desk lamp,79.31,1,2
+118,West,Notebook,39.59,10,3
+119,East,Headphones,51.36,14,1
+
+120,East,Headphones,63.99,12,4
+121,East,Desk lamp,46.00,5,5 stars
+122,West,Desk lamp,58.23,18,1
+123,North,Desk lamp,56.02,8,5
+124,East,Mug,81.14,9,2
+86,South,Notebook,38.26,13,3
+125,West,Desk lamp,24.66,10,1
+126,East,Desk lamp,?,13,3
+122,West,Desk lamp,58.23,18,1
+127,West,Notebook,50.34,2,5
+128,South,Water bottle,N/A,6,1
+129,West,Headphones,74.48,7,4
+130,West,Headphones,73.41,16,1
+131,West,Desk lamp,25.50,nan,2
+132,East,Backpack,23.28,19,?
+133,North,Desk lamp,18.06,12,2
+134,-,Backpack,36.93,20,None
+135,West,Backpack,2.65,9,2
+136,East,Mug,15.53,13,2
+137,East,Mug,32.41,9,4
+138,West,Desk lamp,23.50,16,4
+139,West,Water bottle,43.33,16,5
+140,West,Backpack,68.52,15,2
+141,North,Mug,37.55,11,3
+142,West,USB cable,13.69,1,3
+143,West,Headphones,None,16,1
+144,South,Stapler,43.89,15,1
+145,North,USB cable,18.50,9,2
+125,West,Desk lamp,24.66,10,1
+146,North,USB cable,59.92,6,4
+147,NA,Backpack,44.84,6,4
+148,North,Notebook,82.83,12,2
+149,North,USB cable,null,20,four
+150,East,Headphones,77.17,14,4
+151,,Mug,80.35,16,3
+152,West,Stapler,20.65,7,5
+153,South,Mug,40.04,19,4
+154,East,Desk lamp,73.62,18,3
+135,West,Backpack,2.65,9,2
+155,East,USB cable,33.09,6,5
+156,East,Backpack,22.20,14,5
+157,South,Mug,64.00,9,5
+158,West,Water bottle,73.49,19,NA
+159,West,Notebook,87.73,4,3
+160,West,USB cable,7.34,15,4
+161,South,Notebook,-,2,2
+162,North,Headphones,25.07,16,5
+163,South,Desk lamp,59.97,18,5
+164,West,Backpack,56.64,16,5 stars
+165,North,Backpack,26.49,11,1
+166,South,Headphones,64.69,17,5
+167,South,Mug,70.14,10,1
+168,East,Backpack,64.77,6,1
+125,West,Desk lamp,24.66,10,1
+169,East,Water bottle,34.78,3,1
+170,South,Stapler,,nan,3
+171,East,Stapler,39.48,15,1
+172,West,Headphones,null,3,4
+173,West,USB cable,NA,8,5
+174,North,Desk lamp,57.73,3,1
+175,North,Mug,18.11,15,N.A.
+176,West,Headphones,73.67,8,5
+177,North,Headphones,6.47,7,3
+178,East,Desk lamp,"1,204",10,3
+62,East,Desk lamp,88.45,1,4
+179,West,Mug,77.61,15,5
+180,West,Desk lamp,2.62,13,2
+181,South,Backpack,38.00,9,3
+182,South,Mug,80.41,2,2
+39,West,USB cable,21.44,4,2
+183,West,USB cable,11.16,16,2
+184,East,Stapler,39.29,17,2
+185,West,Notebook,77.82,14,3
+186,East,Mug,40.52,2,
+104,East,USB cable,5.05,8,3
+187,North,Notebook,62.91,16,4
+181,South,Backpack,38.00,9,3
+188,North,Desk lamp,null,8,1
+189,East,Stapler,20.04,18,3
+190,West,Notebook,twelve,3,3

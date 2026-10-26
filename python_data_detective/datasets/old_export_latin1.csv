@@ -1,0 +1,31 @@
+customer_id,name,city,spend
+C001,Renée Dubois,Göteborg,63.86
+C002,Andrés Peña,Montréal,371.65
+C003,José Álvarez,Köln,278.28
+C004,Zoë Martin,Málaga,391.17
+C005,José Álvarez,,79.23
+C006,Chloé Bernard,Göteborg,126.93
+C007,Renée Dubois,São Paulo,226.35
+C008,Ana Simões,Málaga,419.81
+C009,Renée Dubois,Köln,82.76
+C010,Andrés Peña,,310.24
+C011,Chloé Bernard,Köln,434.66
+C012,Andrés Peña,Köln,473.06
+C013,Jürgen Müller,Köln,128.87
+C014,Zoë Martin,Göteborg,131.01
+C015,Chloé Bernard,Zürich,411.18
+C016,Chloé Bernard,Göteborg,292.03
+C017,Zoë Martin,Göteborg,353.58
+C018,Ana Simões,São Paulo,309.13
+C019,Zoë Martin,Montréal,229.64
+C020,Ana Simões,Göteborg,382.53
+C021,José Álvarez,Köln,239.30
+C022,Jürgen Müller,Köln,240.63
+C023,Jürgen Müller,Málaga,abc
+C024,Jürgen Müller,São Paulo,240.75
+C025,Björn Larsen,Montréal,85.54
+C026,Chloé Bernard,Málaga,78.70
+C027,Renée Dubois,Montréal,11.39
+C028,Andrés Peña,São Paulo,27.57
+C029,Ana Simões,Göteborg,107.29
+C030,Zoë Martin,Köln,352.09

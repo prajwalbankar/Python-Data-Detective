@@ -1,0 +1,84 @@
+﻿id;name;address;city;postcode;notes
+1;Sam Wilson;Unit 27, 55 Queen St, Rear;Darwin;0800;Back entrance
+2;"Smith; Jones & Co";Unit 13, 221 George St;Adelaide;5000;Fragile
+3;Mei Nguyen;Unit 30, 44 King St, Rear;Darwin;0800;Fragile
+4;Mia Martin;Unit 16, 162 Oxford St;Brisbane;4000;Back entrance
+5;Mia Martin;Unit 14, 240 King St;Melbourne;3000;Ring twice
+6;"Lee; Park Pty Ltd";Unit 7, 249 Queen St;Brisbane;4000;Call on arrival
+7;Mia Brown;100 Queen St;Perth;6000;Leave at door
+8;Ethan Brown;Unit 29, 298 Oxford St;Sydney;2000;Back entrance
+9;Chloe Martin;Unit 21, 51 King St;Melbourne;3000;Fragile
+10;Oscar Chen;Unit 26, 235 Queen St;Adelaide;5000;Call on arrival
+11;Sam Singh;Unit 34, 287 Bourke St;Adelaide;5000;Fragile
+12;Noah Kumar;Unit 11, 35 Queen St, Rear;Perth;6000;Leave at door
+13;Ethan Singh;Unit 3, 263 Oxford St, Rear;Perth;6000;"Call first
+Gate code 1234"
+14;Isla White;30 Pitt St;Perth;6000;Call on arrival
+15;Ava Kumar;196 Crown St;Perth;6000;Call on arrival
+16;Liam Singh;Unit 5, 166 Crown St;Sydney;2000;
+17;Ava Smith;Unit 17, 198 George St, Rear;Sydney;2000;Ring twice
+18;Mei Singh;Unit 33, 147 King St, Rear;Darwin;0800;Leave at door
+19;Ava Patel;74 George St;Perth;6000;Leave at door
+20;Isla Smith;55 Hay St;Adelaide;5000;Fragile
+21;Arjun Chen;Unit 23, 58 Bourke St;Brisbane;4000;Leave at door
+22;Priya Patel;Unit 14, 42 George St, Rear;Sydney;2000;Call on arrival
+23;Priya Taylor;Unit 36, 60 Hay St;Melbourne;3000;Leave at door
+24;Leo Lee;Unit 7, 35 Bourke St, Rear;Perth;6000;Back entrance
+25;Mei Wilson;Unit 25, 236 Crown St;Brisbane;4000;Fragile
+26;Ava Lee;20 King St;Darwin;0800;Call on arrival
+27;Ethan Singh;152 Queen St;Darwin;0800;Call on arrival
+28;Ethan Singh;92 Oxford St;Darwin;0800;Call on arrival
+29;Ethan Chen;Unit 36, 143 Crown St, Rear;Darwin;0800;Fragile
+30;Isla Lee;267 Pitt St;Brisbane;4000;Fragile
+31;Mei White;Unit 21, 260 Pitt St;Adelaide;5000;Back entrance
+32;Zara Chen;Unit 40, 175 Pitt St, Rear;Melbourne;3000;Leave at door
+33;Priya Patel;Unit 29, 298 Bourke St, Rear;Darwin;0800;Call on arrival
+34;Arjun White;Unit 40, 156 King St, Rear;Adelaide;5000;"Call first
+Gate code 1234"
+35;Arjun Taylor;Unit 34, 6 Crown St;Adelaide;5000;Call on arrival
+36;Chloe Lee;Unit 20, 209 Crown St;Brisbane;4000;Fragile
+37;Ava Singh;Unit 11, 93 George St;Brisbane;4000;Leave at door
+38;Noah Kumar;Unit 34, 175 Bourke St;Adelaide;5000;
+39;Chloe Chen;Unit 26, 271 Crown St, Rear;Melbourne;3000;Leave at door
+40;Arjun Kumar;Unit 12, 220 Oxford St;Adelaide;5000;Ring twice
+41;Oscar Patel;Unit 26, 121 Hay St, Rear;Perth;6000;Ring twice
+42;Liam Brown;Unit 2, 152 Bourke St;Sydney;2000;Call on arrival
+43;Sam Chen;Unit 33, 296 King St, Rear;Darwin;0800;Leave at door
+44;Chloe Nguyen;Unit 27, 73 Crown St;Adelaide;5000;Call on arrival
+45;Leo Kumar;178 Queen St;Perth;6000;Fragile
+46;Noah Smith;253 King St;Adelaide;5000;Ring twice
+47;Isla White;97 Queen St;Adelaide;5000;Ring twice
+48;Chloe Brown;Unit 30, 227 Pitt St;Adelaide;5000;Back entrance
+49;Liam Martin;Unit 1, 266 Oxford St, Rear;Darwin;0800;Leave at door
+50;Ethan Taylor;Unit 24, 274 Pitt St;Adelaide;5000;Fragile
+51;Ava Smith;198 George St;Perth;6000;Ring twice
+52;Chloe Lee;285 King St;Adelaide;5000;Fragile
+53;Mei Smith;Unit 32, 32 King St;Brisbane;4000;Ring twice
+54;Mei Patel;Unit 5, 139 Crown St;Brisbane;4000;Fragile
+55;Ava Brown;99 Oxford St;Brisbane;4000;Back entrance
+56;Zara Smith;248 Oxford St;Sydney;2000;Ring twice
+57;Noah Brown;57 Queen St;Sydney;2000;Leave at door
+58;Zara Martin;Unit 26, 158 Queen St, Rear;Perth;6000;"Call first
+Gate code 1234"
+59;Priya Smith;Unit 19, 8 Crown St, Rear;Adelaide;5000;Leave at door
+60;Ethan Nguyen;Unit 15, 103 George St;Melbourne;3000;
+61;Oscar Smith;20 Crown St;Darwin;0800;Leave at door
+62;Mei Nguyen;Unit 19, 263 Bourke St;Darwin;0800;Back entrance
+63;Chloe Brown;286 Bourke St;Perth;6000;Back entrance
+64;Ethan Martin;Unit 7, 206 Pitt St;Sydney;2000;Leave at door
+65;Isla Martin;Unit 36, 289 Pitt St, Rear;Adelaide;5000;Ring twice
+49;Liam Martin;Unit 1, 266 Oxford St, Rear;Darwin;0800;Leave at door
+66;Isla Kumar;Unit 9, 48 Hay St, Rear;Brisbane;4000;Back entrance
+67;Chloe Wilson;Unit 23, 54 Queen St, Rear;Perth;6000;Call on arrival
+68;Oscar Nguyen;Unit 20, 92 Oxford St, Rear;Adelaide;5000;Ring twice
+69;Ethan Patel;Unit 23, 101 Pitt St;Darwin;0800;Leave at door
+70;Priya Martin;Unit 21, 47 Oxford St;Brisbane;4000;Ring twice
+71;Mia Brown;Unit 18, 164 Queen St, Rear;Darwin;0800;Fragile
+72;Oscar Smith;201 Bourke St;Sydney;2000;Fragile
+73;Arjun Taylor;Unit 12, 160 King St;Brisbane;4000;Leave at door
+74;Arjun Kumar;Unit 17, 59 King St, Rear;Adelaide;5000;Leave at door
+73;Arjun Taylor;Unit 12, 160 King St;Brisbane;4000;Leave at door
+75;Priya Singh;111 Queen St;Adelaide;5000;Back entrance
+76;Isla Nguyen;Unit 24, 80 Queen St;Perth;6000;Back entrance
+77;Arjun Wilson;Unit 22, 27 Queen St;Brisbane;4000;Ring twice
+78;Liam Smith;Unit 13, 293 Queen St;Perth;6000;Call on arrival
