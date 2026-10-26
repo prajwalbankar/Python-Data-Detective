@@ -126,6 +126,14 @@ def show_menu(current: Optional[Dataset]) -> None:
     print("-" * WIDTH)
 
 
+def shown_path(path: str) -> str:
+    """Return path relative to the program folder, for messages."""
+    try:
+        return os.path.relpath(path, BASE_DIR)
+    except ValueError:  # on Windows, a path on another drive
+        return path
+
+
 def save_report(findings: Findings) -> None:
     """Save the case report into reports/ and say where it went."""
     try:
@@ -133,13 +141,48 @@ def save_report(findings: Findings) -> None:
     except OSError as err:
         print(f"Could not save report: {err}")
         return
-    try:
-        shown = os.path.relpath(path, BASE_DIR)
-    except ValueError:  # on Windows, a path on another drive
-        shown = path
-    print(f"Report saved to {shown}")
+    print(f"Report saved to {shown_path(path)}")
     if replaced:
         print("  (replaced the previous report)")
+
+
+def investigate_all() -> None:
+    """Investigate every dataset in datasets/ and show the CASE BOARD."""
+    files = list_csv_files(DATASETS_DIR)
+    if not files:
+        print("The evidence locker is empty")
+        return
+    findings_list = []
+    failures = []   # (file name, reason) for files that couldn't open
+    for name in files:
+        try:
+            dataset = Dataset(os.path.join(DATASETS_DIR, name))
+        except DatasetError as err:
+            failures.append((name, str(err)))
+            continue
+        findings_list.append(Investigator(dataset).investigate())
+
+    board = Report.leaderboard_text(findings_list, failures)
+    print()
+    print(board, end="")
+    if ask_yes_no("Save a report for every dataset? (y/n): "):
+        save_all(findings_list, board)
+
+
+def save_all(findings_list: list[Findings], board: str) -> None:
+    """Save every case report plus the leaderboard into reports/."""
+    try:
+        for findings in findings_list:
+            Report(findings).save(REPORTS_DIR)
+        os.makedirs(REPORTS_DIR, exist_ok=True)
+        with open(os.path.join(REPORTS_DIR, "leaderboard.txt"), "w",
+                  encoding="utf-8") as file:
+            file.write(board)
+    except OSError as err:
+        print(f"Could not save report: {err}")
+        return
+    print(f"Saved {len(findings_list)} case reports and leaderboard.txt "
+          f"to {shown_path(REPORTS_DIR)}")
 
 
 def handle_case_option(choice: str, current: Optional[Dataset],
@@ -179,6 +222,8 @@ def main() -> None:
                     findings = None     # old findings belong to old case
             elif choice in ("2", "3", "4"):
                 findings = handle_case_option(choice, current, findings)
+            elif choice == "5":
+                investigate_all()
             else:
                 print("Please enter a number from 0 to 5")
     except (KeyboardInterrupt, EOFError):

@@ -126,6 +126,39 @@ class TestMenu(MenuTestCase):
         self.assertTrue(out.rstrip().endswith(GOODBYE))
 
 
+class TestInvestigateAll(MenuTestCase):
+
+    def test_all_board_and_save(self):
+        write_file("a,b\n1,x\n2,y\n", "good.csv", folder=self.datasets)
+        write_file("", "e.csv", folder=self.datasets)
+        out = self.run_main(["5", "y", "0"])
+        self.assertIn("CASE BOARD", out)
+        self.assertIn("  e.csv: file is empty", out.splitlines())
+        self.assertEqual(self.report_files(),
+                         ["good_report.txt", "leaderboard.txt",
+                          "t_report.txt"])
+
+    def test_all_no_save(self):
+        out = self.run_main(["5", "n", "0"])
+        self.assertIn("CASE BOARD", out)
+        self.assertEqual(self.report_files(), [])
+
+    def test_all_keeps_current_case(self):
+        out = self.run_main(["1", "1", "5", "n", "0"])
+        self.assertIn("CASE BOARD", out)
+        status = [line for line in out.splitlines()
+                  if "Current case:" in line]
+        self.assertEqual(status[-1],
+                         "  Current case: t.csv (10 rows x 2 columns)")
+
+    def test_all_empty_locker(self):
+        os.remove(os.path.join(self.datasets, "t.csv"))
+        out = self.run_main(["5", "0"])
+        self.assertIn("The evidence locker is empty", out)
+        self.assertNotIn("CASE BOARD", out)
+        self.assertNotIn("Please enter y or n", out)
+
+
 class TestRealProgram(unittest.TestCase):
 
     def run_program(self, typed):
@@ -140,6 +173,12 @@ class TestRealProgram(unittest.TestCase):
         result = self.run_program("1\n1\n3\n0\n")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("VERDICT:", result.stdout)
+        self.assertNotIn("Traceback", result.stderr)
+
+    def test_all_from_other_directory(self):
+        result = self.run_program("5\nn\n0\n")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("CASE BOARD", result.stdout)
         self.assertNotIn("Traceback", result.stderr)
 
 
