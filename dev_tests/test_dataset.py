@@ -1,10 +1,12 @@
 """Tests for loading CSV files into a Dataset."""
 import os
+import subprocess
+import sys
 import tempfile
 import unittest
 from unittest import mock
 
-from context import make_dataset, write_file
+from context import APP_DIR, make_dataset, write_file
 from dataset import Dataset
 from errors import EmptyDatasetError, UnreadableFileError
 
@@ -73,6 +75,24 @@ class TestDatasetLoading(unittest.TestCase):
         self.assertEqual(ds.encoding, "latin-1")
         self.assertEqual(ds.rows[0][0], "café")
 
+    def test_utf16_with_bom(self):
+        # What Windows PowerShell's ">" and Excel "Unicode Text" produce.
+        ds = Dataset(write_file("a,b\r\n1,2\r\n".encode("utf-16")))
+        self.assertEqual(ds.encoding, "utf-16")
+        self.assertEqual((ds.header, ds.rows), (["a", "b"], [["1", "2"]]))
+
+    def test_utf16_without_bom(self):
+        ds = Dataset(write_file("a,b\r\n1,2\r\n".encode("utf-16-le")))
+        self.assertEqual(ds.encoding, "utf-16")
+        self.assertEqual(ds.rows, [["1", "2"]])
+
+    def test_excel_windows_characters(self):
+        # Excel on Windows saves curly quotes and the euro sign as cp1252.
+        data = "name,price\n“Best” deal,€5\n".encode("cp1252")
+        ds = Dataset(write_file(data))
+        self.assertEqual(ds.encoding, "cp1252")
+        self.assertEqual(ds.rows[0], ["“Best” deal", "€5"])
+
     def test_unclosed_quote_is_detected(self):
         # The forgiving reader swallows everything after the stray quote.
         ds = make_dataset('a,b\n1,"oops\n2,3\n4,5\n')
@@ -119,6 +139,23 @@ class TestDatasetErrors(unittest.TestCase):
         path = tempfile.mkdtemp()
         self.assert_error(UnreadableFileError,
                           f"'{path}' is a folder, not a file", path)
+
+    def test_device_names_are_refused_quickly(self):
+        # Opening Windows' CON (or a device such as /dev/null) used to
+        # read from the keyboard and hang. Run it in a child process so
+        # a regression can't hang the test suite.
+        device = "CON" if os.name == "nt" else "/dev/null"
+        code = ("import sys; sys.path.insert(0, sys.argv[1])\n"
+                "from dataset import Dataset\n"
+                "try:\n    Dataset(sys.argv[2])\n"
+                "except Exception as err:\n"
+                "    print(type(err).__name__, err)\n")
+        result = subprocess.run(
+            [sys.executable, "-c", code, APP_DIR, device],
+            capture_output=True, text=True, timeout=20,
+            stdin=subprocess.PIPE)
+        self.assertEqual(result.stdout.strip(),
+                         f"UnreadableFileError no file at '{device}'")
 
     def test_other_os_errors_are_reported(self):
         # e.g. Windows "Invalid argument" for names containing ? * or "

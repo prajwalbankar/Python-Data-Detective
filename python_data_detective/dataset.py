@@ -4,6 +4,7 @@ The Dataset class reads a file once, works out its encoding and
 delimiter, skips blank lines, and makes every row the same length as the
 header, so the investigator can treat the data as a neat grid.
 """
+import codecs
 import csv
 import io
 import os
@@ -66,27 +67,63 @@ class Dataset:
                 f"{self.num_columns()} columns)")
 
     def _read_text(self) -> str:
-        """Read the whole file as text, falling back to latin-1."""
+        """Read the whole file and decode it into text."""
         # Windows raises PermissionError for folders, so check first.
         if os.path.isdir(self.path):
             raise UnreadableFileError(
                 f"'{self.path}' is a folder, not a file")
-        try:
-            # utf-8-sig also removes the BOM that Excel adds.
-            text = self._read_with("utf-8-sig")
-        except UnicodeDecodeError:
-            # latin-1 can decode any bytes, so this read always succeeds.
-            self.encoding = "latin-1"
-            text = self._read_with("latin-1")
+        # Only read ordinary files: opening a device such as Windows'
+        # CON would wait for keyboard input forever.
+        if not os.path.isfile(self.path):
+            raise UnreadableFileError(f"no file at '{self.path}'")
+        text = self._decode(self._read_bytes())
         if "\x00" in text:
             raise UnreadableFileError("doesn't look like a plain text CSV")
         return text
 
-    def _read_with(self, encoding: str) -> str:
-        """Read the file with one encoding, turning OS errors into ours."""
+    def _decode(self, data: bytes) -> str:
+        """Turn the file's bytes into text, trying likely encodings."""
+        utf16 = self._utf16_kind(data)
+        if utf16:
+            self.encoding = "utf-16"
+            return data.decode(utf16, errors="replace")
         try:
-            # newline="" leaves line endings for the csv module to handle.
-            with open(self.path, encoding=encoding, newline="") as file:
+            # utf-8-sig also removes the BOM that Excel adds.
+            return data.decode("utf-8-sig")
+        except UnicodeDecodeError:
+            pass
+        # latin-1 can decode any bytes, so this always succeeds.
+        self.encoding = "latin-1"
+        text = data.decode("latin-1")
+        # Characters 0x80-0x9F are invisible control codes in latin-1 but
+        # curly quotes, dashes and the euro sign in Excel's cp1252.
+        if any("\x80" <= char <= "\x9f" for char in text):
+            try:
+                text = data.decode("cp1252")
+                self.encoding = "cp1252"
+            except UnicodeDecodeError:
+                pass
+        return text
+
+    @staticmethod
+    def _utf16_kind(data: bytes) -> Optional[str]:
+        """Return the codec name if the bytes look like UTF-16."""
+        if data.startswith((codecs.BOM_UTF16_LE, codecs.BOM_UTF16_BE)):
+            return "utf-16"     # the BOM says which byte order
+        # Without a BOM, ASCII text in UTF-16 has a zero in every other
+        # byte: the odd bytes for little-endian, the even ones for big.
+        sample = data[:200]
+        if len(sample) >= 4 and len(sample) % 2 == 0:
+            if set(sample[1::2]) == {0}:
+                return "utf-16-le"
+            if set(sample[0::2]) == {0}:
+                return "utf-16-be"
+        return None
+
+    def _read_bytes(self) -> bytes:
+        """Read the raw bytes of the file, turning OS errors into ours."""
+        try:
+            with open(self.path, "rb") as file:
                 return file.read()
         except FileNotFoundError:
             raise UnreadableFileError(f"no file at '{self.path}'")
