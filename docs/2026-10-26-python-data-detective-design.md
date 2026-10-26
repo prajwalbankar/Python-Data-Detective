@@ -123,7 +123,8 @@ Builds itself from a path and raises a `DatasetError` subclass if the file can't
 5. Skip blank rows (`continue`) and count them. The first non-blank row is the header.
 6. No header: raise `EmptyDatasetError("file is empty")`. A header but no data rows: raise `EmptyDatasetError("file has a header but no data rows")`.
 7. A row with too many fields is trimmed (extra fields are dropped and not analysed). A row with too few is padded with `""`. Either way, `(line, field_count)` is recorded.
-8. `FileNotFoundError`, `IsADirectoryError` and `PermissionError` become `UnreadableFileError` with a plain message such as `"no file at 'x.csv'"`.
+8. `FileNotFoundError`, `IsADirectoryError` and `PermissionError` become `UnreadableFileError` with a plain message such as `"no file at 'x.csv'"`. **Any other `OSError`** (e.g. Windows "Invalid argument" for a name containing `?`, `*` or a stray `"`) becomes `UnreadableFileError("couldn't open '<path>' (<reason>)")`. *(Added after the final review.)*
+9. **Unclosed quotes.** A quote that opens and is never closed makes the forgiving reader treat the rest of the file as one value. A strict second read detects this ("unexpected end of data") and records `unclosed_quote_line`. The report's EVIDENCE section and the evidence screen then show a WARNING. *(Added after the final review.)*
 
 ### 4.6 `investigator.py`
 

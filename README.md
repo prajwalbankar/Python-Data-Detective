@@ -10,7 +10,7 @@ dataset out of 100 and writes a detective-themed case report.
 
 ![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-3776AB?logo=python&logoColor=white)
 ![No dependencies](https://img.shields.io/badge/dependencies-none-success)
-![Tests](https://img.shields.io/badge/tests-70%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-77%20passing-brightgreen)
 ![Platforms](https://img.shields.io/badge/runs%20on-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
 ![COMP9001](https://img.shields.io/badge/COMP9001-University%20of%20Sydney-E64626)
 
@@ -75,7 +75,7 @@ Opened  : 26 Oct 2026, 14:51
 
 [COLUMN PROFILES]
   price         numeric    9.0% missing
-                min 2.6  max 89  mean 44.2  median 40.4
+                min 2.6  max 89.0  mean 44.2  median 40.4
   region        text       3.0% missing
                 4 unique, most common 'East' (54)
   ...
@@ -105,7 +105,8 @@ It reads real-world CSVs without crashing:
 - **Delimiters:** detects `,` `;` tab and `|` automatically.
 - **Encodings:** strips Excel's UTF-8 BOM, and falls back to latin-1 for old exports.
 - **Awkward files:** handles quoted commas, line breaks inside quoted values, Windows line endings and blank lines.
-- **Bad files:** refuses empty or binary files with a friendly message instead of a traceback.
+- **Corrupted quoting:** warns when a quote is opened and never closed, instead of silently reading the rest of the file as one value.
+- **Bad input:** refuses empty or binary files, and odd paths such as `?` or a stray `"`, with a friendly message instead of a traceback.
 
 ## 🧮 How the score works
 
@@ -209,7 +210,7 @@ python_data_detective/
 python -m unittest discover -s dev_tests -v
 ```
 
-There are **70 tests** in [`dev_tests/`](dev_tests). They include:
+There are **77 tests** in [`dev_tests/`](dev_tests). They include:
 - **An answer-key integration test:** the generator injects a known number of each problem, and the detective must report exactly those counts and line numbers.
 - **Real-data checks:** Iris and Penguins against hand-counted duplicates and missing values.
 - **Situations a marker might actually hit:** running from another folder, Windows paths with spaces pasted in quotes, CRLF files, single-column CSVs, and Ctrl+C or Ctrl+D at every prompt.
