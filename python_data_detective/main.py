@@ -67,12 +67,31 @@ def ask_yes_no(prompt: str) -> bool:
 
 
 def clean_path(text: str) -> str:
-    """Strip spaces and one pair of quotes from a typed or pasted path."""
+    """Tidy a typed, pasted or dragged-in path so it can be opened."""
     path = text.strip()
-    # Windows "Copy as path" wraps the path in double quotes.
     if len(path) >= 2 and path[0] == path[-1] and path[0] in "\"'":
+        # Windows "Copy as path" wraps the path in double quotes.
         path = path[1:-1]
-    return path
+    elif os.name != "nt" and "\\" in path:
+        # A file dragged into a macOS or Linux terminal arrives with a
+        # backslash before each space, e.g. My\ Data/file.csv. (On
+        # Windows a backslash separates folders, so it is left alone.)
+        path = unescape_shell(path)
+    # "~" means the user's home folder.
+    return os.path.expanduser(path)
+
+
+def unescape_shell(path: str) -> str:
+    """Remove the backslashes a shell puts before spaces and symbols."""
+    result = []
+    escaped = False
+    for char in path:
+        if escaped or char != "\\":
+            result.append(char)
+            escaped = False
+        else:
+            escaped = True
+    return "".join(result)
 
 
 def open_case(path: str) -> Optional[Dataset]:
@@ -111,7 +130,11 @@ def choose_dataset() -> Optional[Dataset]:
         if choice == "B":
             return None
         if choice == "P":
-            return open_case(clean_path(input("Path to a CSV file: ")))
+            path = clean_path(input("Path to a CSV file: "))
+            if not path:
+                print("No path entered")
+                return None
+            return open_case(path)
         # isdecimal, not isdigit: '²' is a "digit" that int() rejects.
         if choice.isdecimal() and 1 <= int(choice) <= len(files):
             return open_case(os.path.join(DATASETS_DIR,

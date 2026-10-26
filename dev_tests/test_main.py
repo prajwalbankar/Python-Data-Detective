@@ -47,6 +47,22 @@ class TestHelpers(MenuTestCase):
         self.assertEqual(
             main.list_csv_files(os.path.join(folder, "missing")), [])
 
+    def test_clean_path(self):
+        self.assertEqual(main.clean_path('  "C:\\My Data\\f.csv" '),
+                         "C:\\My Data\\f.csv")
+        home = main.clean_path("~/f.csv")
+        self.assertFalse(home.startswith("~"))
+        self.assertTrue(home.startswith(os.path.expanduser("~")))
+        with mock.patch.object(main.os, "name", "nt"):
+            # Backslashes are folder separators on Windows: keep them.
+            self.assertEqual(main.clean_path("C:\\My\\ Data\\f.csv"),
+                             "C:\\My\\ Data\\f.csv")
+        with mock.patch.object(main.os, "name", "posix"):
+            # A file dragged into a macOS terminal arrives escaped.
+            self.assertEqual(
+                main.clean_path("/Users/me/My\\ Data/f\\ (1).csv "),
+                "/Users/me/My Data/f (1).csv")
+
     def test_ask_yes_no(self):
         out = io.StringIO()
         with mock.patch("builtins.input", side_effect=["maybe", "Y"]), \
@@ -118,6 +134,11 @@ class TestMenu(MenuTestCase):
                 out = self.run_main(["1", "P", typed, "0"])
                 self.assertIn("Could not open case:", out)
                 self.assertTrue(out.rstrip().endswith(GOODBYE))
+
+    def test_empty_path(self):
+        out = self.run_main(["1", "P", "   ", "0"])
+        self.assertIn("No path entered", out)
+        self.assertNotIn("Could not open case", out)
 
     def test_long_messages_fit_width(self):
         path = os.path.join(tempfile.mkdtemp(), "a_very_long_folder_name",
