@@ -15,6 +15,7 @@ MAX_LISTED = 10       # duplicates / malformed rows listed before "... more"
 CELL_WIDTH = 12       # widest cell in the evidence preview table
 VALUE_WIDTH = 15      # widest data value quoted in the report
 NAME_WIDTH = 14       # column-name column in SUSPECTS and PROFILES
+BOARD_NAME_WIDTH = 22  # dataset-name column on the leaderboard
 DETAIL_INDENT = 2 + NAME_WIDTH   # where the detail lines start
 PREVIEW_ROWS = 5
 DELIMITER_NAMES = {",": "','", ";": "';'", "\t": "tab", "|": "'|'"}
@@ -81,6 +82,14 @@ def name_column(name: str) -> str:
     return shorten(flatten(name), NAME_WIDTH - 1).ljust(NAME_WIDTH)
 
 
+def board_row(rank: str, name: str, rows: str, score: str,
+              verdict: str) -> str:
+    """Lay out one row of the leaderboard in fixed-width columns."""
+    name = shorten(name, BOARD_NAME_WIDTH)
+    return (f"  {rank:<4}  {name:<{BOARD_NAME_WIDTH}}"
+            f"{rows:>6}{score:>7}  {verdict}")
+
+
 class Report:
     """The themed case report for one investigated dataset."""
 
@@ -125,6 +134,34 @@ class Report:
         lines.append("")
         lines.append(f"  Preview (first {PREVIEW_ROWS} rows):")
         lines += Report._preview_table(dataset)
+        return "\n".join(lines) + "\n"
+
+    @staticmethod
+    def leaderboard_text(findings_list: list[Findings],
+                         failures: list[tuple[str, str]]) -> str:
+        """Return the CASE BOARD ranking several datasets by score.
+
+        failures holds (file name, reason) for files that couldn't open.
+        """
+        lines = ["=" * WIDTH,
+                 "  CASE BOARD  -  every dataset in datasets/",
+                 "=" * WIDTH,
+                 board_row("Rank", "Dataset", "Rows", "Score", "Verdict")]
+        # Highest score first; equal scores in alphabetical order.
+        ranked = sorted(findings_list,
+                        key=lambda f: (-f.overall, f.dataset.name.lower()))
+        for rank, findings in enumerate(ranked, start=1):
+            lines.append(board_row(str(rank), findings.dataset.name,
+                                   f"{findings.dataset.num_rows():,}",
+                                   str(findings.overall),
+                                   findings.short_verdict))
+        for name, reason in failures:
+            lines.append(board_row("--", name, "-", "-", "Could not open"))
+        lines.append("-" * WIDTH)
+        if failures:
+            for name, reason in failures:
+                lines.append(shorten(f"  {name}: {reason}", WIDTH))
+            lines.append("-" * WIDTH)
         return "\n".join(lines) + "\n"
 
     @staticmethod

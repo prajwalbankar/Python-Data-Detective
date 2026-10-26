@@ -6,7 +6,7 @@ import unittest
 from context import SAMPLE_TEXT, make_dataset
 import make_datasets
 from dataset import Dataset
-from investigator import Investigator
+from investigator import Findings, Investigator
 from report import WIDTH, Report, format_stat, shorten
 
 
@@ -92,6 +92,43 @@ class TestCaseReport(unittest.TestCase):
         self.assertIn("top bottom", Report.evidence_text(ds))
         text = Report(Investigator(ds).investigate()).to_text()
         self.assertIn("'top bottom'", text)
+
+
+class TestLeaderboard(unittest.TestCase):
+
+    def _findings(self, name, score, short):
+        f = Findings(make_dataset("a\n1\n", name=name))
+        f.overall, f.short_verdict = score, short
+        return f
+
+    def test_sorted_by_score_then_name(self):
+        text = Report.leaderboard_text(
+            [self._findings("b.csv", 90, "Minor clean-up"),
+             self._findings("C.csv", 97, "Case closed"),
+             self._findings("a.csv", 90, "Minor clean-up")], [])
+        order = [line.split()[1] for line in text.splitlines()
+                 if line[:3].strip().isdigit()]
+        self.assertEqual(order, ["C.csv", "a.csv", "b.csv"])
+
+    def test_failures_last_with_reasons(self):
+        text = Report.leaderboard_text(
+            [self._findings("a.csv", 90, "Minor clean-up")],
+            [("empty.csv", "file is empty")])
+        lines = text.splitlines()
+        fail_row = next(line for line in lines
+                        if "empty.csv" in line and "Could not open" in line)
+        self.assertTrue(fail_row.strip().startswith("--"))
+        self.assertGreater(lines.index(fail_row),
+                           next(i for i, line in enumerate(lines)
+                                if "a.csv" in line))
+        self.assertIn("  empty.csv: file is empty", lines)
+
+    def test_leaderboard_fits_width(self):
+        text = Report.leaderboard_text(
+            [self._findings("x" * 30 + ".csv", 50, "Unreliable")],
+            [("y" * 30 + ".csv", "couldn't be read as CSV: " + "z" * 80)])
+        for line in text.splitlines():
+            self.assertLessEqual(len(line), WIDTH, line)
 
 
 if __name__ == "__main__":
