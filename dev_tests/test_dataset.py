@@ -75,6 +75,41 @@ class TestDatasetLoading(unittest.TestCase):
         self.assertEqual(ds.encoding, "latin-1")
         self.assertEqual(ds.rows[0][0], "café")
 
+    def test_trailing_delimiters_are_ignored(self):
+        # "a,b," / "1,2," is a common export quirk, not an empty column.
+        ds = make_dataset("a,b,\n1,2,\n3,4,\n")
+        self.assertEqual(ds.header, ["a", "b"])
+        self.assertEqual(ds.rows, [["1", "2"], ["3", "4"]])
+        self.assertEqual(ds.malformed_rows, [])
+        self.assertTrue(ds.trailing_delimiters)
+
+    def test_trailing_delimiters_on_rows_only(self):
+        ds = make_dataset("a,b\n1,2,\n3,4\n")
+        self.assertEqual(ds.rows, [["1", "2"], ["3", "4"]])
+        self.assertEqual(ds.malformed_rows, [])
+        self.assertTrue(ds.trailing_delimiters)
+
+    def test_unnamed_column_with_data_is_kept(self):
+        ds = make_dataset("a,b,\n1,2,x\n3,4,\n")
+        self.assertEqual(ds.header, ["a", "b", "column_3"])
+        self.assertFalse(ds.trailing_delimiters)
+
+    def test_header_that_looks_like_data_warns(self):
+        # e.g. the raw iris.data file, which has no header row
+        ds = make_dataset("5.1,3.5,1.4,0.2,Iris-setosa\n"
+                          "4.9,3.0,1.4,0.2,Iris-setosa\n")
+        self.assertTrue(any("no header row" in w for w in ds.warnings),
+                        ds.warnings)
+
+    def test_title_line_warns(self):
+        ds = make_dataset("# exported by tool v2\nid,name,score\n"
+                          "1,a,5\n2,b,6\n")
+        self.assertTrue(any("may be a title" in w for w in ds.warnings),
+                        ds.warnings)
+
+    def test_normal_file_has_no_warnings(self):
+        self.assertEqual(make_dataset("a,b\n1,x\n2,y\n").warnings, [])
+
     def test_utf16_with_bom(self):
         # What Windows PowerShell's ">" and Excel "Unicode Text" produce.
         ds = Dataset(write_file("a,b\r\n1,2\r\n".encode("utf-16")))
@@ -97,6 +132,7 @@ class TestDatasetLoading(unittest.TestCase):
         # The forgiving reader swallows everything after the stray quote.
         ds = make_dataset('a,b\n1,"oops\n2,3\n4,5\n')
         self.assertEqual(ds.unclosed_quote_line, 2)
+        self.assertTrue(any("never closed" in w for w in ds.warnings))
         self.assertIsNone(make_dataset("a,b\n1,2\n").unclosed_quote_line)
         self.assertIsNone(
             make_dataset('a,b\n1,"two\nlines"\n').unclosed_quote_line)

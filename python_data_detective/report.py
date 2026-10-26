@@ -89,13 +89,13 @@ def name_column(name: str) -> str:
     return shorten(flatten(name), NAME_WIDTH - 1).ljust(NAME_WIDTH)
 
 
-def quote_warning(dataset: Dataset) -> list[str]:
-    """Return the warning lines for a quote that is never closed."""
-    if dataset.unclosed_quote_line is None:
-        return []
-    return [f"  WARNING: a quote opened on line "
-            f"{dataset.unclosed_quote_line} is never closed,",
-            "  so everything after it was read as a single value."]
+def warning_lines(dataset: Dataset) -> list[str]:
+    """Return the dataset's structure warnings, wrapped to WIDTH."""
+    lines = []
+    for warning in dataset.warnings:
+        lines += wrap_parts(warning.split(), "  WARNING: ", 4,
+                            separator=" ")
+    return lines
 
 
 def board_row(rank: str, name: str, rows: str, score: str,
@@ -143,7 +143,9 @@ class Report:
                  f"  Delimiter: {DELIMITER_NAMES[dataset.delimiter]}   "
                  f"Encoding: {dataset.encoding}   "
                  f"Blank lines skipped: {dataset.blank_lines_skipped:,}"]
-        lines += quote_warning(dataset)
+        if dataset.trailing_delimiters:
+            lines.append("  Trailing delimiters at line ends were ignored")
+        lines += warning_lines(dataset)
         # Every name but the last gets a trailing comma.
         names = [flatten(name) + "," for name in dataset.header[:-1]]
         names.append(flatten(dataset.header[-1]))
@@ -232,15 +234,17 @@ class Report:
                 + " skipped")
         if dataset.encoding != "utf-8":
             details.append(f"encoding {dataset.encoding}")
+        if dataset.trailing_delimiters:
+            details.append("trailing delimiters ignored")
         size = (f"  {dataset.num_rows():,} rows x "
-                f"{dataset.num_columns():,} columns")
-        detail_text = "(" + ", ".join(details) + ")"
+                f"{dataset.num_columns():,} columns  ")
+        # "(a, b, c)" as separate parts, so a long list can wrap.
+        parts = [detail + "," for detail in details]
+        parts[0] = "(" + parts[0]
+        parts[-1] = parts[-1][:-1] + ")"
         lines = ["[EVIDENCE]"]
-        if len(size) + 2 + len(detail_text) <= WIDTH:
-            lines.append(size + "  " + detail_text)
-        else:
-            lines += [size, "  " + detail_text]
-        return lines + quote_warning(dataset) + [""]
+        lines += wrap_parts(parts, size, 3, separator=" ")
+        return lines + warning_lines(dataset) + [""]
 
     def _suspect_lines(self) -> list[str]:
         """Return the columns with missing or invalid values."""
@@ -329,10 +333,17 @@ class Report:
     def _score_lines(self) -> list[str]:
         """Return the three sub-scores and the verdict."""
         f = self.findings
-        if f.numeric_cells == 0:
-            validity_note = "(no numeric columns)"
+        validity_parts = []
+        if f.numeric_cells > 0:
+            validity_parts.append(f"{f.invalid_percent:.1f}% of numbers "
+                                  "invalid")
+        if f.dataset.malformed_rows:
+            validity_parts.append(f"{f.malformed_percent:.1f}% of rows "
+                                  "malformed")
+        if validity_parts:
+            validity_note = "(" + ", ".join(validity_parts) + ")"
         else:
-            validity_note = f"({f.invalid_percent:.1f}% of numbers invalid)"
+            validity_note = "(no numeric columns)"
         scores = [
             ("Completeness", f.completeness,
              f"({f.missing_percent:.1f}% of cells missing)"),
@@ -342,11 +353,8 @@ class Report:
         ]
         lines = ["[SUB-SCORES]  100 - 5 points per 1% of problem data"]
         for label, score, note in scores:
-            line = f"  {label:<14}{score:.1f}"
-            if len(line) + 2 + len(note) <= WIDTH:
-                lines.append(line + "  " + note)
-            else:
-                lines += [line, " " * DETAIL_INDENT + note]
+            lines += wrap_parts(note.split(), f"  {label:<14}{score:.1f}  ",
+                                DETAIL_INDENT, separator=" ")
         return lines + ["=" * WIDTH,
                         f"VERDICT: {f.overall}/100  -  {f.verdict}",
                         "=" * WIDTH]

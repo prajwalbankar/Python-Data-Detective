@@ -46,6 +46,7 @@ class Findings:
         self.missing_percent = 0.0
         self.duplicate_percent = 0.0
         self.invalid_percent = 0.0
+        self.malformed_percent = 0.0  # rows with the wrong field count
         self.completeness = 0.0     # sub-scores, 0-100, one decimal place
         self.uniqueness = 0.0
         self.validity = 0.0
@@ -149,10 +150,15 @@ class Investigator:
             findings.invalid_percent = (100 * findings.invalid_cells
                                         / findings.numeric_cells)
         # With no numeric columns nothing can be invalid: 0% problems.
+        findings.malformed_percent = (100 * len(self.dataset.malformed_rows)
+                                      / self.dataset.num_rows())
 
         completeness = self.sub_score(findings.missing_percent)
         uniqueness = self.sub_score(findings.duplicate_percent)
-        validity = self.sub_score(findings.invalid_percent)
+        # Validity covers broken values of both kinds: numbers that
+        # aren't numbers, and rows with the wrong number of fields.
+        validity = self.sub_score(findings.invalid_percent
+                                  + findings.malformed_percent)
 
         complete_weight, unique_weight, valid_weight = Investigator.WEIGHTS
         overall = (complete_weight * completeness

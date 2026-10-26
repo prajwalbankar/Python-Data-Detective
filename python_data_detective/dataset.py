@@ -36,13 +36,18 @@ class Dataset:
         self.line_numbers: list[int] = []
         self.malformed_rows: list[tuple[int, int]] = []
         self.blank_lines_skipped = 0
+        # True if lines end with extra, empty fields (e.g. "1,2,").
+        self.trailing_delimiters = False
         # Line where a quote opens and is never closed, if there is one.
         self.unclosed_quote_line: Optional[int] = None
+        # Sentences describing problems with the file's structure.
+        self.warnings: list[str] = []
 
         text = self._read_text()
         self.delimiter = self._detect_delimiter(text)
         self._parse(text)
         self.unclosed_quote_line = self._find_unclosed_quote(text)
+        self.warnings = self._find_warnings()
 
     def num_rows(self) -> int:
         """Return the number of data rows (the header isn't counted)."""
@@ -151,6 +156,8 @@ class Dataset:
         """Split the text into a header and rows, noting any problems."""
         reader = csv.reader(io.StringIO(text, newline=""),
                             delimiter=self.delimiter)
+        header_fields: list[str] = []
+        raw_rows = []   # (start line, fields) for every data row
         previous_end = 0
         try:
             for fields in reader:
@@ -161,17 +168,44 @@ class Dataset:
                 if self._is_blank(fields):
                     self.blank_lines_skipped += 1
                     continue
-                if not self.header:
-                    self.header = self._clean_header(fields)
+                if not header_fields:
+                    header_fields = fields
                     continue
-                self._add_row(fields, start_line)
+                raw_rows.append((start_line, fields))
         except csv.Error as err:
             raise UnreadableFileError(f"couldn't be read as CSV: {err}")
 
-        if not self.header:
+        if not header_fields:
             raise EmptyDatasetError("file is empty")
-        if not self.rows:
+        if not raw_rows:
             raise EmptyDatasetError("file has a header but no data rows")
+
+        width = self._width_without_trailing_blanks(header_fields, raw_rows)
+        self.header = self._clean_header(header_fields[:width])
+        for start_line, fields in raw_rows:
+            self._add_row(fields, start_line)
+
+    def _width_without_trailing_blanks(
+            self, header_fields: list[str],
+            raw_rows: list[tuple[int, list[str]]]) -> int:
+        """Return the header width, ignoring empty unnamed end columns.
+
+        A trailing delimiter on every line ("a,b," / "1,2,") makes an
+        extra column with no name and no data. That's an export quirk,
+        not a real column, so it isn't counted.
+        """
+        width = len(header_fields)
+        while width > 1 and header_fields[width - 1].strip() == "":
+            column_has_data = False
+            for _, fields in raw_rows:
+                if len(fields) >= width and fields[width - 1].strip():
+                    column_has_data = True
+                    break
+            if column_has_data:
+                break
+            width -= 1
+            self.trailing_delimiters = True
+        return width
 
     def _find_unclosed_quote(self, text: str) -> Optional[int]:
         """Return the line where a never-closed quote starts, if any.
@@ -212,7 +246,12 @@ class Dataset:
     def _add_row(self, fields: list[str], start_line: int) -> None:
         """Store a data row, padding or trimming it to the header width."""
         width = len(self.header)
-        if len(fields) != width:
+        extra = fields[width:]
+        if extra and all(value.strip() == "" for value in extra):
+            # Only empty fields past the end: a trailing delimiter.
+            fields = fields[:width]
+            self.trailing_delimiters = True
+        elif len(fields) != width:
             self.malformed_rows.append((start_line, len(fields)))
             if len(fields) < width:
                 fields = fields + [""] * (width - len(fields))
@@ -220,3 +259,34 @@ class Dataset:
                 fields = fields[:width]
         self.rows.append(fields)
         self.line_numbers.append(start_line)
+
+    def _find_warnings(self) -> list[str]:
+        """Return sentences about problems with the file's structure."""
+        warnings = []
+        if self.unclosed_quote_line is not None:
+            warnings.append(
+                f"a quote opened on line {self.unclosed_quote_line} is "
+                "never closed, so everything after it was read as a "
+                "single value.")
+        numeric_names = 0
+        for name in self.header:
+            try:
+                float(name)
+                numeric_names += 1
+            except ValueError:
+                pass
+        if numeric_names * 2 >= len(self.header):
+            warnings.append(
+                "most column names look like numbers, so the file may "
+                "have no header row (its first row is being used as the "
+                "column names).")
+        long_rows = 0
+        for line, count in self.malformed_rows:
+            if count > len(self.header):
+                long_rows += 1
+        if long_rows * 2 > self.num_rows():
+            warnings.append(
+                f"most rows have more fields than the header's "
+                f"{len(self.header)}, so the first line may be a title "
+                "rather than the column names.")
+        return warnings

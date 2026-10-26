@@ -116,6 +116,14 @@ class TestInvestigate(unittest.TestCase):
         self.assertEqual(f.validity, 75.0)
         self.assertEqual(f.overall, 93)
 
+    def test_malformed_rows_lower_validity(self):
+        # 1 of 4 rows has an extra field: 25% malformed -> validity 0
+        f = Investigator(make_dataset(
+            "a,b\n1,2,3\n4,5\n6,7\n8,9\n")).investigate()
+        self.assertEqual(f.malformed_percent, 25.0)
+        self.assertEqual(f.validity, 0.0)
+        self.assertEqual(f.overall, 70)
+
     def test_sub_scores_never_below_zero(self):
         # 2 of 3 rows are duplicates (66.7%) -> 100 - 333 -> 0
         f = Investigator(make_dataset("a,b\n1,x\n1,x\n1,x\n")).investigate()

@@ -106,6 +106,16 @@ class TestCaseReport(unittest.TestCase):
         clean = report_for("a,b\n1,2\n").to_text()
         self.assertNotIn("WARNING", clean)
 
+    def test_structure_problems_are_reported(self):
+        text = report_for("# exported by tool v2\nid,name,score\n"
+                          "1,a,5\n2,b,6\n").to_text()
+        self.assertIn("WARNING:", text)
+        self.assertIn("rows malformed", text)
+        self.assertNotIn("Case closed", text)
+        trailing = report_for("a,b,\n1,2,\n3,4,\n").to_text()
+        self.assertIn("trailing delimiters ignored", trailing)
+        self.assertIn("Case closed", trailing)
+
     def test_line_breaks_in_values_are_flattened(self):
         ds = make_dataset('id,note\n1,"top\nbottom"\n2,"top\nbottom"\n')
         self.assertIn("top bottom", Report.evidence_text(ds))
