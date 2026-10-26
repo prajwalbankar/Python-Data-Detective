@@ -72,6 +72,12 @@ class TestMenu(MenuTestCase):
         self.assertNotIn("Opening case", out)
         self.assertTrue(out.rstrip().endswith(GOODBYE))
 
+    def test_superscript_digit_in_chooser(self):
+        # '²' passes str.isdigit() but int('²') fails.
+        out = self.run_main(["1", "²", "b", "0"])
+        self.assertIn("Please enter a number from 1 to 1, P or B", out)
+        self.assertTrue(out.rstrip().endswith(GOODBYE))
+
     def test_needs_open_case(self):
         out = self.run_main(["2", "3", "4", "0"])
         self.assertEqual(out.count("No case open - choose option 1 first"), 3)
@@ -179,12 +185,22 @@ class TestInvestigateAll(MenuTestCase):
 
 class TestRealProgram(unittest.TestCase):
 
-    def run_program(self, typed):
+    def run_program(self, typed, encoding="utf-8"):
         return subprocess.run(
             [sys.executable, os.path.join(APP_DIR, "main.py")],
             input=typed, cwd=tempfile.mkdtemp(), capture_output=True,
-            text=True, timeout=60,
-            env={**os.environ, "PYTHONIOENCODING": "utf-8"})
+            text=True, timeout=60, encoding="utf-8", errors="replace",
+            env={**os.environ, "PYTHONIOENCODING": encoding})
+
+    def test_unprintable_data_does_not_crash(self):
+        # Output that can't show the data's characters (e.g. Windows
+        # output redirected to a file) must not end in a traceback.
+        path = write_file("name\n王小明\n", "chinese.csv")
+        result = self.run_program(f"1\nP\n{path}\n2\n3\n0\n",
+                                  encoding="ascii")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("Rows: 1", result.stdout)
+        self.assertNotIn("Traceback", result.stderr)
 
     def test_runs_from_other_directory(self):
         # Review Focus 1: the tutor runs it from some other folder.

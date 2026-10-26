@@ -14,6 +14,7 @@ flow. The other modules do the real work:
     errors.py        the program's own exception types
 """
 import os
+import sys
 from typing import Optional
 
 from dataset import Dataset
@@ -103,7 +104,8 @@ def choose_dataset() -> Optional[Dataset]:
             return None
         if choice == "P":
             return open_case(clean_path(input("Path to a CSV file: ")))
-        if choice.isdigit() and 1 <= int(choice) <= len(files):
+        # isdecimal, not isdigit: '²' is a "digit" that int() rejects.
+        if choice.isdecimal() and 1 <= int(choice) <= len(files):
             return open_case(os.path.join(DATASETS_DIR,
                                           files[int(choice) - 1]))
         if files:
@@ -207,6 +209,11 @@ def handle_case_option(choice: str, current: Optional[Dataset],
 
 def main() -> None:
     """Run the case desk until the user chooses to quit."""
+    # If the output can't show a character from the data (e.g. Chinese
+    # text with Windows output redirected to a file), print '?' instead
+    # of crashing.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(errors="replace")
     current: Optional[Dataset] = None
     findings: Optional[Findings] = None
     try:
