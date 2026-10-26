@@ -105,6 +105,14 @@ class TestMenu(MenuTestCase):
         out = self.run_main(["1", "P", f'"{path}"', "0"])
         self.assertIn("Opening case... x y.csv", out)
 
+    def test_odd_paths_do_not_crash(self):
+        # A lone quote, '?' or '*' is an invalid file name on Windows.
+        for typed in ['"', "?", "*", '"C:\\half copied.csv']:
+            with self.subTest(typed=typed):
+                out = self.run_main(["1", "P", typed, "0"])
+                self.assertIn("Could not open case:", out)
+                self.assertTrue(out.rstrip().endswith(GOODBYE))
+
     def test_empty_locker(self):
         os.remove(os.path.join(self.datasets, "t.csv"))
         out = self.run_main(["1", "B", "0"])

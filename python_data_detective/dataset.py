@@ -89,6 +89,12 @@ class Dataset:
         except PermissionError:
             raise UnreadableFileError(
                 f"no permission to read '{self.path}'")
+        except OSError as err:
+            # Anything else the OS rejects, e.g. a name containing ? or *
+            # on Windows, or a name that is far too long.
+            reason = err.strerror or str(err)
+            raise UnreadableFileError(
+                f"couldn't open '{self.path}' ({reason})")
 
     @staticmethod
     def _detect_delimiter(text: str) -> str:

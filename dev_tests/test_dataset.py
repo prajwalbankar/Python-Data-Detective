@@ -2,6 +2,7 @@
 import os
 import tempfile
 import unittest
+from unittest import mock
 
 from context import make_dataset, write_file
 from dataset import Dataset
@@ -110,6 +111,15 @@ class TestDatasetErrors(unittest.TestCase):
         path = tempfile.mkdtemp()
         self.assert_error(UnreadableFileError,
                           f"'{path}' is a folder, not a file", path)
+
+    def test_other_os_errors_are_reported(self):
+        # e.g. Windows "Invalid argument" for names containing ? * or "
+        path = write_file("a\n1\n")
+        with mock.patch("builtins.open",
+                        side_effect=OSError(22, "Invalid argument")):
+            self.assert_error(UnreadableFileError,
+                              f"couldn't open '{path}' (Invalid argument)",
+                              path)
 
     def test_csv_parse_error(self):
         path = write_file("a\n" + "x" * 200000 + "\n")
