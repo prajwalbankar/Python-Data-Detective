@@ -1,0 +1,2 @@
+# Datasets must keep their exact bytes (CRLF vs LF, BOM, latin-1, binary).
+python_data_detective/datasets/** -text
