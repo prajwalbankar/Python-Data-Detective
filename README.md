@@ -171,16 +171,16 @@ The AI-generated files come from [`tools/make_datasets.py`](python_data_detectiv
 
 ```mermaid
 flowchart LR
-    CSV[("CSV file")] --> D["Dataset<br/><i>dataset.py</i>"]
-    D --> I["Investigator<br/><i>investigator.py</i>"]
+    CSV[("CSV file")] --> D["Dataset<br/>dataset.py"]
+    D --> I["Investigator<br/>investigator.py"]
     I --> F["Findings"]
-    F --> R["Report<br/><i>report.py</i>"]
+    F --> R["Report<br/>report.py"]
     R --> T["Terminal"]
     R --> TXT[("reports/*.txt")]
-    M["Case desk menu<br/><i>main.py</i>"] -.drives.-> D
+    M["Case desk menu<br/>main.py"] -. drives .-> D
     M -.-> I
     M -.-> R
-    E["DatasetError<br/><i>errors.py</i>"] -.raised by.-> D
+    E["DatasetError<br/>errors.py"] -. raised by .-> D
 ```
 
 Each module has one job, and data flows in one direction:
