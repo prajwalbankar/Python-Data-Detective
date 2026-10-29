@@ -78,6 +78,17 @@ class TestDatasetLoading(unittest.TestCase):
         self.assertEqual(ds.encoding, "latin-1")
         self.assertEqual(ds.rows[0][0], "café")
 
+    def test_mixed_encodings_are_read_line_by_line(self):
+        data = ("﻿name,city\nJosé,São Paulo\n".encode("utf-8")
+                + "“Smart” Ltd,Köln\n".encode("cp1252"))
+        ds = Dataset(write_file(data))
+        self.assertEqual(ds.encoding, "utf-8 + cp1252")
+        self.assertEqual(ds.header, ["name", "city"])
+        self.assertEqual(ds.rows, [["José", "São Paulo"],
+                                   ["“Smart” Ltd", "Köln"]])
+        self.assertTrue(any("different encodings" in w
+                            for w in ds.warnings), ds.warnings)
+
     def test_trailing_delimiters_are_ignored(self):
         # "a,b," / "1,2," is a common export quirk, not an empty column.
         ds = make_dataset("a,b,\n1,2,\n3,4,\n")

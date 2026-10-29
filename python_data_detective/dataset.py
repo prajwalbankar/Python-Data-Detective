@@ -118,6 +118,10 @@ class Dataset:
             return data.decode("utf-8-sig")
         except UnicodeDecodeError:
             pass
+        mixed = self._decode_line_by_line(data)
+        if mixed is not None:
+            self.encoding = "utf-8 + cp1252"
+            return mixed
         # latin-1 can decode any bytes, so this always succeeds.
         self.encoding = "latin-1"
         text = data.decode("latin-1")
@@ -129,6 +133,36 @@ class Dataset:
                 self.encoding = "cp1252"
             except UnicodeDecodeError:
                 pass
+        return text
+
+    @staticmethod
+    def _decode_line_by_line(data: bytes) -> Optional[str]:
+        """Decode a file whose lines use different encodings.
+
+        Files pasted together from different sources can have some lines
+        in UTF-8 and others in Windows cp1252. Returns the text if both
+        kinds are present, otherwise None.
+        """
+        pieces = []
+        has_utf8 = False     # a line with non-ASCII characters in UTF-8
+        has_other = False    # a line that isn't valid UTF-8
+        for line in data.splitlines(keepends=True):
+            try:
+                piece = line.decode("utf-8")
+                if not piece.isascii():
+                    has_utf8 = True
+            except UnicodeDecodeError:
+                has_other = True
+                try:
+                    piece = line.decode("cp1252")
+                except UnicodeDecodeError:
+                    piece = line.decode("latin-1")
+            pieces.append(piece)
+        if not (has_utf8 and has_other):
+            return None
+        text = "".join(pieces)
+        if text.startswith("﻿"):
+            text = text[1:]          # the BOM Excel puts at the start
         return text
 
     @staticmethod
@@ -310,6 +344,11 @@ class Dataset:
                 f"most rows have more fields than the header's "
                 f"{len(self.header)}, so the first line may be a title "
                 "rather than the column names.")
+        if self.encoding == "utf-8 + cp1252":
+            warnings.append(
+                "lines use different encodings (UTF-8 and Windows "
+                "cp1252), so each line was decoded separately; check "
+                "accented letters.")
         if not self.delimiter_found and self.num_columns() == 1:
             warnings.append(
                 "no delimiter was found, so each line was read as a single "
