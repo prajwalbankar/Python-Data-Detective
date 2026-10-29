@@ -17,6 +17,10 @@ from file_types import describe_binary, describe_text_format
 SNIFF_SAMPLE_SIZE = 4096
 # The delimiters we're willing to detect: comma, semicolon, tab, pipe.
 DELIMITERS = ",;\t|"
+# The csv module refuses any cell over 131,072 characters by default, but
+# real datasets sometimes hold whole documents or base64 images in a cell.
+# 2**31 - 1 is the largest limit every platform accepts.
+csv.field_size_limit(2**31 - 1)
 
 
 def plural(count: int, word: str) -> str:

@@ -1,4 +1,5 @@
 """Tests for loading CSV files into a Dataset."""
+import csv
 import io
 import os
 import subprocess
@@ -274,11 +275,20 @@ class TestDatasetErrors(unittest.TestCase):
                               path)
 
     def test_csv_parse_error(self):
-        path = write_file("a\n" + "x" * 200000 + "\n")
-        with self.assertRaises(UnreadableFileError) as caught:
-            Dataset(path)
-        self.assertTrue(
-            str(caught.exception).startswith("couldn't be read as CSV: "))
+        # The csv module raises while reading rows; simulate that.
+        def failing_rows(*args, **kwargs):
+            raise csv.Error("bad quoting")
+            yield  # makes this a generator
+
+        path = write_file("a\n1\n")
+        with mock.patch("dataset.csv.reader", side_effect=failing_rows):
+            self.assert_error(UnreadableFileError,
+                              "couldn't be read as CSV: bad quoting", path)
+
+    def test_very_large_cell_loads(self):
+        # e.g. an image stored as base64 text in one cell (300 KB)
+        ds = make_dataset("id,image\n1," + "x" * 300_000 + "\n")
+        self.assertEqual(len(ds.rows[0][1]), 300_000)
 
 
 if __name__ == "__main__":
