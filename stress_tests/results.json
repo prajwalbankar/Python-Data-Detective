@@ -1,0 +1,1653 @@
+{
+ "python": "3.10.7",
+ "results": [
+  {
+   "name": "photo.png",
+   "category": "Images & media",
+   "description": "real 64x64 PNG image",
+   "bytes": 7858,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "doesn't look like a plain text CSV",
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: doesn't look like a plain text CSV",
+    "goodbye": true,
+    "seconds": 0.21
+   }
+  },
+  {
+   "name": "photo_renamed.csv",
+   "category": "Images & media",
+   "description": "the same PNG renamed to .csv",
+   "bytes": 7858,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "doesn't look like a plain text CSV",
+    "seconds": 0.0
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: doesn't look like a plain text CSV",
+    "goodbye": true,
+    "seconds": 0.16
+   }
+  },
+  {
+   "name": "photo.jpg",
+   "category": "Images & media",
+   "description": "JPEG (JFIF header + compressed-looking bytes)",
+   "bytes": 3022,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "doesn't look like a plain text CSV",
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: doesn't look like a plain text CSV",
+    "goodbye": true,
+    "seconds": 0.15
+   }
+  },
+  {
+   "name": "pixel.gif",
+   "category": "Images & media",
+   "description": "real 1x1 GIF",
+   "bytes": 43,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "doesn't look like a plain text CSV",
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: doesn't look like a plain text CSV",
+    "goodbye": true,
+    "seconds": 0.15
+   }
+  },
+  {
+   "name": "bitmap.bmp",
+   "category": "Images & media",
+   "description": "real 8x8 BMP image",
+   "bytes": 246,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "doesn't look like a plain text CSV",
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: doesn't look like a plain text CSV",
+    "goodbye": true,
+    "seconds": 0.15
+   }
+  },
+  {
+   "name": "drawing.svg",
+   "category": "Images & media",
+   "description": "SVG vector image (XML text)",
+   "bytes": 183,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 3,
+    "columns": 1,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 0,
+    "text_cols": 1,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 1,
+    "warnings": [],
+    "trailing": false,
+    "score": 70,
+    "verdict": "Needs cleaning",
+    "report_lines": 27,
+    "too_wide": 0,
+    "seconds": 0.02
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 70/100  -  Significant cleaning needed",
+    "goodbye": true,
+    "seconds": 0.17
+   }
+  },
+  {
+   "name": "tone.wav",
+   "category": "Images & media",
+   "description": "real WAV audio, 440 Hz tone",
+   "bytes": 8044,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "doesn't look like a plain text CSV",
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: doesn't look like a plain text CSV",
+    "goodbye": true,
+    "seconds": 0.15
+   }
+  },
+  {
+   "name": "song.mp3",
+   "category": "Images & media",
+   "description": "MP3 (ID3 header + frame-like bytes)",
+   "bytes": 4010,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "doesn't look like a plain text CSV",
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: doesn't look like a plain text CSV",
+    "goodbye": true,
+    "seconds": 0.14
+   }
+  },
+  {
+   "name": "clip.mp4",
+   "category": "Images & media",
+   "description": "MP4 video (ftyp box + media-like bytes)",
+   "bytes": 4024,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "doesn't look like a plain text CSV",
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: doesn't look like a plain text CSV",
+    "goodbye": true,
+    "seconds": 0.14
+   }
+  },
+  {
+   "name": "image_folder",
+   "category": "Images & media",
+   "description": "a folder of 5 PNG images (path given at option P)",
+   "bytes": 2566,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "'C:\\Users\\prajw\\Obsidian Notes\\ITP Data Project\\stress_tests\\files\\image_folder' is a folder, not a file",
+    "seconds": 0.0
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: 'C:\\Users\\prajw\\Obsidian Notes\\ITP Data",
+    "goodbye": true,
+    "seconds": 0.17
+   }
+  },
+  {
+   "name": "image_metadata.csv",
+   "category": "Images & media",
+   "description": "CSV describing 300 images (sizes, formats, labels)",
+   "bytes": 10402,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 300,
+    "columns": 6,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 3,
+    "text_cols": 3,
+    "empty_cols": 0,
+    "missing_pct": 5.2,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 90,
+    "verdict": "Minor clean-up",
+    "report_lines": 36,
+    "too_wide": 0,
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 90/100  -  Minor clean-up needed",
+    "goodbye": true,
+    "seconds": 0.18
+   }
+  },
+  {
+   "name": "mnist_like_pixels.csv",
+   "category": "Images & media",
+   "description": "MNIST-style: 400 images as 784 pixel columns each",
+   "bytes": 757792,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 400,
+    "columns": 785,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 785,
+    "text_cols": 0,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 100,
+    "verdict": "Case closed",
+    "report_lines": 1594,
+    "too_wide": 0,
+    "seconds": 0.43
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
+    "goodbye": true,
+    "seconds": 0.63
+   }
+  },
+  {
+   "name": "images_base64_small.csv",
+   "category": "Images & media",
+   "description": "40 small PNG thumbnails embedded as base64 text",
+   "bytes": 53169,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 40,
+    "columns": 3,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 1,
+    "text_cols": 2,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 100,
+    "verdict": "Case closed",
+    "report_lines": 30,
+    "too_wide": 0,
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
+    "goodbye": true,
+    "seconds": 0.27
+   }
+  },
+  {
+   "name": "images_base64_large.csv",
+   "category": "Images & media",
+   "description": "one 200 KB image embedded as base64 in a cell",
+   "bytes": 200019,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "couldn't be read as CSV: field larger than field limit (131072)",
+    "seconds": 0.02
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: couldn't be read as CSV: field larger than",
+    "goodbye": true,
+    "seconds": 0.24
+   }
+  },
+  {
+   "name": "workbook.xlsx",
+   "category": "Documents & archives",
+   "description": "Excel workbook (zip of XML sheets)",
+   "bytes": 467,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "doesn't look like a plain text CSV",
+    "seconds": 0.02
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: doesn't look like a plain text CSV",
+    "goodbye": true,
+    "seconds": 0.17
+   }
+  },
+  {
+   "name": "workbook_renamed.csv",
+   "category": "Documents & archives",
+   "description": "the same .xlsx renamed to .csv",
+   "bytes": 265,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "doesn't look like a plain text CSV",
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: doesn't look like a plain text CSV",
+    "goodbye": true,
+    "seconds": 0.19
+   }
+  },
+  {
+   "name": "old_excel.xls",
+   "category": "Documents & archives",
+   "description": "legacy Excel .xls (OLE2 compound file)",
+   "bytes": 2512,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "doesn't look like a plain text CSV",
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: doesn't look like a plain text CSV",
+    "goodbye": true,
+    "seconds": 0.18
+   }
+  },
+  {
+   "name": "report.docx",
+   "category": "Documents & archives",
+   "description": "Word document (zip of XML)",
+   "bytes": 306,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "doesn't look like a plain text CSV",
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: doesn't look like a plain text CSV",
+    "goodbye": true,
+    "seconds": 0.17
+   }
+  },
+  {
+   "name": "archive.zip",
+   "category": "Documents & archives",
+   "description": "zip archive containing a CSV",
+   "bytes": 130,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "doesn't look like a plain text CSV",
+    "seconds": 0.02
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: doesn't look like a plain text CSV",
+    "goodbye": true,
+    "seconds": 0.2
+   }
+  },
+  {
+   "name": "data.csv.gz",
+   "category": "Documents & archives",
+   "description": "gzip-compressed CSV",
+   "bytes": 52,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "doesn't look like a plain text CSV",
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: doesn't look like a plain text CSV",
+    "goodbye": true,
+    "seconds": 0.17
+   }
+  },
+  {
+   "name": "plain_text.pdf",
+   "category": "Documents & archives",
+   "description": "PDF written entirely in plain text",
+   "bytes": 194,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 5,
+    "columns": 1,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 0,
+    "text_cols": 1,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 100,
+    "verdict": "Case closed",
+    "report_lines": 26,
+    "too_wide": 0,
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
+    "goodbye": true,
+    "seconds": 0.16
+   }
+  },
+  {
+   "name": "compressed.pdf",
+   "category": "Documents & archives",
+   "description": "PDF with a compressed (binary) stream",
+   "bytes": 126,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "doesn't look like a plain text CSV",
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: doesn't look like a plain text CSV",
+    "goodbye": true,
+    "seconds": 0.16
+   }
+  },
+  {
+   "name": "database.sqlite",
+   "category": "Documents & archives",
+   "description": "real SQLite database",
+   "bytes": 8192,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "doesn't look like a plain text CSV",
+    "seconds": 0.0
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: doesn't look like a plain text CSV",
+    "goodbye": true,
+    "seconds": 0.15
+   }
+  },
+  {
+   "name": "program.exe",
+   "category": "Documents & archives",
+   "description": "a real program (a copy of python.exe)",
+   "bytes": 101760,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "doesn't look like a plain text CSV",
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: doesn't look like a plain text CSV",
+    "goodbye": true,
+    "seconds": 0.14
+   }
+  },
+  {
+   "name": "data.pkl",
+   "category": "Documents & archives",
+   "description": "Python pickle file",
+   "bytes": 1285,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "doesn't look like a plain text CSV",
+    "seconds": 0.02
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: doesn't look like a plain text CSV",
+    "goodbye": true,
+    "seconds": 0.16
+   }
+  },
+  {
+   "name": "table.parquet",
+   "category": "Documents & archives",
+   "description": "Parquet-style columnar file (PAR1 magic)",
+   "bytes": 3008,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "doesn't look like a plain text CSV",
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: doesn't look like a plain text CSV",
+    "goodbye": true,
+    "seconds": 0.15
+   }
+  },
+  {
+   "name": "data.json",
+   "category": "Text that isn't a CSV",
+   "description": "JSON array of objects",
+   "bytes": 6513,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 541,
+    "columns": 1,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 0,
+    "text_cols": 1,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 355,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": true,
+    "score": 70,
+    "verdict": "Needs cleaning",
+    "report_lines": 38,
+    "too_wide": 0,
+    "seconds": 0.03
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 70/100  -  Significant cleaning needed",
+    "goodbye": true,
+    "seconds": 0.17
+   }
+  },
+  {
+   "name": "data.ndjson",
+   "category": "Text that isn't a CSV",
+   "description": "JSON Lines (one object per line)",
+   "bytes": 4051,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 59,
+    "columns": 5,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 0,
+    "text_cols": 5,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 100,
+    "verdict": "Case closed",
+    "report_lines": 34,
+    "too_wide": 0,
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
+    "goodbye": true,
+    "seconds": 0.15
+   }
+  },
+  {
+   "name": "data.xml",
+   "category": "Text that isn't a CSV",
+   "description": "XML records",
+   "bytes": 4212,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 62,
+    "columns": 1,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 0,
+    "text_cols": 1,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 100,
+    "verdict": "Case closed",
+    "report_lines": 26,
+    "too_wide": 0,
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
+    "goodbye": true,
+    "seconds": 0.15
+   }
+  },
+  {
+   "name": "table.html",
+   "category": "Text that isn't a CSV",
+   "description": "HTML page with a table",
+   "bytes": 2581,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 62,
+    "columns": 1,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 0,
+    "text_cols": 1,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 100,
+    "verdict": "Case closed",
+    "report_lines": 26,
+    "too_wide": 0,
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
+    "goodbye": true,
+    "seconds": 0.15
+   }
+  },
+  {
+   "name": "table.md",
+   "category": "Text that isn't a CSV",
+   "description": "Markdown table (pipe-separated)",
+   "bytes": 1889,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 61,
+    "columns": 4,
+    "delimiter": "|",
+    "encoding": "utf-8",
+    "numeric_cols": 1,
+    "text_cols": 2,
+    "empty_cols": 1,
+    "missing_pct": 25.0,
+    "duplicates": 0,
+    "invalid": 1,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": true,
+    "score": 58,
+    "verdict": "Unreliable",
+    "report_lines": 35,
+    "too_wide": 0,
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 58/100  -  Unreliable evidence - investigate before use",
+    "goodbye": true,
+    "seconds": 0.15
+   }
+  },
+  {
+   "name": "config.yaml",
+   "category": "Text that isn't a CSV",
+   "description": "YAML configuration",
+   "bytes": 72,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 4,
+    "columns": 1,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 0,
+    "text_cols": 1,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 1,
+    "warnings": [],
+    "trailing": false,
+    "score": 70,
+    "verdict": "Needs cleaning",
+    "report_lines": 27,
+    "too_wide": 0,
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 70/100  -  Significant cleaning needed",
+    "goodbye": true,
+    "seconds": 0.16
+   }
+  },
+  {
+   "name": "settings.ini",
+   "category": "Text that isn't a CSV",
+   "description": "INI settings file",
+   "bytes": 60,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 4,
+    "columns": 1,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 0,
+    "text_cols": 1,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 100,
+    "verdict": "Case closed",
+    "report_lines": 26,
+    "too_wide": 0,
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
+    "goodbye": true,
+    "seconds": 0.14
+   }
+  },
+  {
+   "name": "story.txt",
+   "category": "Text that isn't a CSV",
+   "description": "plain English prose",
+   "bytes": 3015,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 14,
+    "columns": 6,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 0,
+    "text_cols": 6,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 13,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 70,
+    "verdict": "Needs cleaning",
+    "report_lines": 47,
+    "too_wide": 0,
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 70/100  -  Significant cleaning needed",
+    "goodbye": true,
+    "seconds": 0.14
+   }
+  },
+  {
+   "name": "source_code.py",
+   "category": "Text that isn't a CSV",
+   "description": "Python source code (the app's main.py)",
+   "bytes": 9795,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 225,
+    "columns": 1,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 0,
+    "text_cols": 1,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 29,
+    "invalid": 0,
+    "malformed": 55,
+    "warnings": [],
+    "trailing": true,
+    "score": 51,
+    "verdict": "Unreliable",
+    "report_lines": 49,
+    "too_wide": 0,
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 51/100  -  Unreliable evidence - investigate before use",
+    "goodbye": true,
+    "seconds": 0.14
+   }
+  },
+  {
+   "name": "server.log",
+   "category": "Text that isn't a CSV",
+   "description": "web server access log (space separated)",
+   "bytes": 58110,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 499,
+    "columns": 1,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 0,
+    "text_cols": 1,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 100,
+    "verdict": "Case closed",
+    "report_lines": 26,
+    "too_wide": 0,
+    "seconds": 0.02
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
+    "goodbye": true,
+    "seconds": 0.15
+   }
+  },
+  {
+   "name": "fixed_width.txt",
+   "category": "Text that isn't a CSV",
+   "description": "fixed-width columns padded with spaces",
+   "bytes": 2828,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 100,
+    "columns": 1,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 0,
+    "text_cols": 1,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 100,
+    "verdict": "Case closed",
+    "report_lines": 26,
+    "too_wide": 0,
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
+    "goodbye": true,
+    "seconds": 0.15
+   }
+  },
+  {
+   "name": "dump.sql",
+   "category": "Text that isn't a CSV",
+   "description": "SQL dump with INSERT statements",
+   "bytes": 3816,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 100,
+    "columns": 2,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 0,
+    "text_cols": 2,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 100,
+    "verdict": "Case closed",
+    "report_lines": 28,
+    "too_wide": 0,
+    "seconds": 0.02
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
+    "goodbye": true,
+    "seconds": 0.16
+   }
+  },
+  {
+   "name": "email.eml",
+   "category": "Text that isn't a CSV",
+   "description": "an email message",
+   "bytes": 138,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 6,
+    "columns": 1,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 0,
+    "text_cols": 1,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 2,
+    "warnings": [],
+    "trailing": true,
+    "score": 70,
+    "verdict": "Needs cleaning",
+    "report_lines": 29,
+    "too_wide": 0,
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 70/100  -  Significant cleaning needed",
+    "goodbye": true,
+    "seconds": 0.18
+   }
+  },
+  {
+   "name": "base64_blob.txt",
+   "category": "Text that isn't a CSV",
+   "description": "one 300 KB line of base64, no delimiters",
+   "bytes": 300001,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "couldn't be read as CSV: field larger than field limit (131072)",
+    "seconds": 0.03
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: couldn't be read as CSV: field larger than",
+    "goodbye": true,
+    "seconds": 0.18
+   }
+  },
+  {
+   "name": "minified.js",
+   "category": "Text that isn't a CSV",
+   "description": "minified JavaScript on one 60 KB line",
+   "bytes": 58429,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "file has a header but no data rows",
+    "seconds": 0.03
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: file has a header but no data rows",
+    "goodbye": true,
+    "seconds": 0.17
+   }
+  },
+  {
+   "name": "whitespace_only.txt",
+   "category": "Text that isn't a CSV",
+   "description": "only spaces, tabs and blank lines",
+   "bytes": 13,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "file is empty",
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: file is empty",
+    "goodbye": true,
+    "seconds": 0.14
+   }
+  },
+  {
+   "name": "bom_only.csv",
+   "category": "Text that isn't a CSV",
+   "description": "a UTF-8 BOM and nothing else",
+   "bytes": 3,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "file is empty",
+    "seconds": 0.0
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: file is empty",
+    "goodbye": true,
+    "seconds": 0.16
+   }
+  },
+  {
+   "name": "matrix_no_header.csv",
+   "category": "Numbers",
+   "description": "100x10 matrix of numbers, no header row",
+   "bytes": 7711,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 99,
+    "columns": 10,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 10,
+    "text_cols": 0,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [
+     "most column names look like numbers, so the file may have no header row (its first row is being used as the column names)."
+    ],
+    "trailing": false,
+    "score": 100,
+    "verdict": "Case closed",
+    "report_lines": 47,
+    "too_wide": 0,
+    "seconds": 0.02
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
+    "goodbye": true,
+    "seconds": 0.15
+   }
+  },
+  {
+   "name": "ids_with_leading_zeros.csv",
+   "category": "Numbers",
+   "description": "IDs, postcodes and phone numbers with leading zeros",
+   "bytes": 6038,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 200,
+    "columns": 4,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 4,
+    "text_cols": 0,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 100,
+    "verdict": "Case closed",
+    "report_lines": 34,
+    "too_wide": 0,
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
+    "goodbye": true,
+    "seconds": 0.15
+   }
+  },
+  {
+   "name": "european_decimals.csv",
+   "category": "Numbers",
+   "description": "Excel EU export: ';' delimiter, decimal commas, BOM, CRLF",
+   "bytes": 4864,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 150,
+    "columns": 4,
+    "delimiter": ";",
+    "encoding": "utf-8",
+    "numeric_cols": 0,
+    "text_cols": 4,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 100,
+    "verdict": "Case closed",
+    "report_lines": 32,
+    "too_wide": 0,
+    "seconds": 0.02
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
+    "goodbye": true,
+    "seconds": 0.16
+   }
+  },
+  {
+   "name": "currency_percent.csv",
+   "category": "Numbers",
+   "description": "currency symbols, thousands separators, %, (accounting) negatives",
+   "bytes": 4272,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 150,
+    "columns": 4,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 0,
+    "text_cols": 4,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 100,
+    "verdict": "Case closed",
+    "report_lines": 32,
+    "too_wide": 0,
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
+    "goodbye": true,
+    "seconds": 0.14
+   }
+  },
+  {
+   "name": "scientific_and_special.csv",
+   "category": "Numbers",
+   "description": "scientific notation, inf, NaN, overflow, underflow",
+   "bytes": 752,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 140,
+    "columns": 1,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 0,
+    "text_cols": 1,
+    "empty_cols": 0,
+    "missing_pct": 7.1,
+    "duplicates": 126,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 56,
+    "verdict": "Unreliable",
+    "report_lines": 37,
+    "too_wide": 0,
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 56/100  -  Unreliable evidence - investigate before use",
+    "goodbye": true,
+    "seconds": 0.17
+   }
+  },
+  {
+   "name": "dates_times_booleans.csv",
+   "category": "Numbers",
+   "description": "dates in 3 formats, times, booleans written 5 ways",
+   "bytes": 2820,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 120,
+    "columns": 4,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 1,
+    "text_cols": 3,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 100,
+    "verdict": "Case closed",
+    "report_lines": 32,
+    "too_wide": 0,
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
+    "goodbye": true,
+    "seconds": 0.15
+   }
+  },
+  {
+   "name": "huge_numbers.csv",
+   "category": "Numbers",
+   "description": "numbers near float limits and 30-digit integers",
+   "bytes": 1926,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 100,
+    "columns": 1,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 1,
+    "text_cols": 0,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 95,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 70,
+    "verdict": "Needs cleaning",
+    "report_lines": 38,
+    "too_wide": 0,
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 70/100  -  Significant cleaning needed",
+    "goodbye": true,
+    "seconds": 0.18
+   }
+  },
+  {
+   "name": "sentinel_values.csv",
+   "category": "Numbers",
+   "description": "sensor data using -999 to mean 'missing'",
+   "bytes": 22749,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 2000,
+    "columns": 3,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 2,
+    "text_cols": 1,
+    "empty_cols": 0,
+    "missing_pct": 11.6,
+    "duplicates": 713,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 47,
+    "verdict": "Unreliable",
+    "report_lines": 41,
+    "too_wide": 0,
+    "seconds": 0.02
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 47/100  -  Unreliable evidence - investigate before use",
+    "goodbye": true,
+    "seconds": 0.19
+   }
+  },
+  {
+   "name": "ecommerce_100k.csv",
+   "category": "Complex CSVs",
+   "description": "100k orders: multiline text, emoji, JSON cells, 1% duplicates, ragged rows",
+   "bytes": 13759904,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 101200,
+    "columns": 12,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 5,
+    "text_cols": 7,
+    "empty_cols": 0,
+    "missing_pct": 7.3,
+    "duplicates": 999,
+    "invalid": 6249,
+    "malformed": 201,
+    "warnings": [],
+    "trailing": false,
+    "score": 82,
+    "verdict": "Needs cleaning",
+    "report_lines": 84,
+    "too_wide": 0,
+    "seconds": 3.53
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 82/100  -  Significant cleaning needed",
+    "goodbye": true,
+    "seconds": 3.52
+   }
+  },
+  {
+   "name": "survey_multilingual.csv",
+   "category": "Complex CSVs",
+   "description": "3,000 survey answers in 6 languages and emoji",
+   "bytes": 81184,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 3000,
+    "columns": 6,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 4,
+    "text_cols": 2,
+    "empty_cols": 0,
+    "missing_pct": 17.7,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 65,
+    "verdict": "Unreliable",
+    "report_lines": 39,
+    "too_wide": 0,
+    "seconds": 0.04
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 65/100  -  Unreliable evidence - investigate before use",
+    "goodbye": true,
+    "seconds": 0.18
+   }
+  },
+  {
+   "name": "concatenated_exports.csv",
+   "category": "Complex CSVs",
+   "description": "three exports pasted together (header repeated mid-file)",
+   "bytes": 2139,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 152,
+    "columns": 3,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 2,
+    "text_cols": 1,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 101,
+    "invalid": 4,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 68,
+    "verdict": "Unreliable",
+    "report_lines": 44,
+    "too_wide": 0,
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 68/100  -  Unreliable evidence - investigate before use",
+    "goodbye": true,
+    "seconds": 0.15
+   }
+  },
+  {
+   "name": "mixed_encodings.csv",
+   "category": "Complex CSVs",
+   "description": "UTF-8 lines and Windows cp1252 lines in one file",
+   "bytes": 72,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 4,
+    "columns": 2,
+    "delimiter": ",",
+    "encoding": "cp1252",
+    "numeric_cols": 0,
+    "text_cols": 2,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 100,
+    "verdict": "Case closed",
+    "report_lines": 28,
+    "too_wide": 0,
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
+    "goodbye": true,
+    "seconds": 0.15
+   }
+  },
+  {
+   "name": "wide_1000_columns.csv",
+   "category": "Complex CSVs",
+   "description": "1,000 columns x 200 rows",
+   "bytes": 401025,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 200,
+    "columns": 1000,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 0,
+    "text_cols": 1000,
+    "empty_cols": 0,
+    "missing_pct": 33.4,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 60,
+    "verdict": "Unreliable",
+    "report_lines": 3023,
+    "too_wide": 0,
+    "seconds": 0.24
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 60/100  -  Unreliable evidence - investigate before use",
+    "goodbye": true,
+    "seconds": 0.38
+   }
+  },
+  {
+   "name": "sparse_90_percent_empty.csv",
+   "category": "Complex CSVs",
+   "description": "90% of cells empty",
+   "bytes": 2826,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 400,
+    "columns": 4,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 4,
+    "text_cols": 0,
+    "empty_cols": 0,
+    "missing_pct": 67.1,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 60,
+    "verdict": "Unreliable",
+    "report_lines": 34,
+    "too_wide": 0,
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 60/100  -  Unreliable evidence - investigate before use",
+    "goodbye": true,
+    "seconds": 0.2
+   }
+  },
+  {
+   "name": "all_rows_identical.csv",
+   "category": "Complex CSVs",
+   "description": "500 copies of the same row",
+   "bytes": 3006,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 500,
+    "columns": 3,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 3,
+    "text_cols": 0,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 499,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 70,
+    "verdict": "Needs cleaning",
+    "report_lines": 41,
+    "too_wide": 0,
+    "seconds": 0.01
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 70/100  -  Significant cleaning needed",
+    "goodbye": true,
+    "seconds": 0.17
+   }
+  },
+  {
+   "name": "tab_separated_named_csv.csv",
+   "category": "Complex CSVs",
+   "description": "tab-separated file named .csv",
+   "bytes": 23160,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 1000,
+    "columns": 2,
+    "delimiter": "\t",
+    "encoding": "utf-8",
+    "numeric_cols": 2,
+    "text_cols": 0,
+    "empty_cols": 0,
+    "missing_pct": 0.0,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 100,
+    "verdict": "Case closed",
+    "report_lines": 28,
+    "too_wide": 0,
+    "seconds": 0.02
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
+    "goodbye": true,
+    "seconds": 0.16
+   }
+  },
+  {
+   "name": "huge_1m_rows.csv",
+   "category": "Complex CSVs",
+   "description": "1,000,000 rows (about 24 MB)",
+   "bytes": 23587069,
+   "pipeline": {
+    "outcome": "loaded",
+    "rows": 1000000,
+    "columns": 5,
+    "delimiter": ",",
+    "encoding": "utf-8",
+    "numeric_cols": 2,
+    "text_cols": 3,
+    "empty_cols": 0,
+    "missing_pct": 5.0,
+    "duplicates": 0,
+    "invalid": 0,
+    "malformed": 0,
+    "warnings": [],
+    "trailing": false,
+    "score": 90,
+    "verdict": "Minor clean-up",
+    "report_lines": 35,
+    "too_wide": 0,
+    "seconds": 18.47
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "VERDICT: 90/100  -  Minor clean-up needed",
+    "goodbye": true,
+    "seconds": 17.2
+   }
+  }
+ ],
+ "investigate_all": "================================================================\n  CASE BOARD  -  every dataset in datasets/\n================================================================\n  Rank  Dataset                 Rows  Score  Verdict\n  1     currency_percent.csv     150    100  Case closed\n  2     dates_times_booleans..   120    100  Case closed\n  3     european_decimals.csv    150    100  Case closed\n  4     ids_with_leading_zer..   200    100  Case closed\n  5     images_base64_small...    40    100  Case closed\n  6     matrix_no_header.csv      99    100  Case closed\n  7     mixed_encodings.csv        4    100  Case closed\n  8     mnist_like_pixels.csv    400    100  Case closed\n  9     tab_separated_named_.. 1,000    100  Case closed\n  10    huge_1m_rows.csv      1,000,000     90  Minor clean-up\n  11    image_metadata.csv       300     90  Minor clean-up\n  12    ecommerce_100k.csv    101,200     82  Needs cleaning\n  13    all_rows_identical.csv   500     70  Needs cleaning\n  14    huge_numbers.csv         100     70  Needs cleaning\n  15    concatenated_exports..   152     68  Unreliable\n  16    survey_multilingual... 3,000     65  Unreliable\n  17    sparse_90_percent_em..   400     60  Unreliable\n  18    wide_1000_columns.csv    200     60  Unreliable\n  19    scientific_and_speci..   140     56  Unreliable\n  20    sentinel_values.csv    2,000     47  Unreliable\n  --    bom_only.csv               -      -  Could not open\n  --    images_base64_large...     -      -  Could not open\n  --    photo_renamed.csv          -      -  Could not open\n  --    workbook_renamed.csv       -      -  Could not open\n----------------------------------------------------------------\n  bom_only.csv: file is empty\n  images_base64_large.csv: couldn't be read as CSV: field larg..\n  photo_renamed.csv: doesn't look like a plain text CSV\n  workbook_renamed.csv: doesn't look like a plain text CSV\n----------------------------------------------------------------\n\n(exit code 0, traceback: False)\n",
+ "peak_memory_mb": {
+  "huge_1m_rows.csv": 701.8,
+  "ecommerce_100k.csv": 231.0,
+  "wide_1000_columns.csv": 29.2
+ }
+}
