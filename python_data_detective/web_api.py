@@ -8,6 +8,7 @@ it easy to test.
 """
 import json
 import os
+import tempfile
 import threading
 import traceback
 import urllib.parse
@@ -20,6 +21,8 @@ from main import list_csv_files
 from report import DELIMITER_NAMES
 
 PREVIEW_ROWS = 5
+MAX_UPLOAD_BYTES = 200 * 1024 * 1024   # 200 MB
+MAX_OPEN_CASES = 20      # older cases are closed to limit memory use
 TOO_BIG_MESSAGE = "This file is too large for this computer's memory."
 UNEXPECTED_MESSAGE = "Something went wrong. Details are in the terminal."
 
@@ -61,6 +64,15 @@ def text_response(text: str, filename: str) -> Response:
                    f"filename*=UTF-8''{quoted}")
     return Response(200, "text/plain; charset=utf-8", text.encode("utf-8"),
                     {"Content-Disposition": disposition})
+
+
+def safe_file_name(name: str) -> str:
+    """Return just the file name part of name, never a path."""
+    # Split on both kinds of slash, whatever computer sent the name.
+    base = name.replace("\\", "/").split("/")[-1].strip()
+    if base in ("", ".", ".."):
+        return "upload.csv"
+    return base
 
 
 def capitalise(message: str) -> str:
@@ -121,6 +133,10 @@ class DetectiveApi:
             require_method(method, "POST")
             name = read_json(body).get("name", "")
             return json_response(200, self.open_locker(name))
+        if parts == ["api", "cases", "upload"]:
+            require_method(method, "POST")
+            return json_response(200, self.open_upload(
+                query.get("name", ""), body))
         if len(parts) == 4 and parts[:2] == ["api", "cases"]:
             case_id, action = parts[2], parts[3]
             if action == "evidence":
@@ -145,6 +161,18 @@ class DetectiveApi:
                                 "the evidence locker.")
         return self._open(os.path.join(self.datasets_dir, name))
 
+    def open_upload(self, name: str, data: bytes) -> dict:
+        """Open a file the user dropped into the page."""
+        if len(data) > MAX_UPLOAD_BYTES:
+            raise ApiError(413, "Files over 200 MB can't be uploaded.")
+        # Each upload gets its own folder, so the file keeps its real
+        # name (shown in the case and used for the report's name).
+        folder = tempfile.mkdtemp(dir=self.upload_dir)
+        path = os.path.join(folder, safe_file_name(name))
+        with open(path, "wb") as file:
+            file.write(data)
+        return self._open(path)
+
     def evidence(self, case_id: str) -> dict:
         """Return the 'inspect the evidence' details of an open case."""
         dataset = self._case(case_id)
@@ -161,6 +189,11 @@ class DetectiveApi:
         case_id = f"c{self.next_id}"
         self.next_id += 1
         self.cases[case_id] = dataset
+        if len(self.cases) > MAX_OPEN_CASES:
+            # Dicts keep insertion order, so the first key is the oldest.
+            oldest = next(iter(self.cases))
+            del self.cases[oldest]
+            self.findings.pop(oldest, None)
         return {"case": case_summary(case_id, dataset)}
 
     def _case(self, case_id: str) -> Dataset:

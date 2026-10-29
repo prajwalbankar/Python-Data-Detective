@@ -106,5 +106,53 @@ class TestLockerAndEvidence(ApiTestCase):
                                         "in the terminal.")
 
 
+class TestUploads(ApiTestCase):
+
+    def upload(self, name, data):
+        return self.call("POST", "/api/cases/upload", data, {"name": name})
+
+    def test_upload_csv(self):
+        # Review Focus 1: spaces and accents in the file name.
+        status, data = self.upload("ventes été 2024.csv",
+                                   SAMPLE_TEXT.encode())
+        self.assertEqual(status, 200, data)
+        self.assertEqual(data["case"]["name"], "ventes été 2024.csv")
+        self.assertEqual(data["case"]["rows"], 10)
+
+    def test_upload_png_is_named(self):
+        status, data = self.upload("photo.png",
+                                   b"\x89PNG\r\n\x1a\n\x00\x00")
+        self.assertEqual(status, 422)
+        self.assertEqual(data["error"], "This is a PNG image, not a CSV file")
+
+    def test_upload_too_big(self):
+        with mock.patch.object(web_api, "MAX_UPLOAD_BYTES", 10):
+            status, data = self.upload("big.csv", b"x" * 11)
+        self.assertEqual(status, 413)
+        self.assertEqual(data["error"], "Files over 200 MB can't be "
+                                        "uploaded.")
+
+    def test_safe_file_name(self):
+        cases = {"../../x.csv": "x.csv", "C:\\a\\b.csv": "b.csv",
+                 "": "upload.csv", "..": "upload.csv", " ": "upload.csv"}
+        for name, safe in cases.items():
+            self.assertEqual(web_api.safe_file_name(name), safe, name)
+
+    def test_open_case_limit(self):
+        for _ in range(21):
+            self.open_sample()
+        self.assertNotIn("c1", self.api.cases)
+        self.assertIn("c21", self.api.cases)
+        self.assertEqual(len(self.api.cases), 20)
+
+    def test_out_of_memory(self):
+        with mock.patch.object(web_api, "Dataset", side_effect=MemoryError):
+            status, data = self.call("POST", "/api/cases/locker",
+                                     json.dumps({"name": "t.csv"}).encode())
+        self.assertEqual(status, 413)
+        self.assertEqual(data["error"], "This file is too large for this "
+                                        "computer's memory.")
+
+
 if __name__ == "__main__":
     unittest.main()
