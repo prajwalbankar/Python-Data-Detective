@@ -92,6 +92,16 @@ def warning_lines(dataset: Dataset) -> list[str]:
     return lines
 
 
+def rank_findings(findings_list: list[Findings]) -> list[Findings]:
+    """Order datasets for the case board: highest score first.
+
+    Equal scores are in alphabetical order. Shared by the text case
+    board and the web UI.
+    """
+    return sorted(findings_list,
+                  key=lambda f: (-f.overall, f.dataset.name.lower()))
+
+
 def sub_score_notes(findings: Findings) -> list[tuple[str, float, str]]:
     """Return (label, score, note) for each of the three sub-scores.
 
@@ -184,10 +194,8 @@ class Report:
                  "  CASE BOARD  -  every dataset in datasets/",
                  "=" * WIDTH,
                  board_row("Rank", "Dataset", "Rows", "Score", "Verdict")]
-        # Highest score first; equal scores in alphabetical order.
-        ranked = sorted(findings_list,
-                        key=lambda f: (-f.overall, f.dataset.name.lower()))
-        for rank, findings in enumerate(ranked, start=1):
+        for rank, findings in enumerate(rank_findings(findings_list),
+                                        start=1):
             lines.append(board_row(str(rank), findings.dataset.name,
                                    f"{findings.dataset.num_rows():,}",
                                    str(findings.overall),

@@ -252,5 +252,46 @@ class TestFindingsAndReports(ApiTestCase):
             "Couldn't save the report: "), data)
 
 
+class TestCaseBoard(ApiTestCase):
+
+    def setUp(self):
+        super().setUp()
+        write_file("a,b\n1,x\n2,y\n", "good.csv", folder=self.datasets)
+
+    def test_investigate_all(self):
+        status, data = self.call("POST", "/api/investigate-all")
+        self.assertEqual(status, 200)
+        self.assertEqual(data["ranked"][0], {
+            "rank": 1, "name": "good.csv", "rows": 2, "score": 100,
+            "verdict": "Case closed - ready for analysis",
+            "short_verdict": "Case closed", "band": "good"})
+        self.assertEqual(data["ranked"][1]["name"], "t.csv")
+        self.assertEqual(data["failures"],
+                         [{"name": "e.csv", "reason": "File is empty"}])
+
+    def test_save_all(self):
+        status, data = self.call("POST", "/api/save-all")
+        self.assertEqual((status, data), (200, {"saved": 2,
+                                                "folder": "reports"}))
+        self.assertEqual(sorted(os.listdir(self.reports)),
+                         ["good_report.txt", "leaderboard.txt",
+                          "t_report.txt"])
+
+    def test_save_all_when_nothing_opens(self):
+        for name in ["t.csv", "good.csv"]:
+            os.remove(os.path.join(self.datasets, name))
+        status, data = self.call("POST", "/api/save-all")
+        self.assertEqual((status, data["saved"]), (200, 0), data)
+        self.assertEqual(os.listdir(self.reports), ["leaderboard.txt"])
+
+    def test_investigate_all_out_of_memory(self):
+        with mock.patch.object(web_api, "Dataset", side_effect=MemoryError):
+            status, data = self.call("POST", "/api/investigate-all")
+        self.assertEqual(status, 200)
+        self.assertEqual(data["ranked"], [])
+        self.assertEqual([f["reason"] for f in data["failures"]],
+                         ["Too large for this computer's memory"] * 3)
+
+
 if __name__ == "__main__":
     unittest.main()

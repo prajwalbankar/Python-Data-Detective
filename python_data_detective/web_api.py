@@ -17,8 +17,8 @@ from typing import Optional
 from dataset import Dataset
 from errors import DatasetError
 from investigator import ColumnProfile, Findings, Investigator
-from main import list_csv_files
-from report import DELIMITER_NAMES, Report, sub_score_notes
+from main import TOO_BIG, list_csv_files
+from report import DELIMITER_NAMES, Report, rank_findings, sub_score_notes
 
 PREVIEW_ROWS = 5
 MAX_UPLOAD_BYTES = 200 * 1024 * 1024   # 200 MB
@@ -164,6 +164,9 @@ class DetectiveApi:
         self.cases: dict[str, Dataset] = {}
         self.findings: dict[str, Findings] = {}
         self.next_id = 1
+        # The latest Investigate ALL: (findings, [(file name, reason)]).
+        self.board: Optional[tuple[list[Findings],
+                                   list[tuple[str, str]]]] = None
         # The server answers requests on several threads at once; the
         # lock lets only one of them change the open cases at a time.
         self.lock = threading.Lock()
@@ -199,6 +202,12 @@ class DetectiveApi:
             require_method(method, "POST")
             return json_response(200, self.open_upload(
                 query.get("name", ""), body))
+        if parts == ["api", "investigate-all"]:
+            require_method(method, "POST")
+            return json_response(200, self.investigate_all())
+        if parts == ["api", "save-all"]:
+            require_method(method, "POST")
+            return json_response(200, self.save_all())
         if len(parts) == 4 and parts[:2] == ["api", "cases"]:
             case_id, action = parts[2], parts[3]
             if action == "evidence":
@@ -275,6 +284,51 @@ class DetectiveApi:
     def report_text(self, case_id: str) -> str:
         """Return the case report as text (investigating if needed)."""
         return Report(self._findings(case_id)).to_text()
+
+    def investigate_all(self) -> dict:
+        """Investigate every dataset in the locker and rank them."""
+        findings_list = []
+        failures = []   # (file name, reason) for files that couldn't open
+        for name in list_csv_files(self.datasets_dir):
+            try:
+                dataset = Dataset(os.path.join(self.datasets_dir, name))
+                findings_list.append(Investigator(dataset).investigate())
+            except DatasetError as err:
+                failures.append((name, capitalise(str(err))))
+            except MemoryError:
+                failures.append((name, capitalise(TOO_BIG)))
+        self.board = (findings_list, failures)
+        ranked = []
+        for rank, findings in enumerate(rank_findings(findings_list),
+                                        start=1):
+            ranked.append({"rank": rank, "name": findings.dataset.name,
+                           "rows": findings.dataset.num_rows(),
+                           "score": findings.overall,
+                           "verdict": findings.verdict,
+                           "short_verdict": findings.short_verdict,
+                           "band": BANDS[findings.short_verdict]})
+        failed = [{"name": name, "reason": reason}
+                  for name, reason in failures]
+        return {"ranked": ranked, "failures": failed}
+
+    def save_all(self) -> dict:
+        """Save every case report plus leaderboard.txt into reports/."""
+        if self.board is None:
+            self.investigate_all()
+        findings_list, failures = self.board
+        try:
+            for findings in findings_list:
+                Report(findings).save(self.reports_dir)
+            # The folder may not exist yet if no dataset could be opened.
+            os.makedirs(self.reports_dir, exist_ok=True)
+            board = Report.leaderboard_text(findings_list, failures)
+            with open(os.path.join(self.reports_dir, "leaderboard.txt"),
+                      "w", encoding="utf-8") as file:
+                file.write(board)
+        except OSError as err:
+            raise ApiError(500, f"Couldn't save the report: {err}")
+        return {"saved": len(findings_list),
+                "folder": self._shown_path(self.reports_dir)}
 
     def _findings(self, case_id: str) -> Findings:
         """Return a case's findings, investigating it first if needed."""
