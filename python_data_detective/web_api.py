@@ -16,13 +16,17 @@ from typing import Optional
 
 from dataset import Dataset
 from errors import DatasetError
-from investigator import Findings
+from investigator import ColumnProfile, Findings, Investigator
 from main import list_csv_files
-from report import DELIMITER_NAMES
+from report import DELIMITER_NAMES, Report, sub_score_notes
 
 PREVIEW_ROWS = 5
 MAX_UPLOAD_BYTES = 200 * 1024 * 1024   # 200 MB
 MAX_OPEN_CASES = 20      # older cases are closed to limit memory use
+LIST_LIMIT = 100         # longest duplicates / malformed list sent
+# The colour band the page uses for each short verdict.
+BANDS = {"Case closed": "good", "Minor clean-up": "fair",
+         "Needs cleaning": "poor", "Unreliable": "bad"}
 TOO_BIG_MESSAGE = "This file is too large for this computer's memory."
 UNEXPECTED_MESSAGE = "Something went wrong. Details are in the terminal."
 
@@ -89,6 +93,64 @@ def case_summary(case_id: str, dataset: Dataset) -> dict:
             "warnings": list(dataset.warnings)}
 
 
+def profile_json(profile: ColumnProfile, rows: int) -> dict:
+    """Describe one column's profile for the page."""
+    stats = None
+    if profile.stats is not None:
+        low, high, mean, median = profile.stats
+        stats = {"min": low, "max": high, "mean": mean, "median": median}
+    most_common = None
+    if profile.most_common is not None:
+        value, count = profile.most_common
+        most_common = {"value": value, "count": count}
+    return {"column": profile.name, "kind": profile.kind,
+            "missing_percent": round(100 * profile.missing / rows, 1),
+            "stats": stats, "unique": profile.unique_count,
+            "most_common": most_common}
+
+
+def findings_json(findings: Findings, summary: dict) -> dict:
+    """Describe everything an investigation found, for the page."""
+    dataset = findings.dataset
+    suspects = []
+    for profile in findings.profiles:
+        if profile.missing or profile.invalid or profile.not_numbers:
+            examples = []
+            for value, line in profile.invalid_examples:
+                examples.append({"value": value, "line": line})
+            suspects.append({"column": profile.name, "kind": profile.kind,
+                             "missing": profile.missing,
+                             "invalid": profile.invalid,
+                             "not_numbers": profile.not_numbers,
+                             "examples": examples})
+    duplicates = []
+    for copy_line, original_line in findings.duplicates[:LIST_LIMIT]:
+        duplicates.append({"line": copy_line, "original": original_line})
+    malformed = []
+    for line, fields in dataset.malformed_rows[:LIST_LIMIT]:
+        malformed.append({"line": line, "fields": fields})
+    sub_scores = []
+    for label, score, note in sub_score_notes(findings):
+        sub_scores.append({"name": label, "score": score, "note": note})
+    when = findings.investigated_at
+    return {
+        "case": summary,
+        "case_number": when.strftime("%Y%m%d-%H%M"),
+        "investigated_at": when.isoformat(timespec="seconds"),
+        "score": findings.overall, "verdict": findings.verdict,
+        "short_verdict": findings.short_verdict,
+        "band": BANDS[findings.short_verdict],
+        "sub_scores": sub_scores, "suspects": suspects,
+        "duplicates": {"total": len(findings.duplicates),
+                       "items": duplicates},
+        "malformed": {"total": len(dataset.malformed_rows),
+                      "expected_fields": dataset.num_columns(),
+                      "items": malformed},
+        "profiles": [profile_json(profile, dataset.num_rows())
+                     for profile in findings.profiles],
+    }
+
+
 class DetectiveApi:
     """Every action the web page can ask for, independent of HTTP."""
 
@@ -142,6 +204,17 @@ class DetectiveApi:
             if action == "evidence":
                 require_method(method, "GET")
                 return json_response(200, self.evidence(case_id))
+            if action == "investigate":
+                require_method(method, "POST")
+                return json_response(200, self.investigate(case_id))
+            if action == "save":
+                require_method(method, "POST")
+                return json_response(200, self.save(case_id))
+            if action == "report.txt":
+                require_method(method, "GET")
+                text = self.report_text(case_id)
+                stem = os.path.splitext(self.cases[case_id].name)[0]
+                return text_response(text, stem + "_report.txt")
         raise ApiError(404, "Not found.")
 
     def list_locker(self) -> dict:
@@ -182,6 +255,40 @@ class DetectiveApi:
                 "header": list(dataset.header),
                 "preview": [list(row) for row in
                             dataset.preview(PREVIEW_ROWS)]}
+
+    def investigate(self, case_id: str) -> dict:
+        """Run the investigation on an open case and return the findings."""
+        dataset = self._case(case_id)
+        self.findings[case_id] = Investigator(dataset).investigate()
+        return findings_json(self.findings[case_id],
+                             case_summary(case_id, dataset))
+
+    def save(self, case_id: str) -> dict:
+        """Save the case report into reports/ (investigating if needed)."""
+        try:
+            path, replaced = Report(self._findings(case_id)).save(
+                self.reports_dir)
+        except OSError as err:
+            raise ApiError(500, f"Couldn't save the report: {err}")
+        return {"path": self._shown_path(path), "replaced": replaced}
+
+    def report_text(self, case_id: str) -> str:
+        """Return the case report as text (investigating if needed)."""
+        return Report(self._findings(case_id)).to_text()
+
+    def _findings(self, case_id: str) -> Findings:
+        """Return a case's findings, investigating it first if needed."""
+        self._case(case_id)
+        if case_id not in self.findings:
+            self.investigate(case_id)
+        return self.findings[case_id]
+
+    def _shown_path(self, path: str) -> str:
+        """Show a path relative to the program folder, if possible."""
+        try:
+            return os.path.relpath(path, self.base_dir)
+        except ValueError:   # Windows: a path on another drive
+            return path
 
     def _open(self, path: str) -> dict:
         """Load the file at path as a new case and describe it."""

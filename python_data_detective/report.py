@@ -92,6 +92,27 @@ def warning_lines(dataset: Dataset) -> list[str]:
     return lines
 
 
+def sub_score_notes(findings: Findings) -> list[tuple[str, float, str]]:
+    """Return (label, score, note) for each of the three sub-scores.
+
+    Shared by the text report and the web UI, so the wording lives in
+    one place.
+    """
+    validity_parts = []
+    if findings.numeric_cells > 0:
+        validity_parts.append(f"{findings.invalid_percent:.1f}% of numbers "
+                              "invalid")
+    if findings.dataset.malformed_rows:
+        validity_parts.append(f"{findings.malformed_percent:.1f}% of rows "
+                              "malformed")
+    validity_note = ", ".join(validity_parts) or "no numeric columns"
+    return [("Completeness", findings.completeness,
+             f"{findings.missing_percent:.1f}% of cells missing"),
+            ("Uniqueness", findings.uniqueness,
+             f"{findings.duplicate_percent:.1f}% of rows duplicated"),
+            ("Validity", findings.validity, validity_note)]
+
+
 def board_row(rank: str, name: str, rows: str, score: str,
               verdict: str) -> str:
     """Lay out one row of the leaderboard in fixed-width columns."""
@@ -334,27 +355,10 @@ class Report:
     def _score_lines(self) -> list[str]:
         """Return the three sub-scores and the verdict."""
         f = self.findings
-        validity_parts = []
-        if f.numeric_cells > 0:
-            validity_parts.append(f"{f.invalid_percent:.1f}% of numbers "
-                                  "invalid")
-        if f.dataset.malformed_rows:
-            validity_parts.append(f"{f.malformed_percent:.1f}% of rows "
-                                  "malformed")
-        if validity_parts:
-            validity_note = "(" + ", ".join(validity_parts) + ")"
-        else:
-            validity_note = "(no numeric columns)"
-        scores = [
-            ("Completeness", f.completeness,
-             f"({f.missing_percent:.1f}% of cells missing)"),
-            ("Uniqueness", f.uniqueness,
-             f"({f.duplicate_percent:.1f}% of rows duplicated)"),
-            ("Validity", f.validity, validity_note),
-        ]
         lines = ["[SUB-SCORES]  100 - 5 points per 1% of problem data"]
-        for label, score, note in scores:
-            lines += wrap_parts(note.split(), f"  {label:<14}{score:5.1f}  ",
+        for label, score, note in sub_score_notes(f):
+            lines += wrap_parts(f"({note})".split(),
+                                f"  {label:<14}{score:5.1f}  ",
                                 DETAIL_INDENT, separator=" ")
         return lines + ["=" * WIDTH,
                         f"VERDICT: {f.overall}/100  -  {f.verdict}",
