@@ -134,10 +134,12 @@ class Report:
         """Return the 'inspect the evidence' screen for a dataset."""
         lines = [f"[EVIDENCE] {shorten(dataset.name, WIDTH - 11)}",
                  f"  Rows: {dataset.num_rows():,}   "
-                 f"Columns: {dataset.num_columns():,}",
-                 f"  Delimiter: {DELIMITER_NAMES[dataset.delimiter]}   "
-                 f"Encoding: {dataset.encoding}   "
-                 f"Blank lines skipped: {dataset.blank_lines_skipped:,}"]
+                 f"Columns: {dataset.num_columns():,}"]
+        lines += wrap_parts(
+            [f"Delimiter: {DELIMITER_NAMES[dataset.delimiter]}",
+             f"Encoding: {dataset.encoding}",
+             f"Blank lines skipped: {dataset.blank_lines_skipped:,}"],
+            "  ", 2, separator="   ")
         if dataset.trailing_delimiters:
             lines.append("  Trailing delimiters at line ends were ignored")
         lines += warning_lines(dataset)
