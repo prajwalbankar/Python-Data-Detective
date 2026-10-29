@@ -76,7 +76,14 @@ def safe_file_name(name: str) -> str:
     base = name.replace("\\", "/").split("/")[-1].strip()
     if base in ("", ".", ".."):
         return "upload.csv"
-    return base
+    # Windows can't store these characters in a file name.
+    safe = ""
+    for char in base:
+        if char in '<>:"|?*' or ord(char) < 32:
+            safe += "_"
+        else:
+            safe += char
+    return safe
 
 
 def capitalise(message: str) -> str:
@@ -338,11 +345,13 @@ class DetectiveApi:
         return self.findings[case_id]
 
     def _shown_path(self, path: str) -> str:
-        """Show a path relative to the program folder, if possible."""
+        """Show a path relative to the program folder, if possible,
+        with "/" between folders on every system."""
         try:
-            return os.path.relpath(path, self.base_dir)
+            shown = os.path.relpath(path, self.base_dir)
         except ValueError:   # Windows: a path on another drive
-            return path
+            shown = path
+        return shown.replace(os.sep, "/")
 
     def _open(self, path: str) -> dict:
         """Load the file at path as a new case and describe it."""

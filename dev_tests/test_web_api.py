@@ -138,6 +138,15 @@ class TestUploads(ApiTestCase):
         for name, safe in cases.items():
             self.assertEqual(web_api.safe_file_name(name), safe, name)
 
+    def test_upload_name_windows_cannot_store(self):
+        # Characters Windows can't keep in a file name become "_", on
+        # every system, so the upload saves instead of failing with a 500.
+        self.assertEqual(web_api.safe_file_name('a<b>:c"d|e?f*g\x01.csv'),
+                         "a_b__c_d_e_f_g_.csv")
+        status, data = self.upload("x<script>.csv", SAMPLE_TEXT.encode())
+        self.assertEqual(status, 200, data)
+        self.assertEqual(data["case"]["name"], "x_script_.csv")
+
     def test_open_case_limit(self):
         for _ in range(21):
             self.open_sample()
@@ -217,7 +226,7 @@ class TestFindingsAndReports(ApiTestCase):
         self.investigate(case_id)
         status, data = self.call("POST", f"/api/cases/{case_id}/save")
         self.assertEqual((status, data), (200, {
-            "path": os.path.join("reports", "t_report.txt"),
+            "path": "reports/t_report.txt",
             "replaced": False}))
         self.assertTrue(os.path.exists(
             os.path.join(self.reports, "t_report.txt")))
@@ -235,6 +244,13 @@ class TestFindingsAndReports(ApiTestCase):
                       response.headers["Content-Disposition"])
         self.assertEqual(response.body.decode("utf-8"),
                          Report(self.api.findings[case_id]).to_text())
+
+    def test_save_path_uses_forward_slashes(self):
+        # The page shows "reports/x_report.txt" on every system (spec 5).
+        self.api.reports_dir = os.path.join(self.base, "out", "reports")
+        case_id = self.open_sample()
+        data = self.call("POST", f"/api/cases/{case_id}/save")[1]
+        self.assertEqual(data["path"], "out/reports/t_report.txt")
 
     def test_save_runs_investigation_first(self):
         case_id = self.open_sample()
