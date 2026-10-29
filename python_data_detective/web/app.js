@@ -418,7 +418,7 @@ function dataTable(columns, rows, options = {}) {
         : label);
   }));
   const body = rows.map((row) => (row instanceof Node ? row : el("tr", {}, row)));
-  return el("div", { class: "table-wrap scroll" },
+  return el("div", { class: `table-wrap scroll${options.compact ? " compact" : ""}` },
     el("table", { class: options.class || null }, el("thead", {}, head), el("tbody", {}, body)));
 }
 
@@ -543,12 +543,14 @@ function renderFindings(data) {
     section("Duplicates", duplicates.total ? plural(duplicates.total, "duplicate row") : null,
       dataTable([{ label: "Line", num: true }, { label: "Duplicates line", num: true }],
         duplicates.items.map((item) => [cell(formatNumber(item.line), { num: true }),
-          cell(formatNumber(item.original), { num: true })])),
+          cell(formatNumber(item.original), { num: true })]),
+        { compact: true }),
       moreNote(duplicates.items.length, duplicates.total)),
     section("Malformed rows", malformed.total ? plural(malformed.total, "malformed row") : null,
       dataTable([{ label: "Line", num: true }, { label: "Fields", num: true }, { label: "Expected", num: true }],
         malformed.items.map((item) => [cell(formatNumber(item.line), { num: true }),
-          cell(formatNumber(item.fields), { num: true }), cell(formatNumber(malformed.expected_fields), { num: true })])),
+          cell(formatNumber(item.fields), { num: true }), cell(formatNumber(malformed.expected_fields), { num: true })]),
+        { compact: true }),
       moreNote(malformed.items.length, malformed.total)),
     section("Column profiles", plural(data.profiles.length, "column"),
       dataTable(["Column", "Type", { label: "Missing", num: true }, "Summary"],

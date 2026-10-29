@@ -276,6 +276,7 @@ tr.clickable:hover td { background: var(--surface-2); }
 .placeholder { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
 .table-wrap.scroll { max-height: 360px; overflow: auto; }
 .table-wrap.scroll th { position: sticky; top: 0; z-index: 1; }
+.table-wrap.compact { max-width: 420px; }
 th button.sort::after { content: "\2195"; color: var(--muted); font-weight: 400; }
 th[aria-sort="ascending"] button.sort::after { content: "\2191"; color: var(--accent); }
 th[aria-sort="descending"] button.sort::after { content: "\2193"; color: var(--accent); }
