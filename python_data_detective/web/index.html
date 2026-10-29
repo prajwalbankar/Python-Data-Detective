@@ -1,6 +1,89 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><title>Data Detective</title>
-<link rel="stylesheet" href="style.css"></head>
-<body><script src="app.js"></script></body>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Data Detective</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Icons, drawn once and reused with <use href="#i-..."> -->
+  <svg class="sprite" aria-hidden="true">
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10" cy="10" r="7"/><path d="M21 21l-6-6"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><path d="M7 9l5-5 5 5"/><path d="M12 4v12"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><path d="M7 11l5 5 5-5"/><path d="M12 4v12"/></symbol>
+    <symbol id="i-save" viewBox="0 0 24 24"><path d="M6 4h10l4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2"/><circle cx="12" cy="14" r="2"/><path d="M14 4v4H8V4"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2z"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M3 12h1m8-9v1m8 8h1m-9 8v1M5.6 5.6l.7.7m12.1-.7-.7.7m0 11.4.7.7m-12.1-.7-.7.7"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3h.4a7.5 7.5 0 0 0 7.9 12.4A9 9 0 1 1 12 3z"/></symbol>
+    <symbol id="i-good" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></symbol>
+    <symbol id="i-fair" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4"/><path d="M12 16h.01"/></symbol>
+    <symbol id="i-poor" viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M10.4 3.6 2.3 17.1A1.9 1.9 0 0 0 3.9 20h16.2a1.9 1.9 0 0 0 1.6-2.9L13.6 3.6a1.9 1.9 0 0 0-3.2 0z"/><path d="M12 16h.01"/></symbol>
+    <symbol id="i-bad" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M10 10l4 4m0-4-4 4"/></symbol>
+  </svg>
+
+  <header class="topbar">
+    <div class="brand">
+      <svg class="icon brand-icon" aria-hidden="true"><use href="#i-search"/></svg>
+      <span class="brand-name">Data Detective</span>
+      <span class="brand-tag">Data quality investigator</span>
+    </div>
+    <nav class="views" aria-label="Views">
+      <button type="button" class="view-tab" data-view="case" aria-current="page">Case</button>
+      <button type="button" class="view-tab" data-view="board">Case board</button>
+    </nav>
+    <button type="button" id="theme-toggle" class="ghost-button" aria-label="Switch colour theme">
+      <svg class="icon" aria-hidden="true"><use href="#i-moon"/></svg>
+      <span>Dark</span>
+    </button>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-heading">
+        <h2>Evidence locker</h2>
+        <span id="locker-count" class="muted"></span>
+      </div>
+      <ul id="locker" class="locker" aria-label="Datasets in the evidence locker"></ul>
+      <label id="dropzone" class="dropzone" tabindex="0">
+        <input id="file-input" type="file" hidden>
+        <svg class="icon" aria-hidden="true"><use href="#i-upload"/></svg>
+        <span class="dropzone-title">Drop a file or browse</span>
+        <span class="muted small">Any file up to 200 MB</span>
+      </label>
+    </aside>
+
+    <main class="main" id="main">
+      <p id="status" class="status" aria-live="polite"></p>
+      <div id="banners"></div>
+
+      <section id="case-view" aria-label="Case">
+        <div id="empty-state" class="empty-state">
+          <svg class="icon empty-icon" aria-hidden="true"><use href="#i-search"/></svg>
+          <h1>Open a case</h1>
+          <p class="muted">Choose a dataset from the evidence locker, or drop any file to investigate it.</p>
+        </div>
+
+        <div id="case" hidden>
+          <div class="case-header">
+            <h1 id="case-name"></h1>
+            <p id="case-meta" class="muted mono"></p>
+          </div>
+          <div id="case-warnings"></div>
+          <div class="tabs" role="tablist" aria-label="Case sections">
+            <button type="button" role="tab" id="tab-evidence" data-tab="evidence" aria-controls="panel-evidence">Evidence</button>
+            <button type="button" role="tab" id="tab-findings" data-tab="findings" aria-controls="panel-findings">Findings</button>
+          </div>
+          <div id="panel-evidence" role="tabpanel" aria-labelledby="tab-evidence"></div>
+          <div id="panel-findings" role="tabpanel" aria-labelledby="tab-findings" hidden></div>
+        </div>
+      </section>
+
+      <section id="board-view" aria-label="Case board" hidden></section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
 </html>
