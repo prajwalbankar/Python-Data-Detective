@@ -29,11 +29,30 @@ Menu options:
     0  Close the office       quit (Ctrl+C also quits cleanly)
 
 
+WEB UI (OPTIONAL)
+-----------------
+The same detective also has a web page, for demonstrations:
+
+    python web_app.py                 (python3 web_app.py on macOS, Linux)
+    python web_app.py --no-browser    (just print the address)
+
+It starts a small web server on this computer only (localhost, port
+8000, or the next free port up to 8010) and opens the page in your
+browser. Press Ctrl+C in the terminal to stop it. Every menu option is
+there: the evidence locker (or drop in any file), the evidence, the
+findings and score, saving or downloading the report, and the case
+board with Save all. Saved reports go to the same reports/ folder.
+
+It needs a normal Python install on your own computer: Ed can't run it,
+because it uses networking. The terminal program (main.py) is the main
+version of the project.
+
+
 REQUIREMENTS
 ------------
 Python 3.9 or newer. Only Python's standard library is used, so there
-is nothing to install. No graphics, audio or network access is used, so
-the program runs in Ed's terminal.
+is nothing to install. The terminal program uses no graphics, audio or
+network access, so it runs in Ed's terminal.
 
 
 WHAT'S IN THE FOLDER
@@ -47,6 +66,9 @@ WHAT'S IN THE FOLDER
     errors.py             DatasetError and its subclasses.
     file_types.py         Recognises files that aren't CSVs (images,
                           Excel, PDF, JSON, HTML...) and names them.
+    web_app.py            Optional web UI: runs the local web server.
+    web_api.py            The web UI's JSON API, using the classes above.
+    web/                  The web page: index.html, style.css, app.js.
     datasets/             9 sample CSV files (see below).
     reports/              Created the first time a report is saved.
     tools/make_datasets.py
@@ -155,3 +177,8 @@ CONCEPTS BEYOND THE LECTURES
     typing.Optional                       - "a Dataset or None" type hints
     List comprehensions                   - only where they read clearly
     random.Random (tools only)            - reproducible generated data
+    http.server (ThreadingHTTPServer)     - the web UI's local server
+    threading.Lock                        - one request at a time
+    urllib.parse, tempfile, shutil        - URLs, upload folder clean-up
+    webbrowser                            - opens the page for you
+    HTML, CSS and JavaScript (web/)       - the web page itself

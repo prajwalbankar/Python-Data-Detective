@@ -68,6 +68,9 @@ ITP Data Project/
     ├── report.py                 Report (all text formatting)
     ├── errors.py                 DatasetError and its subclasses
     ├── file_types.py             recognises non-CSV files and names them
+    ├── web_app.py                optional web UI: a local server (added 29 Oct, see the web UI spec)
+    ├── web_api.py                the web UI's JSON API, over the same classes
+    ├── web/                      the web page: index.html, style.css, app.js
     ├── datasets/                 9 sample CSVs
     ├── reports/                  created on first save
     ├── tools/

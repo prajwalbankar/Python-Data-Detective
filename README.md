@@ -10,7 +10,7 @@ dataset out of 100 and writes a detective-themed case report.
 
 ![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-3776AB?logo=python&logoColor=white)
 ![No dependencies](https://img.shields.io/badge/dependencies-none-success)
-![Tests](https://img.shields.io/badge/tests-113%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-149%20passing-brightgreen)
 ![Platforms](https://img.shields.io/badge/runs%20on-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
 ![COMP9001](https://img.shields.io/badge/COMP9001-University%20of%20Sydney-E64626)
 
@@ -152,6 +152,24 @@ python main.py        # or: python3 main.py
 | `5` Investigate ALL | Ranks every dataset on the case board, and can save every report |
 | `0` Close the office | Quit (Ctrl+C also exits cleanly) |
 
+## 🖥️ Web UI (optional)
+
+For demonstrations, the same detective also runs as a local web page:
+
+```bash
+python web_app.py               # opens http://127.0.0.1:8000 in your browser
+python web_app.py --no-browser  # just print the address
+```
+
+![The Data Detective web UI showing the findings for messy_sales.csv](docs/web-ui.png)
+
+Every menu option is there: pick a dataset from the evidence locker or drop in any file, inspect the evidence,
+run the investigation (score, sub-scores, suspects, duplicates, malformed rows and sortable column profiles),
+save the report to `reports/` or download it, and rank every dataset on the case board. It is still standard
+library only: `http.server` serves a small JSON API (`web_api.py`) over the same classes the terminal uses, and the
+page is plain HTML, CSS and JavaScript with light and dark themes. It listens on this computer only
+(`127.0.0.1`); press Ctrl+C to stop it. Ed can't run it, so the terminal program stays the main version.
+
 ## 🗄️ The evidence locker
 
 Nine sample datasets, from spotless to sabotaged:
@@ -197,6 +215,9 @@ python_data_detective/
 ├── report.py          # Report: every piece of text the user reads
 ├── errors.py          # DatasetError -> UnreadableFileError, EmptyDatasetError
 ├── file_types.py      # recognises non-CSV files (images, Excel, PDF, JSON...)
+├── web_app.py         # optional web UI: the local server
+├── web_api.py         # the web UI's JSON API, over the same classes
+├── web/               # index.html, style.css, app.js
 ├── datasets/          # the evidence locker (9 sample CSVs)
 ├── tools/
 │   └── make_datasets.py   # seeded generator plus answer key (not needed to run)
@@ -215,7 +236,7 @@ python_data_detective/
 python -m unittest discover -s dev_tests -v
 ```
 
-There are **113 tests** in [`dev_tests/`](dev_tests). The program was also **stress-tested on 60 kinds of input**, from images, audio, Excel workbooks and JSON to a 1,000,000-row CSV. See the [robustness report](docs/robustness-report.md); it's reproducible with `stress_tests/`. The tests include:
+There are **149 tests** in [`dev_tests/`](dev_tests). The program was also **stress-tested on 60 kinds of input**, from images, audio, Excel workbooks and JSON to a 1,000,000-row CSV. See the [robustness report](docs/robustness-report.md); it's reproducible with `stress_tests/`. The tests include:
 - **Robustness fuzzing:** 400 randomly generated broken CSV files (mixed delimiters, encodings, ragged rows, stray quotes, NUL bytes, emoji) and 150 random typing sessions at every prompt. Nothing may end in a traceback or print a line wider than 64 characters.
 - **An edge-case matrix** of 34 awkward files, from 300 columns and 200 KB fields to CR-only line endings and UTF-16.
 - **An answer-key integration test:** the generator injects a known number of each problem, and the detective must report exactly those counts and line numbers.
@@ -227,13 +248,14 @@ There are **113 tests** in [`dev_tests/`](dev_tests). The program was also **str
 
 **From COMP9001:** classes and objects (instance and static methods, class variables, `__str__`), file I/O, exception handling (a custom exception hierarchy, `raise`, `try/except/finally`), advanced flow control (`break`, `continue`, early `return`, multiple return values), containers, functions and modules.
 
-**Beyond the lectures:** the `csv` module's `Sniffer`, `io.StringIO`, encodings (`utf-8-sig`, UTF-16 via `codecs` BOMs, cp1252, latin-1), file "magic numbers", `json`, `textwrap`, `collections.Counter`, `statistics`, `math.isfinite`, `datetime` formatting, `sorted(key=lambda ...)`, tuples as dictionary keys, f-string format specs, `__file__`-relative paths, `@staticmethod`, `typing.Optional`, and `unittest` with `mock` and `subprocess`.
+**Beyond the lectures:** the `csv` module's `Sniffer`, `io.StringIO`, encodings (`utf-8-sig`, UTF-16 via `codecs` BOMs, cp1252, latin-1), file "magic numbers", `json`, `textwrap`, `collections.Counter`, `statistics`, `math.isfinite`, `datetime` formatting, `sorted(key=lambda ...)`, tuples as dictionary keys, f-string format specs, `__file__`-relative paths, `@staticmethod`, `typing.Optional`, and `unittest` with `mock` and `subprocess`. The optional web UI adds `http.server`, `threading.Lock`, `urllib.parse`, `tempfile`, `webbrowser`, and a page in plain HTML, CSS and JavaScript.
 
 ## 📖 Design documents
 
 The whole project was designed before it was coded:
 - [Design spec](docs/2026-10-26-python-data-detective-design.md): requirements, rules, scoring, every screen, error handling.
 - [Implementation plan](docs/2026-10-26-python-data-detective-plan.md): ten test-first tasks.
+- [Web UI spec](docs/2026-10-29-web-ui-design.md) and [plan](docs/2026-10-29-web-ui-plan.md): the optional web page.
 
 ## 🙏 Credits
 

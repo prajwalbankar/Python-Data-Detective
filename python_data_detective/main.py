@@ -13,6 +13,9 @@ flow. The other modules do the real work:
     report.py        formats everything the user reads
     errors.py        the program's own exception types
     file_types.py    recognises files that aren't CSVs (images, Excel...)
+
+An optional web UI uses the same classes: web_app.py runs a local
+server and web_api.py answers the page (python web_app.py).
 """
 import os
 import sys
