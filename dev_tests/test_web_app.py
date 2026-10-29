@@ -1,4 +1,5 @@
 """Tests for the web UI's HTTP server, using real local connections."""
+import io
 import json
 import os
 import socket
@@ -7,6 +8,7 @@ import threading
 import unittest
 import urllib.error
 import urllib.request
+from unittest import mock
 
 from context import SAMPLE_TEXT, write_file
 import web_app
@@ -34,10 +36,11 @@ class ServerTestCase(unittest.TestCase):
         self.server.shutdown()
         self.server.server_close()
 
-    def request(self, method, path, body=None):
+    def request(self, method, path, body=None, headers=None):
         """Return (status, content type, body bytes) for one request."""
         url = f"http://127.0.0.1:{self.port}{path}"
-        req = urllib.request.Request(url, data=body, method=method)
+        req = urllib.request.Request(url, data=body, method=method,
+                                     headers=headers or {})
         try:
             with urllib.request.urlopen(req, timeout=10) as reply:
                 return (reply.status, reply.headers["Content-Type"],
@@ -96,6 +99,21 @@ class TestServer(ServerTestCase):
         finally:
             blocker.close()
 
+    def test_quiet_when_browser_hangs_up(self):
+        # Closing or reloading the tab mid-answer is normal and mustn't
+        # print a traceback during a demo; a real error still does.
+        cases = [(ConnectionAbortedError("tab closed"), False),
+                 (BrokenPipeError("tab closed"), False),
+                 (ValueError("a real bug"), True)]
+        for error, printed in cases:
+            with self.subTest(error=type(error).__name__):
+                with mock.patch("sys.stderr", new_callable=io.StringIO) as err:
+                    try:
+                        raise error
+                    except Exception:
+                        self.server.handle_error(None, ("127.0.0.1", 1))
+                self.assertEqual(bool(err.getvalue()), printed, err.getvalue())
+
     def test_concurrent_requests(self):
         # Review Focus 4: several requests at once share the API safely.
         statuses = []
@@ -117,6 +135,44 @@ class TestServer(ServerTestCase):
             thread.join(timeout=30)
         self.assertEqual(statuses, [200] * 16)
         self.assertEqual(len(self.api.cases), 8)
+
+
+class TestOtherWebsites(ServerTestCase):
+    """Other web pages must not drive or read the server (review I2)."""
+
+    def open_body(self):
+        return json.dumps({"name": "t.csv"}).encode()
+
+    def test_refuses_other_host_names(self):
+        # A DNS-rebinding page reaches 127.0.0.1 under its own host name.
+        for path in ["/api/locker", "/"]:
+            with self.subTest(path):
+                status, kind, body = self.request(
+                    "GET", path, headers={"Host": f"evil.example:{self.port}"})
+                self.assertEqual(status, 403, body)
+                self.assertTrue(kind.startswith("application/json"))
+
+    def test_refuses_other_origins(self):
+        # A page on another site (or another local port) posting to us.
+        for origin in ["http://evil.example", "null",
+                       f"http://127.0.0.1:{self.port + 1}"]:
+            with self.subTest(origin):
+                status, _, body = self.request(
+                    "POST", "/api/cases/locker", self.open_body(),
+                    headers={"Origin": origin, "Content-Type": "text/plain"})
+                self.assertEqual(status, 403, body)
+        self.assertEqual(self.api.cases, {})
+
+    def test_accepts_this_computer(self):
+        own = [{}, {"Origin": f"http://127.0.0.1:{self.port}"},
+               {"Host": f"localhost:{self.port}",
+                "Origin": f"http://localhost:{self.port}"}]
+        for headers in own:
+            with self.subTest(headers):
+                status, _, body = self.request(
+                    "POST", "/api/cases/locker", self.open_body(),
+                    headers=headers)
+                self.assertEqual(status, 200, body)
 
 
 if __name__ == "__main__":

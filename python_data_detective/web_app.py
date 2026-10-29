@@ -29,6 +29,7 @@ from web_api import DetectiveApi, Response, json_response
 
 WEB_DIR = os.path.join(BASE_DIR, "web")
 PORTS = list(range(8000, 8011))   # 8000, then 8001 ... 8010 if busy
+FORBIDDEN_MESSAGE = "This server only answers its own page on this computer."
 # The only files the server will send: URL path -> (file, content type).
 STATIC_FILES = {
     "/": ("index.html", "text/html; charset=utf-8"),
@@ -44,6 +45,13 @@ class LocalServer(ThreadingHTTPServer):
     # On Windows, address reuse would let us share a port another
     # program is using, so it's turned off and we try the next port.
     allow_reuse_address = False
+
+    def handle_error(self, request: object, client_address: tuple) -> None:
+        """Stay quiet when the browser hangs up (a tab closed or reloaded
+        mid-answer); print the details of any other error."""
+        if isinstance(sys.exc_info()[1], ConnectionError):
+            return
+        super().handle_error(request, client_address)
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -61,6 +69,10 @@ class Handler(BaseHTTPRequestHandler):
 
     def dispatch(self, method: str) -> None:
         """Send API paths to the API and page paths to the page files."""
+        if not self.from_this_computer():
+            self.close_connection = True      # its body is never read
+            self.send(json_response(403, {"error": FORBIDDEN_MESSAGE}))
+            return
         url = urllib.parse.urlsplit(self.path)
         if url.path.startswith("/api/"):
             body = self.read_body()
@@ -75,6 +87,21 @@ class Handler(BaseHTTPRequestHandler):
         else:
             response = json_response(404, {"error": "Not found."})
         self.send(response)
+
+    def from_this_computer(self) -> bool:
+        """Is this request from our own page, not another website?
+
+        Any web page can send requests to 127.0.0.1, or reach it through
+        a host name it controls, so the Host must be this server's own
+        address, and so must the Origin when the browser sends one.
+        """
+        port = self.server.server_address[1]
+        hosts = [f"127.0.0.1:{port}", f"localhost:{port}"]
+        if (self.headers.get("Host") or "").lower() not in hosts:
+            return False
+        origin = self.headers.get("Origin")
+        return origin is None or origin.lower() in [
+            "http://" + host for host in hosts]
 
     def read_body(self) -> Optional[bytes]:
         """Read the request body, refusing anything over the size limit."""

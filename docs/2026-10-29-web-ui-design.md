@@ -69,7 +69,7 @@ python_data_detective/
 
 All JSON uses UTF-8. Errors always come back as `{"error": "<message>"}` with the status codes in §8.
 
-**`CaseSummary`** = `{"id", "name", "rows", "columns", "delimiter", "encoding", "warnings": [str]}`. `delimiter` is the display form from `report.DELIMITER_NAMES` (`"','"`, `"tab"`, …).
+**`CaseSummary`** = `{"id", "name", "rows", "columns", "delimiter", "encoding", "warnings": [str], "run"}`. `delimiter` is the display form from `report.DELIMITER_NAMES` (`"','"`, `"tab"`, …). `run` is a random token for this server run (added after the final review): the page sends it back as `?run=` on every `/api/cases/<id>/…` call, and a token from an earlier run gets the "no longer open" 404, because ids restart at `c1`. A call without the token is accepted.
 
 | Endpoint | Request | Response 200 |
 |---|---|---|
@@ -191,6 +191,7 @@ Banners use the `fair` colours for warnings and the `bad` colours for errors. Ba
 
 ## 9. Security
 - The server binds to `127.0.0.1` only.
+- Other web pages can still send requests to `127.0.0.1`, so every request's `Host` must be `127.0.0.1:<port>` or `localhost:<port>`, and its `Origin`, when sent, `http://` plus one of those. Anything else gets 403 `{"error": "This server only answers its own page on this computer."}`. This blocks cross-site posts and DNS rebinding (added after the final review).
 - Static serving covers exactly `/`, `/index.html`, `/style.css` and `/app.js`. Nothing else is served from disk; there are no directory listings.
 - Locker names are checked against `list_csv_files(DATASETS_DIR)`.
 - An uploaded file's name is reduced to its base name, and blank or unsafe names become `upload.csv`. It's written into a fresh `tempfile.mkdtemp()` subfolder of the upload directory, which is deleted when the server stops.

@@ -29,6 +29,8 @@ BANDS = {"Case closed": "good", "Minor clean-up": "fair",
          "Needs cleaning": "poor", "Unreliable": "bad"}
 TOO_BIG_MESSAGE = "This file is too large for this computer's memory."
 UNEXPECTED_MESSAGE = "Something went wrong. Details are in the terminal."
+CLOSED_MESSAGE = ("This case is no longer open. Open it again from the "
+                  "evidence locker.")
 
 
 class ApiError(Exception):
@@ -91,13 +93,13 @@ def capitalise(message: str) -> str:
     return message[:1].upper() + message[1:]
 
 
-def case_summary(case_id: str, dataset: Dataset) -> dict:
+def case_summary(case_id: str, dataset: Dataset, run: str) -> dict:
     """Return the short description of an open case."""
     return {"id": case_id, "name": dataset.name,
             "rows": dataset.num_rows(), "columns": dataset.num_columns(),
             "delimiter": DELIMITER_NAMES[dataset.delimiter],
             "encoding": dataset.encoding,
-            "warnings": list(dataset.warnings)}
+            "warnings": list(dataset.warnings), "run": run}
 
 
 def profile_json(profile: ColumnProfile, rows: int) -> dict:
@@ -171,6 +173,10 @@ class DetectiveApi:
         self.cases: dict[str, Dataset] = {}
         self.findings: dict[str, Findings] = {}
         self.next_id = 1
+        # Ids start at c1 on every run, so the page sends this token back
+        # with each case request; a page left open from an earlier run is
+        # told its case is closed instead of reaching a different file.
+        self.run_id = os.urandom(4).hex()
         # The latest Investigate ALL: (findings, [(file name, reason)]).
         self.board: Optional[tuple[list[Findings],
                                    list[tuple[str, str]]]] = None
@@ -217,6 +223,8 @@ class DetectiveApi:
             return json_response(200, self.save_all())
         if len(parts) == 4 and parts[:2] == ["api", "cases"]:
             case_id, action = parts[2], parts[3]
+            if query.get("run", self.run_id) != self.run_id:
+                raise ApiError(404, CLOSED_MESSAGE)
             if action == "evidence":
                 require_method(method, "GET")
                 return json_response(200, self.evidence(case_id))
@@ -265,7 +273,7 @@ class DetectiveApi:
     def evidence(self, case_id: str) -> dict:
         """Return the 'inspect the evidence' details of an open case."""
         dataset = self._case(case_id)
-        return {"case": case_summary(case_id, dataset),
+        return {"case": case_summary(case_id, dataset, self.run_id),
                 "blank_lines_skipped": dataset.blank_lines_skipped,
                 "trailing_delimiters": dataset.trailing_delimiters,
                 "header": list(dataset.header),
@@ -277,7 +285,7 @@ class DetectiveApi:
         dataset = self._case(case_id)
         self.findings[case_id] = Investigator(dataset).investigate()
         return findings_json(self.findings[case_id],
-                             case_summary(case_id, dataset))
+                             case_summary(case_id, dataset, self.run_id))
 
     def save(self, case_id: str) -> dict:
         """Save the case report into reports/ (investigating if needed)."""
@@ -364,13 +372,12 @@ class DetectiveApi:
             oldest = next(iter(self.cases))
             del self.cases[oldest]
             self.findings.pop(oldest, None)
-        return {"case": case_summary(case_id, dataset)}
+        return {"case": case_summary(case_id, dataset, self.run_id)}
 
     def _case(self, case_id: str) -> Dataset:
         """Return an open case, or explain that it's no longer open."""
         if case_id not in self.cases:
-            raise ApiError(404, "This case is no longer open. Open it "
-                                "again from the evidence locker.")
+            raise ApiError(404, CLOSED_MESSAGE)
         return self.cases[case_id]
 
 

@@ -10,7 +10,7 @@ dataset out of 100 and writes a detective-themed case report.
 
 ![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-3776AB?logo=python&logoColor=white)
 ![No dependencies](https://img.shields.io/badge/dependencies-none-success)
-![Tests](https://img.shields.io/badge/tests-149%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-154%20passing-brightgreen)
 ![Platforms](https://img.shields.io/badge/runs%20on-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
 ![COMP9001](https://img.shields.io/badge/COMP9001-University%20of%20Sydney-E64626)
 
@@ -236,7 +236,7 @@ python_data_detective/
 python -m unittest discover -s dev_tests -v
 ```
 
-There are **149 tests** in [`dev_tests/`](dev_tests). The program was also **stress-tested on 60 kinds of input**, from images, audio, Excel workbooks and JSON to a 1,000,000-row CSV. See the [robustness report](docs/robustness-report.md); it's reproducible with `stress_tests/`. The tests include:
+There are **154 tests** in [`dev_tests/`](dev_tests). The program was also **stress-tested on 60 kinds of input**, from images, audio, Excel workbooks and JSON to a 1,000,000-row CSV. See the [robustness report](docs/robustness-report.md); it's reproducible with `stress_tests/`. The tests include:
 - **Robustness fuzzing:** 400 randomly generated broken CSV files (mixed delimiters, encodings, ragged rows, stray quotes, NUL bytes, emoji) and 150 random typing sessions at every prompt. Nothing may end in a traceback or print a line wider than 64 characters.
 - **An edge-case matrix** of 34 awkward files, from 300 columns and 200 KB fields to CR-only line endings and UTF-16.
 - **An answer-key integration test:** the generator injects a known number of each problem, and the detective must report exactly those counts and line numbers.

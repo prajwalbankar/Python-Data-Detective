@@ -54,7 +54,32 @@ class TestLockerAndEvidence(ApiTestCase):
         self.assertEqual(status, 200)
         self.assertEqual(data["case"], {
             "id": "c1", "name": "t.csv", "rows": 10, "columns": 2,
-            "delimiter": "','", "encoding": "utf-8", "warnings": []})
+            "delimiter": "','", "encoding": "utf-8", "warnings": [],
+            "run": self.api.run_id})
+
+    def test_case_from_an_earlier_run(self):
+        # Review Focus 3: a restarted server hands out c1 again, so a page
+        # left open from the earlier run must not reach the new run's c1.
+        old_run = self.api.run_id
+        self.open_sample()
+        restarted = DetectiveApi(self.datasets, self.reports, self.uploads,
+                                 self.base)
+        self.assertNotEqual(restarted.run_id, old_run)
+        restarted.handle("POST", "/api/cases/locker", {},
+                         json.dumps({"name": "t.csv"}).encode())
+        for method, action in [("GET", "evidence"), ("POST", "investigate"),
+                               ("POST", "save"), ("GET", "report.txt")]:
+            with self.subTest(action):
+                response = restarted.handle(method, f"/api/cases/c1/{action}",
+                                            {"run": old_run}, b"")
+                self.assertEqual(response.status, 404)
+                self.assertIn(b"no longer open", response.body)
+        self.assertFalse(os.path.exists(self.reports))   # nothing saved
+        # This run's own token, or none at all (e.g. curl), still works.
+        for query in [{"run": restarted.run_id}, {}]:
+            response = restarted.handle("GET", "/api/cases/c1/evidence",
+                                        query, b"")
+            self.assertEqual(response.status, 200, response.body)
 
     def test_open_refused_file_reports_reason(self):
         status, data = self.call("POST", "/api/cases/locker",

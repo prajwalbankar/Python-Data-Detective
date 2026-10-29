@@ -8,7 +8,7 @@ const SVG_NS = "http://www.w3.org/2000/svg";
 const BAND_LABELS = { good: "Good", fair: "Fair", poor: "Poor", bad: "Bad" };
 const CHIP_LIMIT = 60;
 
-const state = { caseId: null, caseName: null, view: "case", tab: "evidence", board: null };
+const state = { caseId: null, caseName: null, caseRun: null, view: "case", tab: "evidence", board: null };
 
 // ---- small helpers --------------------------------------------------------
 
@@ -92,6 +92,13 @@ async function send(method, path, body, headers) {
     throw new Error(data.error || `The server answered ${reply.status}.`);
   }
   return reply;
+}
+
+// The address of one case's API call. Case ids restart at c1 when the
+// server restarts, so the run token makes a page left open from an
+// earlier run get "no longer open" instead of reaching another file.
+function casePath(id, run, action) {
+  return `/api/cases/${encodeURIComponent(id)}/${action}?run=${encodeURIComponent(run)}`;
 }
 
 // Call the JSON API and return the parsed answer.
@@ -274,6 +281,7 @@ function showClosedCase() {
   if (!$("#banners").childElementCount) return;
   state.caseId = null;
   state.caseName = null;
+  state.caseRun = null;
   $("#case").hidden = true;
   $("#empty-state").hidden = true;
 }
@@ -311,6 +319,7 @@ function initDropzone() {
 async function openCase(summary) {
   state.caseId = summary.id;
   state.caseName = summary.name;
+  state.caseRun = summary.run;
   clearBanners();
   $("#empty-state").hidden = true;
   $("#case").hidden = false;
@@ -322,7 +331,8 @@ async function openCase(summary) {
     (text) => banner("warning", text.charAt(0).toUpperCase() + text.slice(1))));
   $("#panel-findings").replaceChildren(findingsPlaceholder());
   setTab("evidence");
-  const data = await api("GET", `/api/cases/${summary.id}/evidence`);
+  const data = await api("GET", casePath(summary.id, summary.run, "evidence"));
+  if (state.caseId !== summary.id) return;   // another case was opened meanwhile
   renderEvidence(data);
   announce(`Opened ${summary.name}.`);
 }
@@ -469,10 +479,11 @@ function findingsPlaceholder() {
 async function runInvestigation(button) {
   const id = state.caseId;
   const name = state.caseName;
+  const run = state.caseRun;
   if (!id) return;
   const hadFocus = Boolean(button) && document.activeElement === button;
   await withBusy(button, `Investigating ${name}…`, async () => {
-    const data = await api("POST", `/api/cases/${id}/investigate`);
+    const data = await api("POST", casePath(id, run, "investigate"));
     if (state.caseId !== id) return;   // another case was opened meanwhile
     renderFindings(data);
     setTab("findings");
@@ -524,7 +535,7 @@ function renderFindings(data) {
       bar(sub.score, band),
       el("div", { class: "note" }, sub.note));
   });
-  const reportPath = `/api/cases/${data.case.id}/report.txt`;
+  const reportPath = casePath(data.case.id, data.case.run, "report.txt");
   const duplicates = data.duplicates;
   const malformed = data.malformed;
   fill($("#panel-findings"),
@@ -562,8 +573,9 @@ function renderFindings(data) {
 
 async function saveReport(button) {
   const id = state.caseId;
+  const run = state.caseRun;
   await withBusy(button, `Saving the report for ${state.caseName}…`, async () => {
-    const data = await api("POST", `/api/cases/${id}/save`);
+    const data = await api("POST", casePath(id, run, "save"));
     const text = `Saved to ${data.path}${data.replaced ? " (replaced the previous report)" : ""}`;
     showBanner("success", text);
     announce(text);
