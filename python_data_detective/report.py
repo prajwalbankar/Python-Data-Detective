@@ -96,8 +96,9 @@ def board_row(rank: str, name: str, rows: str, score: str,
               verdict: str) -> str:
     """Lay out one row of the leaderboard in fixed-width columns."""
     name = shorten(name, BOARD_NAME_WIDTH)
+    # Rows is 10 wide so even "1,000,000" lines up with smaller counts.
     return (f"  {rank:<4}  {name:<{BOARD_NAME_WIDTH}}"
-            f"{rows:>6}{score:>7}  {verdict}")
+            f"{rows:>10}{score:>7}  {verdict}")
 
 
 class Report:

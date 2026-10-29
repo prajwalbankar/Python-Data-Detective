@@ -160,6 +160,19 @@ class TestLeaderboard(unittest.TestCase):
                                 if "a.csv" in line))
         self.assertIn("  empty.csv: file is empty", lines)
 
+    def test_big_row_counts_stay_aligned(self):
+        big = self._findings("big.csv", 90, "Minor clean-up")
+        big.dataset.rows = big.dataset.rows * 1_234_567  # 1,234,567 rows
+        small = self._findings("small.csv", 97, "Case closed")
+        lines = Report.leaderboard_text([big, small], []).splitlines()
+        header = next(line for line in lines if "Score" in line)
+        score_end = header.index("Score") + len("Score")
+        for line in lines:
+            if "big.csv" in line or "small.csv" in line:
+                self.assertIn(line[score_end - 2:score_end], ("90", "97"),
+                              line)
+                self.assertLessEqual(len(line), WIDTH)
+
     def test_leaderboard_fits_width(self):
         text = Report.leaderboard_text(
             [self._findings("x" * 30 + ".csv", 50, "Unreliable")],
