@@ -16,7 +16,34 @@ python stress_tests/make_stress_files.py
 python stress_tests/run_stress_tests.py
 ```
 
-## Headline
+## After the fixes (29 Oct 2026)
+
+Issues 1–7 below were fixed test-first, bringing the suite to 113 tests, and all 60 scenarios were run again. There are still **no crashes, tracebacks, hangs or over-wide lines**, and **37 of the 60 outcomes changed**:
+
+| Input | Before | After |
+|---|---|---|
+| 19 binary files | *"doesn't look like a plain text CSV"* | **Named:** *"this is a PNG image, not a CSV file"* (also JPEG, GIF, BMP, WAV, MP3, MP4, PDF, SQLite, exe, Parquet, pickle, zip, gzip, xls, docx). Excel adds *"open it in Excel and use Save As > CSV"* |
+| `data.json`, `data.ndjson`, `data.xml`, `table.html`, `drawing.svg`, `table.md`, `dump.sql`, `plain_text.pdf` | Scored; 5 got "Case closed" | **Refused by name:** *"this looks like JSON data / XML or HTML markup / an SQL script / a Markdown table, not a CSV table"*, *"this is a PDF document"* |
+| `images_base64_large.csv` (200 KB cell) | Whole file refused | **Loads:** 100, Case closed |
+| `scientific_and_special.csv` | Bad values hidden in a "text" column | SUSPECTS: **`40 not numbers`**, e.g. `-inf`, `1e400`, `0x1F` |
+| `mixed_encodings.csv` | `JosÃ©`, `SÃ£o Paulo`, no warning | **`José`, `São Paulo`**, encoding `utf-8 + cp1252`, with a WARNING |
+| `settings.ini`, `server.log`, `fixed_width.txt`, `config.yaml`, `email.eml` | Scored silently | Still scored, but now with a WARNING: *"no delimiter was found … this file may not be a CSV table"* |
+| Case board with ≥100,000 rows | Columns pushed out of line | Aligned |
+| A file too big for memory | Traceback (`MemoryError`) | *"too large for this computer's memory"*. Tested by simulating the error; a real out-of-memory file wasn't created |
+
+**Still not recognised:**
+- `story.txt`: prose split at its commas, 70.
+- `source_code.py`: 51.
+- `settings.ini`, `server.log` and `fixed_width.txt` can still be "Case closed", but with a warning.
+
+**Known limitations, unchanged (issue 8):**
+- Decimal commas, `$`, `%` and `-999` codes aren't understood.
+- Leading-zero IDs are profiled as numbers.
+- Memory use is still about 30× the file size.
+
+The sections below record the original findings, **before the fixes**.
+
+## Headline (before the fixes)
 
 - **The program never crashed.** Across all 60 scenarios and the mixed Investigate ALL run: 0 crashes, 0 tracebacks, 0 hangs, and every run exited with code 0 and the goodbye message.
 - **No line of the program's own text was wider than 64 characters.**
@@ -162,13 +189,13 @@ Time grows roughly in line with file size. Memory is about **17–30 times the f
 
 ## What should be improved, most important first
 
-| # | Problem | Effect on a marker | Fix |
-|---|---|---|---|
-| 1 | **Bug:** the board's Rows column is too narrow for ≥100,000 rows | Misaligned leaderboard | Widen the column to 9 characters (still within 64) |
-| 2 | Non-table text (JSON, XML/HTML/SVG, plain-text PDF, logs, prose) is investigated and can get "Case closed" | Looks naive if a marker tries a `.json` or `.html` file | Recognise these formats from their first characters (`{`, `[`, `<`, `%PDF`) and refuse them by name. Warn when the file is one column of long text with no delimiter |
-| 3 | Binary files get one generic message | Fine, but unhelpful for Excel | Name the format (*"this is a PNG image"*, *"an Excel workbook: use Save As → CSV"*) from its first bytes (`\x89PNG`, `PK`, `%PDF`, `\xff\xd8`, `GIF8`, `RIFF`, `SQLite format 3`, …) |
-| 4 | Cells over 131,072 characters make the whole file unreadable | Real image-in-CSV datasets are refused | Raise the csv module's `field_size_limit` |
-| 5 | Columns that are 50–79% numbers flip to "text" and hide their bad values | Wrong "no suspects" | Add a "mixed column" finding: *"mostly numbers, but 31% aren't"* |
-| 6 | Files mixing UTF-8 and Windows lines are garbled silently | Mojibake in the report | Decode line by line (UTF-8 first, then cp1252) and note "mixed encodings" |
-| 7 | Very large files: about 17–30× memory, and an uncaught `MemoryError` | A traceback on a huge file | Catch `MemoryError` with a friendly message; lower memory by reading once |
-| 8 | Decimal commas, `$`, `%` and `-999` codes aren't understood | Some numeric columns are judged as text | Document as known limitations, or recognise them |
+| # | Problem | Effect on a marker | Fix | Status |
+|---|---|---|---|---|
+| 1 | **Bug:** the board's Rows column is too narrow for ≥100,000 rows | Misaligned leaderboard | Widen the column (now 10 characters, still within 64) | ✅ Fixed |
+| 2 | Non-table text (JSON, XML/HTML/SVG, plain-text PDF, logs, prose) is investigated and can get "Case closed" | Looks naive if a marker tries a `.json` or `.html` file | Recognise these formats and refuse them by name. Warn when no delimiter is found | ✅ Fixed (prose and logs only get a warning) |
+| 3 | Binary files get one generic message | Fine, but unhelpful for Excel | Name the format from its first bytes | ✅ Fixed |
+| 4 | Cells over 131,072 characters make the whole file unreadable | Real image-in-CSV datasets are refused | Raise the csv module's `field_size_limit` | ✅ Fixed |
+| 5 | Columns that are 50–79% numbers flip to "text" and hide their bad values | Wrong "no suspects" | List them as *"N not numbers"* in SUSPECTS | ✅ Fixed (the score is unchanged) |
+| 6 | Files mixing UTF-8 and Windows lines are garbled silently | Mojibake in the report | Decode line by line, and warn | ✅ Fixed |
+| 7 | Very large files: about 17–30× memory, and an uncaught `MemoryError` | A traceback on a huge file | Catch `MemoryError` with a friendly message | ✅ Fixed (memory use not reduced) |
+| 8 | Decimal commas, `$`, `%` and `-999` codes aren't understood | Some numeric columns are judged as text | Document as known limitations, or recognise them | ⏸ Not changed |

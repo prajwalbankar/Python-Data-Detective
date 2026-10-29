@@ -10,7 +10,7 @@ dataset out of 100 and writes a detective-themed case report.
 
 ![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-3776AB?logo=python&logoColor=white)
 ![No dependencies](https://img.shields.io/badge/dependencies-none-success)
-![Tests](https://img.shields.io/badge/tests-99%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-113%20passing-brightgreen)
 ![Platforms](https://img.shields.io/badge/runs%20on-Windows%20%7C%20macOS%20%7C%20Linux-lightgrey)
 ![COMP9001](https://img.shields.io/badge/COMP9001-University%20of%20Sydney-E64626)
 
@@ -38,7 +38,7 @@ Option 5 puts every dataset in the evidence locker on trial at once:
   --    not_really_a_csv.csv       -      -  Could not open
 ----------------------------------------------------------------
   empty.csv: file is empty
-  not_really_a_csv.csv: doesn't look like a plain text CSV
+  not_really_a_csv.csv: this is a PNG image, not a CSV file
 ----------------------------------------------------------------
 ```
 
@@ -108,7 +108,9 @@ It reads real-world CSVs without crashing:
 - **Suspicious structure:** warns when the "header" looks like data (a file with no header row) or when a title line sits above the real header.
 - **Awkward files:** handles quoted commas, line breaks inside quoted values, Windows line endings and blank lines.
 - **Corrupted quoting:** warns when a quote is opened and never closed, instead of silently reading the rest of the file as one value.
-- **Bad input:** refuses empty or binary files, device names such as `CON`, and odd paths such as `?` or a stray `"`, with a friendly message instead of a traceback. It also accepts `~` and paths dragged into a macOS terminal.
+- **Not a CSV at all?** It names the file instead of misreading it: *"this is a PNG image"*, *"…an Excel workbook (.xlsx) – open it in Excel and use Save As > CSV"*, or *"this looks like JSON data"*. This covers images, audio, video, Office files, archives, PDFs, databases, programs, JSON, XML/HTML, SQL and Markdown.
+- **Bad input:** refuses empty files, device names such as `CON`, and odd paths such as `?` or a stray `"`, and reports a file that's too big for memory, all with a friendly message instead of a traceback. It also accepts `~` and paths dragged into a macOS terminal.
+- **Awkward data:** handles cells of any size (e.g. base64 images), files mixing UTF-8 and Windows encodings, and lists the stray values in a column that's mostly numbers.
 
 ## 🧮 How the score works
 
@@ -194,6 +196,7 @@ python_data_detective/
 ├── investigator.py    # Investigator, Findings, ColumnProfile: checks, profiles and scores
 ├── report.py          # Report: every piece of text the user reads
 ├── errors.py          # DatasetError -> UnreadableFileError, EmptyDatasetError
+├── file_types.py      # recognises non-CSV files (images, Excel, PDF, JSON...)
 ├── datasets/          # the evidence locker (9 sample CSVs)
 ├── tools/
 │   └── make_datasets.py   # seeded generator plus answer key (not needed to run)
@@ -212,7 +215,7 @@ python_data_detective/
 python -m unittest discover -s dev_tests -v
 ```
 
-There are **99 tests** in [`dev_tests/`](dev_tests). They include:
+There are **113 tests** in [`dev_tests/`](dev_tests). The program was also **stress-tested on 60 kinds of input**, from images, audio, Excel workbooks and JSON to a 1,000,000-row CSV. See the [robustness report](docs/robustness-report.md); it's reproducible with `stress_tests/`. The tests include:
 - **Robustness fuzzing:** 400 randomly generated broken CSV files (mixed delimiters, encodings, ragged rows, stray quotes, NUL bytes, emoji) and 150 random typing sessions at every prompt. Nothing may end in a traceback or print a line wider than 64 characters.
 - **An edge-case matrix** of 34 awkward files, from 300 columns and 200 KB fields to CR-only line endings and UTF-16.
 - **An answer-key integration test:** the generator injects a known number of each problem, and the detective must report exactly those counts and line numbers.
@@ -224,7 +227,7 @@ There are **99 tests** in [`dev_tests/`](dev_tests). They include:
 
 **From COMP9001:** classes and objects (instance and static methods, class variables, `__str__`), file I/O, exception handling (a custom exception hierarchy, `raise`, `try/except/finally`), advanced flow control (`break`, `continue`, early `return`, multiple return values), containers, functions and modules.
 
-**Beyond the lectures:** the `csv` module's `Sniffer`, `io.StringIO`, encodings (`utf-8-sig`, UTF-16 via `codecs` BOMs, cp1252, latin-1), `textwrap`, `collections.Counter`, `statistics`, `math.isfinite`, `datetime` formatting, `sorted(key=lambda ...)`, tuples as dictionary keys, f-string format specs, `__file__`-relative paths, `@staticmethod`, `typing.Optional`, and `unittest` with `mock` and `subprocess`.
+**Beyond the lectures:** the `csv` module's `Sniffer`, `io.StringIO`, encodings (`utf-8-sig`, UTF-16 via `codecs` BOMs, cp1252, latin-1), file "magic numbers", `json`, `textwrap`, `collections.Counter`, `statistics`, `math.isfinite`, `datetime` formatting, `sorted(key=lambda ...)`, tuples as dictionary keys, f-string format specs, `__file__`-relative paths, `@staticmethod`, `typing.Optional`, and `unittest` with `mock` and `subprocess`.
 
 ## 📖 Design documents
 

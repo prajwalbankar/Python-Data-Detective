@@ -8,15 +8,15 @@
    "bytes": 7858,
    "pipeline": {
     "outcome": "refused",
-    "message": "doesn't look like a plain text CSV",
-    "seconds": 0.01
+    "message": "this is a PNG image, not a CSV file",
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
-    "said": "Could not open case: doesn't look like a plain text CSV",
+    "said": "Could not open case: this is a PNG image, not a CSV file",
     "goodbye": true,
-    "seconds": 0.21
+    "seconds": 0.16
    }
   },
   {
@@ -26,13 +26,13 @@
    "bytes": 7858,
    "pipeline": {
     "outcome": "refused",
-    "message": "doesn't look like a plain text CSV",
+    "message": "this is a PNG image, not a CSV file",
     "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
-    "said": "Could not open case: doesn't look like a plain text CSV",
+    "said": "Could not open case: this is a PNG image, not a CSV file",
     "goodbye": true,
     "seconds": 0.16
    }
@@ -44,15 +44,15 @@
    "bytes": 3022,
    "pipeline": {
     "outcome": "refused",
-    "message": "doesn't look like a plain text CSV",
-    "seconds": 0.01
+    "message": "this is a JPEG image, not a CSV file",
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
-    "said": "Could not open case: doesn't look like a plain text CSV",
+    "said": "Could not open case: this is a JPEG image, not a CSV file",
     "goodbye": true,
-    "seconds": 0.15
+    "seconds": 0.16
    }
   },
   {
@@ -62,15 +62,15 @@
    "bytes": 43,
    "pipeline": {
     "outcome": "refused",
-    "message": "doesn't look like a plain text CSV",
-    "seconds": 0.01
+    "message": "this is a GIF image, not a CSV file",
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
-    "said": "Could not open case: doesn't look like a plain text CSV",
+    "said": "Could not open case: this is a GIF image, not a CSV file",
     "goodbye": true,
-    "seconds": 0.15
+    "seconds": 0.16
    }
   },
   {
@@ -80,15 +80,15 @@
    "bytes": 246,
    "pipeline": {
     "outcome": "refused",
-    "message": "doesn't look like a plain text CSV",
-    "seconds": 0.01
+    "message": "this is a BMP image, not a CSV file",
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
-    "said": "Could not open case: doesn't look like a plain text CSV",
+    "said": "Could not open case: this is a BMP image, not a CSV file",
     "goodbye": true,
-    "seconds": 0.15
+    "seconds": 0.16
    }
   },
   {
@@ -97,32 +97,16 @@
    "description": "SVG vector image (XML text)",
    "bytes": 183,
    "pipeline": {
-    "outcome": "loaded",
-    "rows": 3,
-    "columns": 1,
-    "delimiter": ",",
-    "encoding": "utf-8",
-    "numeric_cols": 0,
-    "text_cols": 1,
-    "empty_cols": 0,
-    "missing_pct": 0.0,
-    "duplicates": 0,
-    "invalid": 0,
-    "malformed": 1,
-    "warnings": [],
-    "trailing": false,
-    "score": 70,
-    "verdict": "Needs cleaning",
-    "report_lines": 27,
-    "too_wide": 0,
-    "seconds": 0.02
+    "outcome": "refused",
+    "message": "this looks like XML or HTML markup, not a CSV table",
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
-    "said": "VERDICT: 70/100  -  Significant cleaning needed",
+    "said": "Could not open case: this looks like XML or HTML markup, not a",
     "goodbye": true,
-    "seconds": 0.17
+    "seconds": 0.15
    }
   },
   {
@@ -132,13 +116,13 @@
    "bytes": 8044,
    "pipeline": {
     "outcome": "refused",
-    "message": "doesn't look like a plain text CSV",
-    "seconds": 0.01
+    "message": "this is a WAV audio file, not a CSV file",
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
-    "said": "Could not open case: doesn't look like a plain text CSV",
+    "said": "Could not open case: this is a WAV audio file, not a CSV file",
     "goodbye": true,
     "seconds": 0.15
    }
@@ -150,15 +134,15 @@
    "bytes": 4010,
    "pipeline": {
     "outcome": "refused",
-    "message": "doesn't look like a plain text CSV",
-    "seconds": 0.01
+    "message": "this is an MP3 audio file, not a CSV file",
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
-    "said": "Could not open case: doesn't look like a plain text CSV",
+    "said": "Could not open case: this is an MP3 audio file, not a CSV file",
     "goodbye": true,
-    "seconds": 0.14
+    "seconds": 0.15
    }
   },
   {
@@ -168,15 +152,15 @@
    "bytes": 4024,
    "pipeline": {
     "outcome": "refused",
-    "message": "doesn't look like a plain text CSV",
-    "seconds": 0.01
+    "message": "this is an MP4 or MOV video, not a CSV file",
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
-    "said": "Could not open case: doesn't look like a plain text CSV",
+    "said": "Could not open case: this is an MP4 or MOV video, not a CSV file",
     "goodbye": true,
-    "seconds": 0.14
+    "seconds": 0.16
    }
   },
   {
@@ -194,7 +178,7 @@
     "traceback": false,
     "said": "Could not open case: 'C:\\Users\\prajw\\Obsidian Notes\\ITP Data",
     "goodbye": true,
-    "seconds": 0.17
+    "seconds": 0.16
    }
   },
   {
@@ -228,7 +212,7 @@
     "traceback": false,
     "said": "VERDICT: 90/100  -  Minor clean-up needed",
     "goodbye": true,
-    "seconds": 0.18
+    "seconds": 0.16
    }
   },
   {
@@ -255,14 +239,14 @@
     "verdict": "Case closed",
     "report_lines": 1594,
     "too_wide": 0,
-    "seconds": 0.43
+    "seconds": 0.39
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
     "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
     "goodbye": true,
-    "seconds": 0.63
+    "seconds": 0.56
    }
   },
   {
@@ -289,14 +273,14 @@
     "verdict": "Case closed",
     "report_lines": 30,
     "too_wide": 0,
-    "seconds": 0.01
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
     "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
     "goodbye": true,
-    "seconds": 0.27
+    "seconds": 0.16
    }
   },
   {
@@ -305,138 +289,12 @@
    "description": "one 200 KB image embedded as base64 in a cell",
    "bytes": 200019,
    "pipeline": {
-    "outcome": "refused",
-    "message": "couldn't be read as CSV: field larger than field limit (131072)",
-    "seconds": 0.02
-   },
-   "program": {
-    "exit_code": 0,
-    "traceback": false,
-    "said": "Could not open case: couldn't be read as CSV: field larger than",
-    "goodbye": true,
-    "seconds": 0.24
-   }
-  },
-  {
-   "name": "workbook.xlsx",
-   "category": "Documents & archives",
-   "description": "Excel workbook (zip of XML sheets)",
-   "bytes": 467,
-   "pipeline": {
-    "outcome": "refused",
-    "message": "doesn't look like a plain text CSV",
-    "seconds": 0.02
-   },
-   "program": {
-    "exit_code": 0,
-    "traceback": false,
-    "said": "Could not open case: doesn't look like a plain text CSV",
-    "goodbye": true,
-    "seconds": 0.17
-   }
-  },
-  {
-   "name": "workbook_renamed.csv",
-   "category": "Documents & archives",
-   "description": "the same .xlsx renamed to .csv",
-   "bytes": 265,
-   "pipeline": {
-    "outcome": "refused",
-    "message": "doesn't look like a plain text CSV",
-    "seconds": 0.01
-   },
-   "program": {
-    "exit_code": 0,
-    "traceback": false,
-    "said": "Could not open case: doesn't look like a plain text CSV",
-    "goodbye": true,
-    "seconds": 0.19
-   }
-  },
-  {
-   "name": "old_excel.xls",
-   "category": "Documents & archives",
-   "description": "legacy Excel .xls (OLE2 compound file)",
-   "bytes": 2512,
-   "pipeline": {
-    "outcome": "refused",
-    "message": "doesn't look like a plain text CSV",
-    "seconds": 0.01
-   },
-   "program": {
-    "exit_code": 0,
-    "traceback": false,
-    "said": "Could not open case: doesn't look like a plain text CSV",
-    "goodbye": true,
-    "seconds": 0.18
-   }
-  },
-  {
-   "name": "report.docx",
-   "category": "Documents & archives",
-   "description": "Word document (zip of XML)",
-   "bytes": 306,
-   "pipeline": {
-    "outcome": "refused",
-    "message": "doesn't look like a plain text CSV",
-    "seconds": 0.01
-   },
-   "program": {
-    "exit_code": 0,
-    "traceback": false,
-    "said": "Could not open case: doesn't look like a plain text CSV",
-    "goodbye": true,
-    "seconds": 0.17
-   }
-  },
-  {
-   "name": "archive.zip",
-   "category": "Documents & archives",
-   "description": "zip archive containing a CSV",
-   "bytes": 130,
-   "pipeline": {
-    "outcome": "refused",
-    "message": "doesn't look like a plain text CSV",
-    "seconds": 0.02
-   },
-   "program": {
-    "exit_code": 0,
-    "traceback": false,
-    "said": "Could not open case: doesn't look like a plain text CSV",
-    "goodbye": true,
-    "seconds": 0.2
-   }
-  },
-  {
-   "name": "data.csv.gz",
-   "category": "Documents & archives",
-   "description": "gzip-compressed CSV",
-   "bytes": 52,
-   "pipeline": {
-    "outcome": "refused",
-    "message": "doesn't look like a plain text CSV",
-    "seconds": 0.01
-   },
-   "program": {
-    "exit_code": 0,
-    "traceback": false,
-    "said": "Could not open case: doesn't look like a plain text CSV",
-    "goodbye": true,
-    "seconds": 0.17
-   }
-  },
-  {
-   "name": "plain_text.pdf",
-   "category": "Documents & archives",
-   "description": "PDF written entirely in plain text",
-   "bytes": 194,
-   "pipeline": {
     "outcome": "loaded",
-    "rows": 5,
-    "columns": 1,
+    "rows": 1,
+    "columns": 2,
     "delimiter": ",",
     "encoding": "utf-8",
-    "numeric_cols": 0,
+    "numeric_cols": 1,
     "text_cols": 1,
     "empty_cols": 0,
     "missing_pct": 0.0,
@@ -447,7 +305,7 @@
     "trailing": false,
     "score": 100,
     "verdict": "Case closed",
-    "report_lines": 26,
+    "report_lines": 28,
     "too_wide": 0,
     "seconds": 0.01
    },
@@ -460,21 +318,147 @@
    }
   },
   {
+   "name": "workbook.xlsx",
+   "category": "Documents & archives",
+   "description": "Excel workbook (zip of XML sheets)",
+   "bytes": 467,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "this is an Excel workbook (.xlsx), not a CSV file - open it in Excel and use Save As > CSV",
+    "seconds": 0.0
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: this is an Excel workbook (.xlsx), not a",
+    "goodbye": true,
+    "seconds": 0.15
+   }
+  },
+  {
+   "name": "workbook_renamed.csv",
+   "category": "Documents & archives",
+   "description": "the same .xlsx renamed to .csv",
+   "bytes": 265,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "this is an Excel workbook (.xlsx), not a CSV file - open it in Excel and use Save As > CSV",
+    "seconds": 0.0
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: this is an Excel workbook (.xlsx), not a",
+    "goodbye": true,
+    "seconds": 0.15
+   }
+  },
+  {
+   "name": "old_excel.xls",
+   "category": "Documents & archives",
+   "description": "legacy Excel .xls (OLE2 compound file)",
+   "bytes": 2512,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "this is an old Office file (.xls or .doc), not a CSV file",
+    "seconds": 0.0
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: this is an old Office file (.xls or .doc),",
+    "goodbye": true,
+    "seconds": 0.15
+   }
+  },
+  {
+   "name": "report.docx",
+   "category": "Documents & archives",
+   "description": "Word document (zip of XML)",
+   "bytes": 306,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "this is a Word document (.docx), not a CSV file",
+    "seconds": 0.0
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: this is a Word document (.docx), not a CSV",
+    "goodbye": true,
+    "seconds": 0.16
+   }
+  },
+  {
+   "name": "archive.zip",
+   "category": "Documents & archives",
+   "description": "zip archive containing a CSV",
+   "bytes": 130,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "this is a zip archive, not a CSV file",
+    "seconds": 0.0
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: this is a zip archive, not a CSV file",
+    "goodbye": true,
+    "seconds": 0.16
+   }
+  },
+  {
+   "name": "data.csv.gz",
+   "category": "Documents & archives",
+   "description": "gzip-compressed CSV",
+   "bytes": 52,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "this is a gzip-compressed file, not a CSV file",
+    "seconds": 0.0
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: this is a gzip-compressed file, not a CSV",
+    "goodbye": true,
+    "seconds": 0.15
+   }
+  },
+  {
+   "name": "plain_text.pdf",
+   "category": "Documents & archives",
+   "description": "PDF written entirely in plain text",
+   "bytes": 194,
+   "pipeline": {
+    "outcome": "refused",
+    "message": "this is a PDF document, not a CSV file",
+    "seconds": 0.0
+   },
+   "program": {
+    "exit_code": 0,
+    "traceback": false,
+    "said": "Could not open case: this is a PDF document, not a CSV file",
+    "goodbye": true,
+    "seconds": 0.15
+   }
+  },
+  {
    "name": "compressed.pdf",
    "category": "Documents & archives",
    "description": "PDF with a compressed (binary) stream",
    "bytes": 126,
    "pipeline": {
     "outcome": "refused",
-    "message": "doesn't look like a plain text CSV",
-    "seconds": 0.01
+    "message": "this is a PDF document, not a CSV file",
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
-    "said": "Could not open case: doesn't look like a plain text CSV",
+    "said": "Could not open case: this is a PDF document, not a CSV file",
     "goodbye": true,
-    "seconds": 0.16
+    "seconds": 0.15
    }
   },
   {
@@ -484,15 +468,15 @@
    "bytes": 8192,
    "pipeline": {
     "outcome": "refused",
-    "message": "doesn't look like a plain text CSV",
+    "message": "this is an SQLite database, not a CSV file",
     "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
-    "said": "Could not open case: doesn't look like a plain text CSV",
+    "said": "Could not open case: this is an SQLite database, not a CSV file",
     "goodbye": true,
-    "seconds": 0.15
+    "seconds": 0.16
    }
   },
   {
@@ -502,15 +486,15 @@
    "bytes": 101760,
    "pipeline": {
     "outcome": "refused",
-    "message": "doesn't look like a plain text CSV",
-    "seconds": 0.01
+    "message": "this is a Windows program (.exe), not a CSV file",
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
-    "said": "Could not open case: doesn't look like a plain text CSV",
+    "said": "Could not open case: this is a Windows program (.exe), not a CSV",
     "goodbye": true,
-    "seconds": 0.14
+    "seconds": 0.16
    }
   },
   {
@@ -520,13 +504,13 @@
    "bytes": 1285,
    "pipeline": {
     "outcome": "refused",
-    "message": "doesn't look like a plain text CSV",
-    "seconds": 0.02
+    "message": "this is a Python pickle file, not a CSV file",
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
-    "said": "Could not open case: doesn't look like a plain text CSV",
+    "said": "Could not open case: this is a Python pickle file, not a CSV",
     "goodbye": true,
     "seconds": 0.16
    }
@@ -538,15 +522,15 @@
    "bytes": 3008,
    "pipeline": {
     "outcome": "refused",
-    "message": "doesn't look like a plain text CSV",
-    "seconds": 0.01
+    "message": "this is a Parquet file, not a CSV file",
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
-    "said": "Could not open case: doesn't look like a plain text CSV",
+    "said": "Could not open case: this is a Parquet file, not a CSV file",
     "goodbye": true,
-    "seconds": 0.15
+    "seconds": 0.16
    }
   },
   {
@@ -555,32 +539,16 @@
    "description": "JSON array of objects",
    "bytes": 6513,
    "pipeline": {
-    "outcome": "loaded",
-    "rows": 541,
-    "columns": 1,
-    "delimiter": ",",
-    "encoding": "utf-8",
-    "numeric_cols": 0,
-    "text_cols": 1,
-    "empty_cols": 0,
-    "missing_pct": 0.0,
-    "duplicates": 355,
-    "invalid": 0,
-    "malformed": 0,
-    "warnings": [],
-    "trailing": true,
-    "score": 70,
-    "verdict": "Needs cleaning",
-    "report_lines": 38,
-    "too_wide": 0,
-    "seconds": 0.03
+    "outcome": "refused",
+    "message": "this looks like JSON data, not a CSV table",
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
-    "said": "VERDICT: 70/100  -  Significant cleaning needed",
+    "said": "Could not open case: this looks like JSON data, not a CSV table",
     "goodbye": true,
-    "seconds": 0.17
+    "seconds": 0.2
    }
   },
   {
@@ -589,32 +557,16 @@
    "description": "JSON Lines (one object per line)",
    "bytes": 4051,
    "pipeline": {
-    "outcome": "loaded",
-    "rows": 59,
-    "columns": 5,
-    "delimiter": ",",
-    "encoding": "utf-8",
-    "numeric_cols": 0,
-    "text_cols": 5,
-    "empty_cols": 0,
-    "missing_pct": 0.0,
-    "duplicates": 0,
-    "invalid": 0,
-    "malformed": 0,
-    "warnings": [],
-    "trailing": false,
-    "score": 100,
-    "verdict": "Case closed",
-    "report_lines": 34,
-    "too_wide": 0,
-    "seconds": 0.01
+    "outcome": "refused",
+    "message": "this looks like JSON Lines data, not a CSV table",
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
-    "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
+    "said": "Could not open case: this looks like JSON Lines data, not a CSV",
     "goodbye": true,
-    "seconds": 0.15
+    "seconds": 0.16
    }
   },
   {
@@ -623,32 +575,16 @@
    "description": "XML records",
    "bytes": 4212,
    "pipeline": {
-    "outcome": "loaded",
-    "rows": 62,
-    "columns": 1,
-    "delimiter": ",",
-    "encoding": "utf-8",
-    "numeric_cols": 0,
-    "text_cols": 1,
-    "empty_cols": 0,
-    "missing_pct": 0.0,
-    "duplicates": 0,
-    "invalid": 0,
-    "malformed": 0,
-    "warnings": [],
-    "trailing": false,
-    "score": 100,
-    "verdict": "Case closed",
-    "report_lines": 26,
-    "too_wide": 0,
-    "seconds": 0.01
+    "outcome": "refused",
+    "message": "this looks like XML or HTML markup, not a CSV table",
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
-    "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
+    "said": "Could not open case: this looks like XML or HTML markup, not a",
     "goodbye": true,
-    "seconds": 0.15
+    "seconds": 0.16
    }
   },
   {
@@ -657,32 +593,16 @@
    "description": "HTML page with a table",
    "bytes": 2581,
    "pipeline": {
-    "outcome": "loaded",
-    "rows": 62,
-    "columns": 1,
-    "delimiter": ",",
-    "encoding": "utf-8",
-    "numeric_cols": 0,
-    "text_cols": 1,
-    "empty_cols": 0,
-    "missing_pct": 0.0,
-    "duplicates": 0,
-    "invalid": 0,
-    "malformed": 0,
-    "warnings": [],
-    "trailing": false,
-    "score": 100,
-    "verdict": "Case closed",
-    "report_lines": 26,
-    "too_wide": 0,
-    "seconds": 0.01
+    "outcome": "refused",
+    "message": "this looks like XML or HTML markup, not a CSV table",
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
-    "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
+    "said": "Could not open case: this looks like XML or HTML markup, not a",
     "goodbye": true,
-    "seconds": 0.15
+    "seconds": 0.17
    }
   },
   {
@@ -691,32 +611,16 @@
    "description": "Markdown table (pipe-separated)",
    "bytes": 1889,
    "pipeline": {
-    "outcome": "loaded",
-    "rows": 61,
-    "columns": 4,
-    "delimiter": "|",
-    "encoding": "utf-8",
-    "numeric_cols": 1,
-    "text_cols": 2,
-    "empty_cols": 1,
-    "missing_pct": 25.0,
-    "duplicates": 0,
-    "invalid": 1,
-    "malformed": 0,
-    "warnings": [],
-    "trailing": true,
-    "score": 58,
-    "verdict": "Unreliable",
-    "report_lines": 35,
-    "too_wide": 0,
-    "seconds": 0.01
+    "outcome": "refused",
+    "message": "this looks like a Markdown table, not a CSV file",
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
-    "said": "VERDICT: 58/100  -  Unreliable evidence - investigate before use",
+    "said": "Could not open case: this looks like a Markdown table, not a CSV",
     "goodbye": true,
-    "seconds": 0.15
+    "seconds": 0.16
    }
   },
   {
@@ -737,13 +641,15 @@
     "duplicates": 0,
     "invalid": 0,
     "malformed": 1,
-    "warnings": [],
+    "warnings": [
+     "no delimiter was found, so each line was read as a single value. That's fine for a one-column list; otherwise this file may not be a CSV table."
+    ],
     "trailing": false,
     "score": 70,
     "verdict": "Needs cleaning",
-    "report_lines": 27,
+    "report_lines": 30,
     "too_wide": 0,
-    "seconds": 0.01
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
@@ -771,20 +677,22 @@
     "duplicates": 0,
     "invalid": 0,
     "malformed": 0,
-    "warnings": [],
+    "warnings": [
+     "no delimiter was found, so each line was read as a single value. That's fine for a one-column list; otherwise this file may not be a CSV table."
+    ],
     "trailing": false,
     "score": 100,
     "verdict": "Case closed",
-    "report_lines": 26,
+    "report_lines": 29,
     "too_wide": 0,
-    "seconds": 0.01
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
     "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
     "goodbye": true,
-    "seconds": 0.14
+    "seconds": 0.17
    }
   },
   {
@@ -811,14 +719,14 @@
     "verdict": "Needs cleaning",
     "report_lines": 47,
     "too_wide": 0,
-    "seconds": 0.01
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
     "said": "VERDICT: 70/100  -  Significant cleaning needed",
     "goodbye": true,
-    "seconds": 0.14
+    "seconds": 0.15
    }
   },
   {
@@ -845,14 +753,14 @@
     "verdict": "Unreliable",
     "report_lines": 49,
     "too_wide": 0,
-    "seconds": 0.01
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
     "said": "VERDICT: 51/100  -  Unreliable evidence - investigate before use",
     "goodbye": true,
-    "seconds": 0.14
+    "seconds": 0.15
    }
   },
   {
@@ -873,20 +781,22 @@
     "duplicates": 0,
     "invalid": 0,
     "malformed": 0,
-    "warnings": [],
+    "warnings": [
+     "no delimiter was found, so each line was read as a single value. That's fine for a one-column list; otherwise this file may not be a CSV table."
+    ],
     "trailing": false,
     "score": 100,
     "verdict": "Case closed",
-    "report_lines": 26,
+    "report_lines": 29,
     "too_wide": 0,
-    "seconds": 0.02
+    "seconds": 0.01
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
     "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
     "goodbye": true,
-    "seconds": 0.15
+    "seconds": 0.17
    }
   },
   {
@@ -907,11 +817,13 @@
     "duplicates": 0,
     "invalid": 0,
     "malformed": 0,
-    "warnings": [],
+    "warnings": [
+     "no delimiter was found, so each line was read as a single value. That's fine for a one-column list; otherwise this file may not be a CSV table."
+    ],
     "trailing": false,
     "score": 100,
     "verdict": "Case closed",
-    "report_lines": 26,
+    "report_lines": 29,
     "too_wide": 0,
     "seconds": 0.01
    },
@@ -920,7 +832,7 @@
     "traceback": false,
     "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
     "goodbye": true,
-    "seconds": 0.15
+    "seconds": 0.2
    }
   },
   {
@@ -929,32 +841,16 @@
    "description": "SQL dump with INSERT statements",
    "bytes": 3816,
    "pipeline": {
-    "outcome": "loaded",
-    "rows": 100,
-    "columns": 2,
-    "delimiter": ",",
-    "encoding": "utf-8",
-    "numeric_cols": 0,
-    "text_cols": 2,
-    "empty_cols": 0,
-    "missing_pct": 0.0,
-    "duplicates": 0,
-    "invalid": 0,
-    "malformed": 0,
-    "warnings": [],
-    "trailing": false,
-    "score": 100,
-    "verdict": "Case closed",
-    "report_lines": 28,
-    "too_wide": 0,
-    "seconds": 0.02
+    "outcome": "refused",
+    "message": "this looks like an SQL script, not a CSV table",
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
-    "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
+    "said": "Could not open case: this looks like an SQL script, not a CSV",
     "goodbye": true,
-    "seconds": 0.16
+    "seconds": 0.17
    }
   },
   {
@@ -975,20 +871,22 @@
     "duplicates": 0,
     "invalid": 0,
     "malformed": 2,
-    "warnings": [],
+    "warnings": [
+     "no delimiter was found, so each line was read as a single value. That's fine for a one-column list; otherwise this file may not be a CSV table."
+    ],
     "trailing": true,
     "score": 70,
     "verdict": "Needs cleaning",
-    "report_lines": 29,
+    "report_lines": 32,
     "too_wide": 0,
-    "seconds": 0.01
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
     "said": "VERDICT: 70/100  -  Significant cleaning needed",
     "goodbye": true,
-    "seconds": 0.18
+    "seconds": 0.17
    }
   },
   {
@@ -998,15 +896,15 @@
    "bytes": 300001,
    "pipeline": {
     "outcome": "refused",
-    "message": "couldn't be read as CSV: field larger than field limit (131072)",
-    "seconds": 0.03
+    "message": "file has a header but no data rows",
+    "seconds": 0.01
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
-    "said": "Could not open case: couldn't be read as CSV: field larger than",
+    "said": "Could not open case: file has a header but no data rows",
     "goodbye": true,
-    "seconds": 0.18
+    "seconds": 0.17
    }
   },
   {
@@ -1017,7 +915,7 @@
    "pipeline": {
     "outcome": "refused",
     "message": "file has a header but no data rows",
-    "seconds": 0.03
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
@@ -1035,14 +933,14 @@
    "pipeline": {
     "outcome": "refused",
     "message": "file is empty",
-    "seconds": 0.01
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
     "said": "Could not open case: file is empty",
     "goodbye": true,
-    "seconds": 0.14
+    "seconds": 0.15
    }
   },
   {
@@ -1060,7 +958,7 @@
     "traceback": false,
     "said": "Could not open case: file is empty",
     "goodbye": true,
-    "seconds": 0.16
+    "seconds": 0.15
    }
   },
   {
@@ -1089,14 +987,14 @@
     "verdict": "Case closed",
     "report_lines": 47,
     "too_wide": 0,
-    "seconds": 0.02
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
     "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
     "goodbye": true,
-    "seconds": 0.15
+    "seconds": 0.16
    }
   },
   {
@@ -1123,14 +1021,14 @@
     "verdict": "Case closed",
     "report_lines": 34,
     "too_wide": 0,
-    "seconds": 0.01
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
     "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
     "goodbye": true,
-    "seconds": 0.15
+    "seconds": 0.16
    }
   },
   {
@@ -1157,14 +1055,14 @@
     "verdict": "Case closed",
     "report_lines": 32,
     "too_wide": 0,
-    "seconds": 0.02
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
     "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
     "goodbye": true,
-    "seconds": 0.16
+    "seconds": 0.17
    }
   },
   {
@@ -1189,16 +1087,16 @@
     "trailing": false,
     "score": 100,
     "verdict": "Case closed",
-    "report_lines": 32,
+    "report_lines": 34,
     "too_wide": 0,
-    "seconds": 0.01
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
     "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
     "goodbye": true,
-    "seconds": 0.14
+    "seconds": 0.15
    }
   },
   {
@@ -1219,11 +1117,13 @@
     "duplicates": 126,
     "invalid": 0,
     "malformed": 0,
-    "warnings": [],
+    "warnings": [
+     "no delimiter was found, so each line was read as a single value. That's fine for a one-column list; otherwise this file may not be a CSV table."
+    ],
     "trailing": false,
     "score": 56,
     "verdict": "Unreliable",
-    "report_lines": 37,
+    "report_lines": 42,
     "too_wide": 0,
     "seconds": 0.01
    },
@@ -1232,7 +1132,7 @@
     "traceback": false,
     "said": "VERDICT: 56/100  -  Unreliable evidence - investigate before use",
     "goodbye": true,
-    "seconds": 0.17
+    "seconds": 0.16
    }
   },
   {
@@ -1259,14 +1159,14 @@
     "verdict": "Case closed",
     "report_lines": 32,
     "too_wide": 0,
-    "seconds": 0.01
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
     "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
     "goodbye": true,
-    "seconds": 0.15
+    "seconds": 0.17
    }
   },
   {
@@ -1287,11 +1187,13 @@
     "duplicates": 95,
     "invalid": 0,
     "malformed": 0,
-    "warnings": [],
+    "warnings": [
+     "no delimiter was found, so each line was read as a single value. That's fine for a one-column list; otherwise this file may not be a CSV table."
+    ],
     "trailing": false,
     "score": 70,
     "verdict": "Needs cleaning",
-    "report_lines": 38,
+    "report_lines": 41,
     "too_wide": 0,
     "seconds": 0.01
    },
@@ -1300,7 +1202,7 @@
     "traceback": false,
     "said": "VERDICT: 70/100  -  Significant cleaning needed",
     "goodbye": true,
-    "seconds": 0.18
+    "seconds": 0.16
    }
   },
   {
@@ -1327,14 +1229,14 @@
     "verdict": "Unreliable",
     "report_lines": 41,
     "too_wide": 0,
-    "seconds": 0.02
+    "seconds": 0.01
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
     "said": "VERDICT: 47/100  -  Unreliable evidence - investigate before use",
     "goodbye": true,
-    "seconds": 0.19
+    "seconds": 0.16
    }
   },
   {
@@ -1361,14 +1263,14 @@
     "verdict": "Needs cleaning",
     "report_lines": 84,
     "too_wide": 0,
-    "seconds": 3.53
+    "seconds": 3.07
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
     "said": "VERDICT: 82/100  -  Significant cleaning needed",
     "goodbye": true,
-    "seconds": 3.52
+    "seconds": 3.05
    }
   },
   {
@@ -1395,14 +1297,14 @@
     "verdict": "Unreliable",
     "report_lines": 39,
     "too_wide": 0,
-    "seconds": 0.04
+    "seconds": 0.03
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
     "said": "VERDICT: 65/100  -  Unreliable evidence - investigate before use",
     "goodbye": true,
-    "seconds": 0.18
+    "seconds": 0.23
    }
   },
   {
@@ -1429,14 +1331,14 @@
     "verdict": "Unreliable",
     "report_lines": 44,
     "too_wide": 0,
-    "seconds": 0.01
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
     "said": "VERDICT: 68/100  -  Unreliable evidence - investigate before use",
     "goodbye": true,
-    "seconds": 0.15
+    "seconds": 0.18
    }
   },
   {
@@ -1449,7 +1351,7 @@
     "rows": 4,
     "columns": 2,
     "delimiter": ",",
-    "encoding": "cp1252",
+    "encoding": "utf-8 + cp1252",
     "numeric_cols": 0,
     "text_cols": 2,
     "empty_cols": 0,
@@ -1457,20 +1359,22 @@
     "duplicates": 0,
     "invalid": 0,
     "malformed": 0,
-    "warnings": [],
+    "warnings": [
+     "lines use different encodings (UTF-8 and Windows cp1252), so each line was decoded separately; check accented letters."
+    ],
     "trailing": false,
     "score": 100,
     "verdict": "Case closed",
-    "report_lines": 28,
+    "report_lines": 31,
     "too_wide": 0,
-    "seconds": 0.01
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
     "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
     "goodbye": true,
-    "seconds": 0.15
+    "seconds": 0.18
    }
   },
   {
@@ -1495,16 +1399,16 @@
     "trailing": false,
     "score": 60,
     "verdict": "Unreliable",
-    "report_lines": 3023,
+    "report_lines": 3525,
     "too_wide": 0,
-    "seconds": 0.24
+    "seconds": 0.22
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
     "said": "VERDICT: 60/100  -  Unreliable evidence - investigate before use",
     "goodbye": true,
-    "seconds": 0.38
+    "seconds": 0.39
    }
   },
   {
@@ -1531,14 +1435,14 @@
     "verdict": "Unreliable",
     "report_lines": 34,
     "too_wide": 0,
-    "seconds": 0.01
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
     "said": "VERDICT: 60/100  -  Unreliable evidence - investigate before use",
     "goodbye": true,
-    "seconds": 0.2
+    "seconds": 0.18
    }
   },
   {
@@ -1565,14 +1469,14 @@
     "verdict": "Needs cleaning",
     "report_lines": 41,
     "too_wide": 0,
-    "seconds": 0.01
+    "seconds": 0.0
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
     "said": "VERDICT: 70/100  -  Significant cleaning needed",
     "goodbye": true,
-    "seconds": 0.17
+    "seconds": 0.18
    }
   },
   {
@@ -1599,20 +1503,20 @@
     "verdict": "Case closed",
     "report_lines": 28,
     "too_wide": 0,
-    "seconds": 0.02
+    "seconds": 0.01
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
     "said": "VERDICT: 100/100  -  Case closed - ready for analysis",
     "goodbye": true,
-    "seconds": 0.16
+    "seconds": 0.21
    }
   },
   {
    "name": "huge_1m_rows.csv",
    "category": "Complex CSVs",
-   "description": "1,000,000 rows (about 24 MB)",
+   "description": "1,000,000 rows (about 33 MB)",
    "bytes": 23587069,
    "pipeline": {
     "outcome": "loaded",
@@ -1633,21 +1537,21 @@
     "verdict": "Minor clean-up",
     "report_lines": 35,
     "too_wide": 0,
-    "seconds": 18.47
+    "seconds": 14.41
    },
    "program": {
     "exit_code": 0,
     "traceback": false,
     "said": "VERDICT: 90/100  -  Minor clean-up needed",
     "goodbye": true,
-    "seconds": 17.2
+    "seconds": 13.96
    }
   }
  ],
- "investigate_all": "================================================================\n  CASE BOARD  -  every dataset in datasets/\n================================================================\n  Rank  Dataset                 Rows  Score  Verdict\n  1     currency_percent.csv     150    100  Case closed\n  2     dates_times_booleans..   120    100  Case closed\n  3     european_decimals.csv    150    100  Case closed\n  4     ids_with_leading_zer..   200    100  Case closed\n  5     images_base64_small...    40    100  Case closed\n  6     matrix_no_header.csv      99    100  Case closed\n  7     mixed_encodings.csv        4    100  Case closed\n  8     mnist_like_pixels.csv    400    100  Case closed\n  9     tab_separated_named_.. 1,000    100  Case closed\n  10    huge_1m_rows.csv      1,000,000     90  Minor clean-up\n  11    image_metadata.csv       300     90  Minor clean-up\n  12    ecommerce_100k.csv    101,200     82  Needs cleaning\n  13    all_rows_identical.csv   500     70  Needs cleaning\n  14    huge_numbers.csv         100     70  Needs cleaning\n  15    concatenated_exports..   152     68  Unreliable\n  16    survey_multilingual... 3,000     65  Unreliable\n  17    sparse_90_percent_em..   400     60  Unreliable\n  18    wide_1000_columns.csv    200     60  Unreliable\n  19    scientific_and_speci..   140     56  Unreliable\n  20    sentinel_values.csv    2,000     47  Unreliable\n  --    bom_only.csv               -      -  Could not open\n  --    images_base64_large...     -      -  Could not open\n  --    photo_renamed.csv          -      -  Could not open\n  --    workbook_renamed.csv       -      -  Could not open\n----------------------------------------------------------------\n  bom_only.csv: file is empty\n  images_base64_large.csv: couldn't be read as CSV: field larg..\n  photo_renamed.csv: doesn't look like a plain text CSV\n  workbook_renamed.csv: doesn't look like a plain text CSV\n----------------------------------------------------------------\n\n(exit code 0, traceback: False)\n",
+ "investigate_all": "================================================================\n  CASE BOARD  -  every dataset in datasets/\n================================================================\n  Rank  Dataset                     Rows  Score  Verdict\n  1     currency_percent.csv         150    100  Case closed\n  2     dates_times_booleans..       120    100  Case closed\n  3     european_decimals.csv        150    100  Case closed\n  4     ids_with_leading_zer..       200    100  Case closed\n  5     images_base64_large...         1    100  Case closed\n  6     images_base64_small...        40    100  Case closed\n  7     matrix_no_header.csv          99    100  Case closed\n  8     mixed_encodings.csv            4    100  Case closed\n  9     mnist_like_pixels.csv        400    100  Case closed\n  10    tab_separated_named_..     1,000    100  Case closed\n  11    huge_1m_rows.csv       1,000,000     90  Minor clean-up\n  12    image_metadata.csv           300     90  Minor clean-up\n  13    ecommerce_100k.csv       101,200     82  Needs cleaning\n  14    all_rows_identical.csv       500     70  Needs cleaning\n  15    huge_numbers.csv             100     70  Needs cleaning\n  16    concatenated_exports..       152     68  Unreliable\n  17    survey_multilingual...     3,000     65  Unreliable\n  18    sparse_90_percent_em..       400     60  Unreliable\n  19    wide_1000_columns.csv        200     60  Unreliable\n  20    scientific_and_speci..       140     56  Unreliable\n  21    sentinel_values.csv        2,000     47  Unreliable\n  --    bom_only.csv                   -      -  Could not open\n  --    photo_renamed.csv              -      -  Could not open\n  --    workbook_renamed.csv           -      -  Could not open\n----------------------------------------------------------------\n  bom_only.csv: file is empty\n  photo_renamed.csv: this is a PNG image, not a CSV file\n  workbook_renamed.csv: this is an Excel workbook (.xlsx), not..\n----------------------------------------------------------------\n\n(exit code 0, traceback: False)\n",
  "peak_memory_mb": {
-  "huge_1m_rows.csv": 701.8,
-  "ecommerce_100k.csv": 231.0,
+  "huge_1m_rows.csv": 699.8,
+  "ecommerce_100k.csv": 231.2,
   "wide_1000_columns.csv": 29.2
  }
 }

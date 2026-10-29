@@ -45,6 +45,8 @@ WHAT'S IN THE FOLDER
     report.py             Report: all the text the user reads (case
                           report, evidence screen, leaderboard).
     errors.py             DatasetError and its subclasses.
+    file_types.py         Recognises files that aren't CSVs (images,
+                          Excel, PDF, JSON, HTML...) and names them.
     datasets/             9 sample CSV files (see below).
     reports/              Created the first time a report is saved.
     tools/make_datasets.py
@@ -73,9 +75,17 @@ numbers. Rows with too many or too few fields are reported, then
 trimmed or padded with blanks (the blanks count as missing).
 Trailing delimiters at the ends of lines ("a,b," / "1,2,") are ignored.
 
-The program reads UTF-8, UTF-16, Windows cp1252 and latin-1 files. It
-warns about a quote that is never closed, a header row that looks like
-data (a file with no header), and a title line above the header.
+The program reads UTF-8, UTF-16, Windows cp1252 and latin-1 files, and
+files that mix UTF-8 and cp1252 lines. It warns about a quote that is
+never closed, a header row that looks like data (a file with no header),
+a title line above the header, and a file with no delimiter at all. A
+text column that is mostly numbers has its non-numbers listed.
+
+Files that aren't CSVs are refused by name instead of being misread:
+images (PNG, JPEG, GIF, BMP), audio and video, Excel and Word files,
+zip/gzip archives, PDFs, databases, programs, JSON, XML/HTML, SQL
+scripts and Markdown tables. Excel users are told to use Save As > CSV.
+A file too big for the computer's memory gives a message, not a crash.
 
 
 DATASETS AND SOURCES
@@ -128,6 +138,9 @@ CONCEPTS BEYOND THE LECTURES
                                             cp1252 and latin-1
     codecs (BOM constants)                - recognise UTF-16 files
     textwrap                              - wrap long messages to fit
+    json                                  - recognise JSON files
+    "Magic numbers" (bytes.startswith)    - recognise images, Excel...
+    csv.field_size_limit                  - allow very large cells
     Custom exceptions via inheritance     - DatasetError and subclasses
     Tuples as dict keys                   - fast duplicate-row detection
     collections.Counter                   - most common value in a column

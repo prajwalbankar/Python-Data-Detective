@@ -12,6 +12,7 @@ flow. The other modules do the real work:
     investigator.py  checks its quality and scores it
     report.py        formats everything the user reads
     errors.py        the program's own exception types
+    file_types.py    recognises files that aren't CSVs (images, Excel...)
 """
 import os
 import sys

@@ -67,6 +67,7 @@ ITP Data Project/
     ├── investigator.py           Investigator, Findings, ColumnProfile
     ├── report.py                 Report (all text formatting)
     ├── errors.py                 DatasetError and its subclasses
+    ├── file_types.py             recognises non-CSV files and names them
     ├── datasets/                 9 sample CSVs
     ├── reports/                  created on first save
     ├── tools/
@@ -119,10 +120,18 @@ Builds itself from a path and raises a `DatasetError` subclass if the file can't
 1. Read the raw bytes, but only from a regular file. A device such as Windows' `CON` would wait for keyboard input forever, so it gets "no file at". Then decode, trying each in turn:
    - UTF-16, recognised by its BOM, or by zero bytes in every other position when there's no BOM;
    - `utf-8-sig`, which also removes Excel's BOM;
+   - line by line, when some lines are valid UTF-8 with accents and others aren't (a file pasted together from different sources). Each line is read as UTF-8 if it can be, and as `cp1252` otherwise. The encoding is shown as `utf-8 + cp1252`, with a WARNING;
    - `latin-1`, which is switched to `cp1252` when the text contains characters 0x80–0x9F (Excel's curly quotes, dashes and €).
 
-   *(Extended in the robustness pass.)*
-2. If the text contains a null character (`\x00`), raise `UnreadableFileError("doesn't look like a plain text CSV")`.
+   *(Extended in the robustness passes.)*
+2. If the text contains a null character (`\x00`), raise `UnreadableFileError`. `file_types.describe_binary` names the format from the file's first bytes: *"this is a PNG image, not a CSV file"*. It knows PNG, JPEG, GIF, BMP, WAV, MP3, MP4, PDF, xlsx, docx, pptx, zip, xls/doc, gzip, SQLite, exe, ELF, Parquet, 7z, RAR and pickle. Excel files also get *"open it in Excel and use Save As > CSV"*. Unknown binaries keep *"doesn't look like a plain text CSV"*. Then `file_types.describe_text_format` refuses text that isn't a table:
+   - JSON and JSON Lines, but only if the text really parses as JSON;
+   - XML, HTML and SVG, which start with `<` and contain closing tags;
+   - a plain-text PDF;
+   - an SQL script;
+   - a Markdown table.
+
+   *(Added in stress-test pass 2. Format names are only looked up for files that are being refused anyway, so a real CSV can never be misjudged.)*
 3. Detect the delimiter with `csv.Sniffer().sniff(sample, delimiters=",;\t|")` on the first 4096 characters. If that raises `csv.Error`, use `","`.
 4. Parse with `csv.reader(io.StringIO(text, newline=""), delimiter=...)`. A `csv.Error` while parsing becomes `UnreadableFileError("couldn't be read as CSV: ...")`.
 5. Skip blank rows (`continue`) and count them. The first non-blank row is the header.
@@ -133,6 +142,9 @@ Builds itself from a path and raises a `DatasetError` subclass if the file can't
 10. **Trailing delimiters and structure warnings.** These were added in the robustness pass.
     - An unnamed header column that is empty in every row (from `a,b,` / `1,2,`) is dropped, and extra fields that are all empty are trimmed without counting the row as malformed. The report notes "trailing delimiters ignored".
     - `Dataset.warnings` flags three things: a quote that is never closed; a header where at least half the names are numbers (the file probably has no header row); and most rows being longer than the header (the first line is probably a title).
+11. **Stress-test pass 2 additions:**
+    - `csv.field_size_limit(2**31 - 1)`, so a cell of any size loads. Previously a single cell over 131,072 characters, such as a base64 image, made the whole file unreadable.
+    - Two more warnings: lines in different encodings, and "no delimiter was found" when the Sniffer can't find a delimiter and the file is one column.
 
 ### 4.6 `investigator.py`
 
@@ -190,6 +202,7 @@ Builds itself from a path and raises a `DatasetError` subclass if the file can't
   - `numeric` if at least 80% of its filled cells are number-like.
   - `text` otherwise.
 - **Invalid number:** a filled cell in a numeric column that isn't number-like. Text columns never have invalid values.
+- **Mostly numbers:** a text column where 50–79% of the filled cells are numbers (`MOSTLY_NUMBERS = 0.5`). Its non-numbers are counted as `not_numbers` and listed in SUSPECTS with examples. They don't change the score, and the 80% rule is unchanged. *(Added in stress-test pass 2.)*
 - **Duplicate row:** every cell equal to an earlier row's cell after removing surrounding spaces. The comparison is case-sensitive (`North` and `north` differ). The first occurrence is the original, and each later copy counts as one duplicate. Detection uses a `dict` that maps each row (as a tuple) to the line where it first appeared.
 - **All rows are analysed**, duplicates included, for the missing and invalid counts.
 - **Malformed rows** are listed in the report and count against Validity (see §5.2). Blanks added by padding also count as missing. *(Changed in the robustness pass: previously they didn't affect the score, so a file whose every row was malformed could score 100.)*
@@ -360,6 +373,7 @@ Save a report for every dataset? (y/n):
 | Ragged rows, blank lines, blank column names | `Dataset` | pad/trim, skip, `column_N` | listed in the report |
 | No valid numbers in a numeric column | `Investigator` | `stats = None` | `no valid numbers` |
 | Report can't be written | `main` | catch `OSError` | `Could not save report: ...` |
+| File too big for memory | `main` | catch `MemoryError` when opening, investigating, or in Investigate ALL | `...too large for this computer's memory` |
 | `datasets/` missing or empty | `main` | message | `The evidence locker is empty` |
 | Bad menu or y/n input | `main` | re-prompt | `Please enter ...` |
 | Ctrl+C / Ctrl+D | `main` | catch `KeyboardInterrupt`, `EOFError` | goodbye message |
