@@ -172,6 +172,21 @@ class TestMenu(MenuTestCase):
         self.assertTrue(out.rstrip().endswith(GOODBYE))
         self.assertEqual(self.report_files(), [])
 
+    def test_out_of_memory_when_opening(self):
+        with mock.patch.object(main, "Dataset", side_effect=MemoryError):
+            out = self.run_main(["1", "1", "0"])
+        self.assertIn("too large for this computer's memory", out)
+        self.assertTrue(out.rstrip().endswith(GOODBYE))
+
+    def test_out_of_memory_when_investigating(self):
+        with mock.patch.object(main.Investigator, "investigate",
+                               side_effect=MemoryError):
+            out = self.run_main(["1", "1", "3", "4", "0"])
+        self.assertEqual(out.count("too large for this computer's memory"),
+                         2)
+        self.assertEqual(self.report_files(), [])
+        self.assertTrue(out.rstrip().endswith(GOODBYE))
+
     def test_save_error_reported(self):
         self.reports = write_file("not a folder", "reports_file")
         out = self.run_main(["1", "1", "4", "0"])
@@ -194,6 +209,12 @@ class TestInvestigateAll(MenuTestCase):
     def test_all_saved_message_is_singular(self):
         out = self.run_main(["5", "y", "0"])
         self.assertIn("Saved 1 case report and leaderboard.txt", out)
+
+    def test_all_out_of_memory(self):
+        with mock.patch.object(main, "Dataset", side_effect=MemoryError):
+            out = self.run_main(["5", "n", "0"])
+        self.assertIn("t.csv: too large for this computer's memory", out)
+        self.assertTrue(out.rstrip().endswith(GOODBYE))
 
     def test_all_no_save(self):
         out = self.run_main(["5", "n", "0"])

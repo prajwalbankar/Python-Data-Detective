@@ -29,6 +29,9 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATASETS_DIR = os.path.join(BASE_DIR, "datasets")
 REPORTS_DIR = os.path.join(BASE_DIR, "reports")
 
+# Shown when a file is too big to hold in memory (a MemoryError).
+TOO_BIG = "too large for this computer's memory"
+
 MENU = [("1", "Open a case", "choose a dataset"),
         ("2", "Inspect the evidence", "size, columns, preview"),
         ("3", "Run the investigation", "quality checks + score"),
@@ -100,6 +103,9 @@ def open_case(path: str) -> Optional[Dataset]:
         dataset = Dataset(path)
     except DatasetError as err:
         say(f"Could not open case: {err}")
+        return None
+    except MemoryError:
+        say(f"Could not open case: {TOO_BIG}")
         return None
     details = (f"({plural(dataset.num_rows(), 'row')} x "
                f"{plural(dataset.num_columns(), 'column')}, "
@@ -190,10 +196,11 @@ def investigate_all() -> None:
     for name in files:
         try:
             dataset = Dataset(os.path.join(DATASETS_DIR, name))
+            findings_list.append(Investigator(dataset).investigate())
         except DatasetError as err:
             failures.append((name, str(err)))
-            continue
-        findings_list.append(Investigator(dataset).investigate())
+        except MemoryError:
+            failures.append((name, TOO_BIG))
 
     board = Report.leaderboard_text(findings_list, failures)
     print()
@@ -228,14 +235,25 @@ def handle_case_option(choice: str, current: Optional[Dataset],
         print()
         print(Report.evidence_text(current), end="")
     elif choice == "3":
-        findings = Investigator(current).investigate()
-        print()
-        print(Report(findings).to_text(), end="")
+        findings = investigate(current)
+        if findings is not None:
+            print()
+            print(Report(findings).to_text(), end="")
     else:
         if findings is None:
-            findings = Investigator(current).investigate()
-        save_report(findings)
+            findings = investigate(current)
+        if findings is not None:
+            save_report(findings)
     return findings
+
+
+def investigate(dataset: Dataset) -> Optional[Findings]:
+    """Investigate dataset, or explain if it's too big for memory."""
+    try:
+        return Investigator(dataset).investigate()
+    except MemoryError:
+        say(f"Could not investigate: {TOO_BIG}")
+        return None
 
 
 def main() -> None:
