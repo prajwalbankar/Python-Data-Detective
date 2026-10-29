@@ -54,6 +54,18 @@ class TestColumnProfile(unittest.TestCase):
         self.assertEqual(p.unique_count, 5)
         self.assertEqual(p.most_common, ("1", 1))
 
+    def test_mostly_numbers_are_flagged(self):
+        # 70% numbers: below the 80% numeric threshold, so the column is
+        # text, but the 3 values that aren't numbers are still reported.
+        p = profile(["1", "2", "3", "4", "5", "6", "7", "x", "y", "z"])
+        self.assertEqual(p.kind, "text")
+        self.assertEqual((p.invalid, p.not_numbers), (0, 3))
+        self.assertEqual(p.invalid_examples[0], ("x", 9))
+
+    def test_mostly_text_is_not_flagged(self):
+        p = profile(["1", "2", "x", "y", "z"])
+        self.assertEqual(p.not_numbers, 0)
+
     def test_missing_is_not_invalid(self):
         p = profile(["1", "NA", "2", "?"])
         self.assertEqual(p.kind, "numeric")

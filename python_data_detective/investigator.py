@@ -22,6 +22,8 @@ class ColumnProfile:
         self.kind = "text"          # "numeric", "text" or "empty"
         self.missing = 0
         self.invalid = 0
+        # For a text column that is mostly numbers: how many values aren't.
+        self.not_numbers = 0
         self.invalid_examples: list[tuple[str, int]] = []
         # (min, max, mean, median) of the valid numbers.
         self.stats: Optional[tuple[float, float, float, float]] = None
@@ -64,6 +66,9 @@ class Investigator:
     # A column is numeric if at least this share of its filled cells
     # are numbers.
     NUMERIC_THRESHOLD = 0.8
+    # A text column where at least this share are numbers is "mostly
+    # numbers": its other values are reported, as they may be mistakes.
+    MOSTLY_NUMBERS = 0.5
     # Weights of completeness, uniqueness and validity in the overall.
     WEIGHTS = (0.4, 0.3, 0.3)
     # Points a sub-score loses for every 1% of the data with a problem.
@@ -205,6 +210,10 @@ class Investigator:
                              statistics.median(numbers))
         else:
             profile.kind = "text"
+            if len(numbers) / len(filled) >= Investigator.MOSTLY_NUMBERS:
+                profile.not_numbers = len(non_numbers)
+                profile.invalid_examples = non_numbers[
+                    :Investigator.MAX_EXAMPLES]
             # Count each distinct value; ties keep the first one seen.
             counts = Counter([value for value, line in filled])
             profile.unique_count = len(counts)

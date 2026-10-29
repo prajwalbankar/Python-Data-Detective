@@ -108,6 +108,19 @@ class TestCaseReport(unittest.TestCase):
         clean = report_for("a,b\n1,2\n").to_text()
         self.assertNotIn("WARNING", clean)
 
+    def test_mostly_numeric_column_is_a_suspect(self):
+        text = report_for("m\n1\n2\n3\n4\n5\n6\n7\nx\ny\nz\n").to_text()
+        self.assertIn("3 not numbers", text)
+        self.assertIn("e.g. 'x' (line 9)", text)
+
+    def test_suspect_line_with_huge_counts_fits(self):
+        findings = Investigator(make_dataset(
+            "m\n1\n2\n3\n4\n5\n6\n7\nx\ny\nz\n")).investigate()
+        profile = findings.profiles[0]
+        profile.missing, profile.not_numbers = 1_234_567, 1_234_567
+        for line in Report(findings).to_text().splitlines():
+            self.assertLessEqual(len(line), WIDTH, line)
+
     def test_singular_rows_and_columns(self):
         ds = make_dataset("a\n1\n")
         self.assertEqual(str(ds), "t.csv (1 row x 1 column)")

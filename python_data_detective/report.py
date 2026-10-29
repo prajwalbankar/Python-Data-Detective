@@ -245,13 +245,17 @@ class Report:
         """Return the columns with missing or invalid values."""
         lines = ["[SUSPECTS]  columns with problems"]
         for profile in self.findings.profiles:
-            if profile.missing == 0 and profile.invalid == 0:
+            if (profile.missing == 0 and profile.invalid == 0
+                    and profile.not_numbers == 0):
                 continue
-            problems = f"{profile.missing:,} missing"
+            problems = [f"{profile.missing:,} missing"]
             if profile.invalid > 0:
-                problems += f"  {profile.invalid:,} invalid"
-            lines.append("  " + name_column(profile.name)
-                         + f"{profile.kind:<9}{problems}")
+                problems.append(f"{profile.invalid:,} invalid")
+            if profile.not_numbers > 0:
+                # A text column that is mostly numbers.
+                problems.append(f"{profile.not_numbers:,} not numbers")
+            lines += wrap_parts(problems, "  " + name_column(profile.name)
+                                + f"{profile.kind:<9}", DETAIL_INDENT + 9)
             if profile.invalid_examples:
                 examples = []
                 for value, line in profile.invalid_examples:
