@@ -11,6 +11,7 @@ import os
 from typing import Optional
 
 from errors import EmptyDatasetError, UnreadableFileError
+from file_types import describe_binary, describe_text_format
 
 # How much of the file the delimiter detector looks at.
 SNIFF_SAMPLE_SIZE = 4096
@@ -51,7 +52,10 @@ class Dataset:
         self.warnings: list[str] = []
 
         text = self._read_text()
-        self.delimiter = self._detect_delimiter(text)
+        detected = self._detect_delimiter(text)
+        # With no delimiter found, each line is read as a single value.
+        self.delimiter_found = detected is not None
+        self.delimiter = detected or ","
         self._parse(text)
         self.unclosed_quote_line = self._find_unclosed_quote(text)
         self.warnings = self._find_warnings()
@@ -88,9 +92,15 @@ class Dataset:
         # CON would wait for keyboard input forever.
         if not os.path.isfile(self.path):
             raise UnreadableFileError(f"no file at '{self.path}'")
-        text = self._decode(self._read_bytes())
+        data = self._read_bytes()
+        text = self._decode(data)
+        # Plain text never contains zero bytes; images, Office files
+        # and programs almost always do.
         if "\x00" in text:
-            raise UnreadableFileError("doesn't look like a plain text CSV")
+            raise UnreadableFileError(describe_binary(data))
+        other_format = describe_text_format(text)
+        if other_format:
+            raise UnreadableFileError(other_format)
         return text
 
     def _decode(self, data: bytes) -> str:
@@ -150,14 +160,14 @@ class Dataset:
                 f"couldn't open '{self.path}' ({reason})")
 
     @staticmethod
-    def _detect_delimiter(text: str) -> str:
-        """Guess the delimiter from the start of the file; default ','."""
+    def _detect_delimiter(text: str) -> Optional[str]:
+        """Guess the delimiter from the start of the file, or None."""
         try:
             dialect = csv.Sniffer().sniff(text[:SNIFF_SAMPLE_SIZE],
                                           delimiters=DELIMITERS)
             return dialect.delimiter
         except csv.Error:
-            return ","
+            return None
 
     def _parse(self, text: str) -> None:
         """Split the text into a header and rows, noting any problems."""
@@ -296,4 +306,9 @@ class Dataset:
                 f"most rows have more fields than the header's "
                 f"{len(self.header)}, so the first line may be a title "
                 "rather than the column names.")
+        if not self.delimiter_found and self.num_columns() == 1:
+            warnings.append(
+                "no delimiter was found, so each line was read as a single "
+                "value. That's fine for a one-column list; otherwise this "
+                "file may not be a CSV table.")
         return warnings

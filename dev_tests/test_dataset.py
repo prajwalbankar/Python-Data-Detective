@@ -1,9 +1,11 @@
 """Tests for loading CSV files into a Dataset."""
+import io
 import os
 import subprocess
 import sys
 import tempfile
 import unittest
+import zipfile
 from unittest import mock
 
 from context import APP_DIR, make_dataset, write_file
@@ -163,9 +165,78 @@ class TestDatasetErrors(unittest.TestCase):
                           write_file("a,b\n"))
 
     def test_binary_file(self):
-        path = write_file(b"\x89PNG\r\n\x1a\n\x00\x00")
+        path = write_file(b"\x01\x02\x00\x03 unknown binary")
         self.assert_error(UnreadableFileError,
                           "doesn't look like a plain text CSV", path)
+
+    def test_binary_formats_are_named(self):
+        def zipped(name):
+            buffer = io.BytesIO()
+            with zipfile.ZipFile(buffer, "w") as archive:
+                archive.writestr(name, "<x/>")
+            return buffer.getvalue()
+
+        cases = {
+            "a PNG image": b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR",
+            "a JPEG image": b"\xff\xd8\xff\xe0\x00\x10JFIF\x00",
+            "a GIF image": b"GIF89a\x01\x00\x01\x00\x80\x00\x00",
+            "a BMP image": b"BM6\x00\x00\x00\x00\x00\x00\x006",
+            "a WAV audio file": b"RIFF$\x00\x00\x00WAVEfmt \x10\x00",
+            "an MP3 audio file": b"ID3\x03\x00\x00\x00\x00\x00\x0a",
+            "an MP4 or MOV video": b"\x00\x00\x00\x18ftypisom\x00\x00",
+            "a PDF document": b"%PDF-1.7\n%\xe2\xe3\xcf\xd3\n\x00",
+            "an Excel workbook (.xlsx)": zipped("xl/workbook.xml"),
+            "a Word document (.docx)": zipped("word/document.xml"),
+            "a zip archive": zipped("inner.csv"),
+            "an old Office file (.xls or .doc)":
+                b"\xd0\xcf\x11\xe0\xa1\xb1\x1a\xe1\x00\x00",
+            "a gzip-compressed file": b"\x1f\x8b\x08\x00\x00\x00",
+            "an SQLite database": b"SQLite format 3\x00\x10\x00",
+            "a Windows program (.exe)": b"MZ\x90\x00\x03\x00\x00\x00",
+            "a Parquet file": b"PAR1\x15\x04\x00\x00PAR1",
+        }
+        for kind, data in cases.items():
+            with self.subTest(kind):
+                with self.assertRaises(UnreadableFileError) as caught:
+                    Dataset(write_file(data, "x.csv"))
+                self.assertTrue(str(caught.exception).startswith(
+                    f"this is {kind}, not a CSV file"),
+                    str(caught.exception))
+        with self.assertRaises(UnreadableFileError) as caught:
+            Dataset(write_file(zipped("xl/workbook.xml"), "x.csv"))
+        self.assertIn("Save As", str(caught.exception))
+
+    def test_text_formats_that_are_not_tables(self):
+        cases = {
+            "JSON": '[\n  {"id": 1, "name": "a"},\n  {"id": 2}\n]\n',
+            "JSON Lines": '{"id": 1, "name": "a"}\n{"id": 2, "name": "b"}\n',
+            "XML or HTML": "<?xml version='1.0'?>\n<people><p>a</p></people>\n",
+            "XML or HTML ": "<html><body><table><tr><td>1</td></tr>"
+                            "</table></body></html>\n",
+            "XML or HTML  ": '<svg xmlns="x"><circle r="4"/></svg>\n',
+            "a PDF document": "%PDF-1.4\n1 0 obj << /Type /Catalog >>\n",
+            "an SQL script": "CREATE TABLE t (id INT);\n"
+                             "INSERT INTO t VALUES (1, 'a');\n",
+            "a Markdown table": "| a | b |\n|---|---|\n| 1 | 2 |\n",
+        }
+        for kind, text in cases.items():
+            with self.subTest(kind):
+                with self.assertRaises(UnreadableFileError) as caught:
+                    make_dataset(text)
+                self.assertIn(kind.strip(), str(caught.exception))
+
+    def test_csvs_that_start_like_other_formats(self):
+        # Bracketed or angled column names are still a CSV.
+        self.assertEqual(make_dataset("[id],[name]\n1,a\n").header,
+                         ["[id]", "[name]"])
+        self.assertEqual(make_dataset("<id>,name\n1,a\n").num_rows(), 1)
+        self.assertEqual(make_dataset("{a},b\n1,2\n").num_rows(), 1)
+
+    def test_no_delimiter_warning(self):
+        ds = make_dataset("GET /index.html 200 5120 Mozilla\n"
+                          "GET /about.html 404 210 Mozilla\n")
+        self.assertTrue(any("no delimiter" in w for w in ds.warnings),
+                        ds.warnings)
 
     def test_missing_file(self):
         path = os.path.join(tempfile.mkdtemp(), "nope.csv")
