@@ -1,0 +1,6 @@
+AI ACKNOWLEDGEMENT
+
+This project was built with the help of Claude (Anthropic), an AI 
+assistant. Claude helped to plan the design, write and test the Python
+code, and draft this README. Datasets 3 to 9 listed above are AI-generated: 
+they were created by tools/make_datasets.py, which was written with Claude's help.

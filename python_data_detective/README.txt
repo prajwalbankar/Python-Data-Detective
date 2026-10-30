@@ -57,24 +57,24 @@ network access, so it runs in Ed's terminal.
 
 WHAT'S IN THE FOLDER
 --------------------
-    main.py               RUN THIS. The menu, user input and program flow.
-    dataset.py            Dataset: loads a CSV file and tidies its rows.
-    investigator.py       Investigator, Findings, ColumnProfile: the
-                          quality checks, column profiles and scores.
-    report.py             Report: all the text the user reads (case
-                          report, evidence screen, leaderboard).
-    errors.py             DatasetError and its subclasses.
-    file_types.py         Recognises files that aren't CSVs (images,
-                          Excel, PDF, JSON, HTML...) and names them.
-    web_app.py            Optional web UI: runs the local web server.
-    web_api.py            The web UI's JSON API, using the classes above.
-    web/                  The web page: index.html, style.css, app.js.
-    datasets/             9 sample CSV files (see below).
-    reports/              Created the first time a report is saved.
-    tools/make_datasets.py
-                          Generates the AI-made datasets and prints an
-                          answer key. NOT needed to run the program.
-    README.txt            This file.
+    main.py                 RUN THIS. The menu, user input and program flow.
+    dataset.py              Dataset: loads a CSV file and tidies its rows.
+    investigator.py         Investigator, Findings, ColumnProfile: the
+                            quality checks, column profiles and scores.
+    report.py               Report: all the text the user reads (case
+                            report, evidence screen, leaderboard).
+    errors.py               DatasetError and its subclasses.
+    file_types.py           Recognises files that aren't CSVs (images,
+                            Excel, PDF, JSON, HTML...) and names them.
+    web_app.py              Optional web UI: runs the local web server.
+    web_api.py              The web UI's JSON API, using the classes above.
+    web/                    The web page: index.html, style.css, app.js.
+    datasets/               9 sample CSV files (see below).
+    reports/                Created the first time a report is saved.
+    tools/make_datasets.py  Generates the AI-made datasets and prints an
+                            answer key. NOT needed to run the program.
+    README.txt              This file.
+    AI_Acknowledgement.txt  Acknowledges the use of AI. 
 
 
 HOW THE SCORE WORKS
@@ -139,49 +139,3 @@ AI-generated datasets (made by tools/make_datasets.py, fixed seed 9001):
                                column name
     8. empty.csv               an empty file (shows a friendly error)
     9. not_really_a_csv.csv    binary data renamed .csv (friendly error)
-
-
-AI USE ACKNOWLEDGEMENT
-----------------------
-[DRAFT - check this wording against the COMP9001 / University of Sydney
-AI policy before submitting, and edit it to describe your own work.]
-
-This project was built with the help of Claude (Anthropic), an AI
-assistant. Claude helped to plan the design, write and test the Python
-code (including tools/make_datasets.py), and draft this README. Datasets
-3 to 9 listed above are AI-generated: they were created by
-tools/make_datasets.py, which was written with Claude's help.
-
-
-CONCEPTS BEYOND THE LECTURES
-----------------------------
-    csv module (reader, writer, Sniffer)  - parses quoted commas and line
-                                            breaks; detects , ; tab |
-    io.StringIO                           - parse text already in memory
-    with open(..., "rb") and bytes.decode - safe file handling; UTF-8
-                                            (and Excel's BOM), UTF-16,
-                                            cp1252 and latin-1
-    codecs (BOM constants)                - recognise UTF-16 files
-    textwrap                              - wrap long messages to fit
-    json                                  - recognise JSON files
-    "Magic numbers" (bytes.startswith)    - recognise images, Excel...
-    csv.field_size_limit                  - allow very large cells
-    Custom exceptions via inheritance     - DatasetError and subclasses
-    Tuples as dict keys                   - fast duplicate-row detection
-    collections.Counter                   - most common value in a column
-    statistics (mean, median)             - column profile numbers
-    math.isfinite                         - rejects 'inf' as a number
-    datetime and strftime                 - case number and timestamp
-    sorted(..., key=lambda ...)           - leaderboard ranking
-    enumerate, zip                        - line numbers, value pairing
-    f-string format specs (:<14 :.1f :,)  - aligned, readable tables
-    __file__, os.path, os.makedirs        - folders found from the script
-    @staticmethod decorator               - helpers that don't need self
-    typing.Optional                       - "a Dataset or None" type hints
-    List comprehensions                   - only where they read clearly
-    random.Random (tools only)            - reproducible generated data
-    http.server (ThreadingHTTPServer)     - the web UI's local server
-    threading.Lock                        - one request at a time
-    urllib.parse, tempfile, shutil        - URLs, upload folder clean-up
-    webbrowser                            - opens the page for you
-    HTML, CSS and JavaScript (web/)       - the web page itself
