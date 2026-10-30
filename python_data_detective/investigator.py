@@ -101,6 +101,17 @@ class Investigator:
             return False
 
     @staticmethod
+    def median(numbers: list[float]) -> float:
+        """Return the median of finite numbers, even near the float limit."""
+        middle = statistics.median(numbers)
+        if math.isinf(middle):
+            # Adding the two middle numbers overflowed; halving each one
+            # first gives the same median without the overflow.
+            middle = (statistics.median_low(numbers) / 2
+                      + statistics.median_high(numbers) / 2)
+        return middle
+
+    @staticmethod
     def verdict_for(score: int) -> tuple[str, str]:
         """Return the (short, full) verdict for an overall score."""
         for minimum, short, full in Investigator.VERDICT_BANDS:
@@ -206,8 +217,7 @@ class Investigator:
             profile.invalid = len(non_numbers)
             profile.invalid_examples = non_numbers[:Investigator.MAX_EXAMPLES]
             profile.stats = (min(numbers), max(numbers),
-                             statistics.mean(numbers),
-                             statistics.median(numbers))
+                             statistics.mean(numbers), self.median(numbers))
         else:
             profile.kind = "text"
             if len(numbers) / len(filled) >= Investigator.MOSTLY_NUMBERS:

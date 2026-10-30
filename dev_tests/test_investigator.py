@@ -1,5 +1,6 @@
 """Tests for the investigator's rules, column profiles and scores."""
 import datetime
+import math
 import unittest
 
 from context import SAMPLE_TEXT, make_dataset
@@ -72,6 +73,15 @@ class TestColumnProfile(unittest.TestCase):
         self.assertEqual(p.missing, 2)
         self.assertEqual(p.invalid, 0)
         self.assertEqual(p.stats, (1.0, 2.0, 1.5, 1.5))
+
+    def test_median_near_the_float_limit(self):
+        # Adding the two middle values overflows to inf, but their median
+        # (like their mean) is an ordinary number below the limit.
+        for values in [["1.5e308", "1.6e308"], ["-1.7e308", "-1.6e308"]]:
+            with self.subTest(values):
+                low, high, mean, median = profile(values).stats
+                self.assertTrue(math.isfinite(median))
+                self.assertEqual(median, mean)
 
     def test_empty_column(self):
         p = profile(["NA", "null"])

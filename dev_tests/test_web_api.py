@@ -233,6 +233,18 @@ class TestFindingsAndReports(ApiTestCase):
         self.assertEqual(profiles[1]["most_common"]["value"],
                          "<script>x</script>")
 
+    def test_numbers_near_the_float_limit_reach_the_page(self):
+        # Browsers can't parse Infinity or NaN in JSON, so a column of
+        # huge numbers must still give findings the page can read.
+        case_id = self.upload("huge.csv", "x\n1.5e308\n1.6e308\n")
+        response = self.api.handle("POST", f"/api/cases/{case_id}/investigate",
+                                   {}, b"")
+
+        def refuse(token):
+            raise ValueError(f"a browser can't parse {token}")
+        data = json.loads(response.body, parse_constant=refuse)
+        self.assertEqual(data["profiles"][0]["stats"]["median"], 1.55e308)
+
     def test_wide_file_returns_every_profile(self):
         # Review Focus 5: a 1,000-column file.
         header = ",".join(f"c{i}" for i in range(1000))
