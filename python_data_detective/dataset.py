@@ -1,13 +1,15 @@
 """Load a CSV file into memory as a tidy grid of text values.
 
 The Dataset class reads a file once, works out its encoding and
-delimiter, skips blank lines, and makes every row the same length as the
-header, so the investigator can treat the data as a neat grid.
+delimiter, skips blank lines and any notes above the header, and makes
+every row the same length as the header, so the investigator can treat
+the data as a neat grid.
 """
 import codecs
 import csv
 import io
 import os
+from collections import Counter
 from typing import Optional
 
 from errors import EmptyDatasetError, UnreadableFileError
@@ -17,6 +19,9 @@ from file_types import describe_binary, describe_text_format
 SNIFF_SAMPLE_SIZE = 4096
 # The delimiters we're willing to detect: comma, semicolon, tab, pipe.
 DELIMITERS = ",;\t|"
+# Notes above the header (as in World Bank downloads) are only skipped
+# when a blank line within this many lines separates them from it.
+NOTES_SEARCH_LINES = 10
 # The csv module refuses any cell over 131,072 characters by default, but
 # real datasets sometimes hold whole documents or base64 images in a cell.
 # 2**31 - 1 is the largest limit every platform accepts.
@@ -54,13 +59,18 @@ class Dataset:
         self.unclosed_quote_line: Optional[int] = None
         # Sentences describing problems with the file's structure.
         self.warnings: list[str] = []
+        # The line the column names are on, and how many lines above it
+        # were skipped as notes (0 when the header is the first line).
+        self.header_line = 1
+        self.notes_lines = 0
 
         text = self._read_text()
-        detected = self._detect_delimiter(text)
+        named = self._separator_line(text)
+        detected = named or self._detect_delimiter(text)
         # With no delimiter found, each line is read as a single value.
         self.delimiter_found = detected is not None
         self.delimiter = detected or ","
-        self._parse(text)
+        self._parse(text, separator_line=named is not None)
         self.unclosed_quote_line = self._find_unclosed_quote(text)
         self.warnings = self._find_warnings()
 
@@ -207,12 +217,22 @@ class Dataset:
         except csv.Error:
             return None
 
-    def _parse(self, text: str) -> None:
+    @staticmethod
+    def _separator_line(text: str) -> Optional[str]:
+        """Return the delimiter an Excel "sep=;" first line names, if any."""
+        lines = text[:8].splitlines()
+        first = lines[0] if lines else ""
+        if (len(first) == 5 and first.startswith("sep=")
+                and first[4] in DELIMITERS):
+            return first[4]
+        return None
+
+    def _parse(self, text: str, separator_line: bool) -> None:
         """Split the text into a header and rows, noting any problems."""
         reader = csv.reader(io.StringIO(text, newline=""),
                             delimiter=self.delimiter)
-        header_fields: list[str] = []
-        raw_rows = []   # (start line, fields) for every data row
+        records = []        # (start line, fields) for every non-blank line
+        early_blanks = []   # blank lines near the top, where notes end
         previous_end = 0
         try:
             for fields in reader:
@@ -222,16 +242,22 @@ class Dataset:
                 previous_end = reader.line_num
                 if self._is_blank(fields):
                     self.blank_lines_skipped += 1
+                    if start_line <= NOTES_SEARCH_LINES:
+                        early_blanks.append(start_line)
                     continue
-                if not header_fields:
-                    header_fields = fields
-                    continue
-                raw_rows.append((start_line, fields))
+                records.append((start_line, fields))
         except csv.Error as err:
             raise UnreadableFileError(f"couldn't be read as CSV: {err}")
 
-        if not header_fields:
+        # Excel's "sep=;" line only names the delimiter: it isn't data.
+        first = 1 if separator_line else 0
+        if len(records) <= first:
             raise EmptyDatasetError("file is empty")
+        position = self._header_position(records, first, early_blanks)
+        self.header_line, header_fields = records[position]
+        if position > first:
+            self.notes_lines = self.header_line - 1
+        raw_rows = records[position + 1:]
         if not raw_rows:
             raise EmptyDatasetError("file has a header but no data rows")
 
@@ -239,6 +265,35 @@ class Dataset:
         self.header = self._clean_header(header_fields[:width])
         for start_line, fields in raw_rows:
             self._add_row(fields, start_line)
+
+    @staticmethod
+    def _header_position(records: list[tuple[int, list[str]]], first: int,
+                         early_blanks: list[int]) -> int:
+        """Return the position in records of the line with the column names.
+
+        Usually that's the first line. Downloads such as the World Bank's
+        start with notes instead: lines with at most half as many filled
+        fields as most rows have, then a blank line. The header is then
+        the first wider line, as long as a blank line comes right before
+        it near the top. Otherwise (a title directly above the header, or
+        rows broken by stray commas) the first line stays the header.
+        """
+        if not early_blanks:
+            return first
+        widths = Counter(len(fields) for _, fields in records)
+        usual = widths.most_common(1)[0][0]
+        position = first
+        while position < len(records):
+            line, fields = records[position]
+            filled = sum(1 for value in fields if value.strip())
+            if filled * 2 > usual or line > NOTES_SEARCH_LINES + 1:
+                break
+            position += 1
+        if position == len(records) or position == first:
+            return first
+        if records[position][0] - 1 in early_blanks:
+            return position
+        return first
 
     def _width_without_trailing_blanks(
             self, header_fields: list[str],
@@ -318,6 +373,11 @@ class Dataset:
     def _find_warnings(self) -> list[str]:
         """Return sentences about problems with the file's structure."""
         warnings = []
+        if self.notes_lines:
+            warnings.append(
+                f"the {plural(self.notes_lines, 'line')} above the header on "
+                f"line {self.header_line} look like notes rather than data, "
+                "so they were skipped.")
         if self.unclosed_quote_line is not None:
             warnings.append(
                 f"a quote opened on line {self.unclosed_quote_line} is "
@@ -330,7 +390,9 @@ class Dataset:
                 numeric_names += 1
             except ValueError:
                 pass
-        if numeric_names * 2 >= len(self.header):
+        # A header found below notes was recognised by its width, so
+        # years as column names (as in World Bank files) don't make it data.
+        if numeric_names * 2 >= len(self.header) and not self.notes_lines:
             warnings.append(
                 "most column names look like numbers, so the file may "
                 "have no header row (its first row is being used as the "

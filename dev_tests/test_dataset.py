@@ -121,6 +121,56 @@ class TestDatasetLoading(unittest.TestCase):
         self.assertTrue(any("may be a title" in w for w in ds.warnings),
                         ds.warnings)
 
+    def test_notes_above_the_header_are_skipped(self):
+        # A World Bank download: notes and blank lines above the header,
+        # a trailing comma on every line, and years as column names.
+        ds = make_dataset('"Data Source","World Development Indicators",\n'
+                          "\n"
+                          '"Last Updated Date","2026-09-30",\n'
+                          "\n"
+                          '"Country Name","Country Code","1960","1961",\n'
+                          '"Aruba","ABW","54608","55811",\n'
+                          '"Chad","TCD","","3.1",\n')
+        self.assertEqual(ds.header, ["Country Name", "Country Code", "1960",
+                                     "1961"])
+        self.assertEqual(ds.line_numbers, [6, 7])
+        self.assertEqual(ds.malformed_rows, [])
+        self.assertEqual(ds.warnings, [
+            "the 4 lines above the header on line 5 look like notes "
+            "rather than data, so they were skipped."])
+
+    def test_title_and_blank_line_above_the_header(self):
+        ds = make_dataset("Quarterly sales\n\nid,region,total\n1,NSW,5\n"
+                          "2,VIC,6\n")
+        self.assertEqual(ds.header, ["id", "region", "total"])
+        self.assertEqual(ds.num_rows(), 2)
+        self.assertEqual(ds.warnings, [
+            "the 2 lines above the header on line 3 look like notes "
+            "rather than data, so they were skipped."])
+
+    def test_short_rows_above_a_blank_line_are_not_notes(self):
+        # Most rows have an unquoted comma, so they're longer than the
+        # header; a blank line near the top mustn't make the header and
+        # the first row look like notes.
+        ds = make_dataset("id,address\n1,Kings Cross\n\n"
+                          "2,Unit 7, 9 Queen St\n3,Unit 1, 2 King St\n")
+        self.assertEqual(ds.header, ["id", "address"])
+        self.assertEqual(ds.malformed_rows, [(4, 3), (5, 3)])
+
+    def test_excel_separator_line(self):
+        # Excel reads a first line such as "sep=;" as the delimiter.
+        ds = make_dataset("sep=;\nName;Amount\nAnna;1,50\nBen;2,75\n")
+        self.assertEqual(ds.delimiter, ";")
+        self.assertEqual(ds.header, ["Name", "Amount"])
+        self.assertEqual(ds.rows, [["Anna", "1,50"], ["Ben", "2,75"]])
+        self.assertEqual(ds.line_numbers, [3, 4])
+        self.assertEqual(ds.warnings, [])
+
+    def test_separator_line_with_an_unknown_delimiter(self):
+        # Only the four delimiters the program knows are taken from it.
+        ds = make_dataset("sep=#\na#b\n1#2\n")
+        self.assertEqual(ds.header, ["sep=#"])
+
     def test_normal_file_has_no_warnings(self):
         self.assertEqual(make_dataset("a,b\n1,x\n2,y\n").warnings, [])
 

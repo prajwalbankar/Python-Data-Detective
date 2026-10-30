@@ -135,9 +135,9 @@ Builds itself from a path and raises a `DatasetError` subclass if the file can't
    - a Markdown table.
 
    *(Added in stress-test pass 2. Format names are only looked up for files that are being refused anyway, so a real CSV can never be misjudged.)*
-3. Detect the delimiter with `csv.Sniffer().sniff(sample, delimiters=",;\t|")` on the first 4096 characters. If that raises `csv.Error`, use `","`.
+3. Detect the delimiter with `csv.Sniffer().sniff(sample, delimiters=",;\t|")` on the first 4096 characters. If that raises `csv.Error`, use `","`. If the first line is exactly `sep=` plus one of those four delimiters (the hint Excel reads), that delimiter is used instead and the line is skipped; any other `sep=` line is read as ordinary text. *(Added in the real-world layout pass.)*
 4. Parse with `csv.reader(io.StringIO(text, newline=""), delimiter=...)`. A `csv.Error` while parsing becomes `UnreadableFileError("couldn't be read as CSV: ...")`.
-5. Skip blank rows (`continue`) and count them. The first non-blank row is the header.
+5. Skip blank rows (`continue`) and count them. The first non-blank row is the header, unless the file starts with notes (see 12).
 6. No header: raise `EmptyDatasetError("file is empty")`. A header but no data rows: raise `EmptyDatasetError("file has a header but no data rows")`.
 7. A row with too many fields is trimmed (extra fields are dropped and not analysed). A row with too few is padded with `""`. Either way, `(line, field_count)` is recorded.
 8. `FileNotFoundError`, `IsADirectoryError` and `PermissionError` become `UnreadableFileError` with a plain message such as `"no file at 'x.csv'"`. **Any other `OSError`** (e.g. Windows "Invalid argument" for a name containing `?`, `*` or a stray `"`) becomes `UnreadableFileError("couldn't open '<path>' (<reason>)")`. *(Added after the final review.)*
@@ -148,6 +148,7 @@ Builds itself from a path and raises a `DatasetError` subclass if the file can't
 11. **Stress-test pass 2 additions:**
     - `csv.field_size_limit(2**31 - 1)`, so a cell of any size loads. Previously a single cell over 131,072 characters, such as a base64 image, made the whole file unreadable.
     - Two more warnings: lines in different encodings, and "no delimiter was found" when the Sniffer can't find a delimiter and the file is one column.
+12. **Notes above the header** (real-world layout pass). Downloads such as the World Bank's start with a few lines of notes, then a blank line, then the header. A line counts as notes if it has at most half as many filled fields as the most common row width. If the first line is notes, and the first wider line within the first 11 lines comes straight after a blank line, that wider line is the header. The lines above it are skipped, `header_line` and `notes_lines` record this, and a warning says so: *"the 4 lines above the header on line 5 look like notes rather than data, so they were skipped."* The "header looks like data" warning is not given for such a header, because years as column names are normal there. A title directly above the header (no blank line), or rows broken by stray commas, keep the rules above, so malformed rows are still found.
 
 ### 4.6 `investigator.py`
 
@@ -159,7 +160,7 @@ Builds itself from a path and raises a `DatasetError` subclass if the file can't
 | `missing` | count of missing cells |
 | `invalid` | count of invalid numbers (numeric columns only, otherwise 0) |
 | `invalid_examples` | up to 3 `(value, line)` pairs |
-| `stats` | for numeric columns: `(min, max, mean, median)` over valid numbers only, or `None` if there are none |
+| `stats` | for numeric columns: `(min, max, mean, median)` over valid numbers only, or `None` if there are none. If the two middle numbers overflow when added (both near 1.7e308), the median halves each one first, so it stays finite *(real-world layout pass)* |
 | `unique_count`, `most_common` | for text columns: number of distinct filled values, and `(value, count)` |
 
 **`Findings`**: everything about one investigated dataset. It holds the `Dataset`; `profiles`; `duplicates` (a list of `(line, original_line)`); `total_cells`, `missing_cells`, `numeric_cells` (filled cells in numeric columns), `invalid_cells`; `missing_percent`, `duplicate_percent`, `invalid_percent`; `completeness`, `uniqueness`, `validity` (each 0–100, one decimal place); `overall` (an int from 0–100); `verdict` and `short_verdict` (str); and `investigated_at` (datetime).

@@ -101,7 +101,10 @@ The program reads UTF-8, UTF-16, Windows cp1252 and latin-1 files, and
 files that mix UTF-8 and cp1252 lines. It warns about a quote that is
 never closed, a header row that looks like data (a file with no header),
 a title line above the header, and a file with no delimiter at all. A
-text column that is mostly numbers has its non-numbers listed.
+text column that is mostly numbers has its non-numbers listed. Notes
+above the header (as in World Bank downloads: a few short lines, then a
+blank line) are skipped with a warning, and Excel's "sep=;" first line
+sets the delimiter.
 
 Files that aren't CSVs are refused by name instead of being misread:
 images (PNG, JPEG, GIF, BMP), audio and video, Excel and Word files,

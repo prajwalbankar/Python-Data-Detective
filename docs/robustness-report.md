@@ -199,3 +199,30 @@ Time grows roughly in line with file size. Memory is about **17–30 times the f
 | 6 | Files mixing UTF-8 and Windows lines are garbled silently | Mojibake in the report | Decode line by line, and warn | ✅ Fixed |
 | 7 | Very large files: about 17–30× memory, and an uncaught `MemoryError` | A traceback on a huge file | Catch `MemoryError` with a friendly message | ✅ Fixed (memory use not reduced) |
 | 8 | Decimal commas, `$`, `%` and `-999` codes aren't understood | Some numeric columns are judged as text | Document as known limitations, or recognise them | ⏸ Not changed |
+
+## Real-world layout pass
+
+After the web UI was added, both the terminal program and the web UI were run on all 60 files above. All 60 gave the same results as before, and none caused an error in the web UI. Both were then run on 20 more real-world layouts:
+
+- a Titanic-style file, with quoted names containing commas and doubled quotes;
+- a World Bank download and Excel's `sep=;` first line;
+- old Mac (`\r`) and mixed line endings;
+- duplicate column names and NUL bytes;
+- missing values written as `NA`, `null`, `-` or `?`;
+- pipe-separated, ragged and headerless files, and comment lines;
+- 19-digit IDs, accented and CJK headers, and numbers near the float limit.
+
+Three problems came out of it:
+
+| # | Problem | Effect on a marker | Fix | Status |
+|---|---|---|---|---|
+| 9 | **Bug:** the median of two numbers near 1.7e308 overflowed to `inf` | The report said "median inf", and the web UI couldn't show the findings (browsers reject `Infinity` in JSON) | Halve the two middle numbers before adding them | ✅ Fixed |
+| 10 | World Bank downloads put notes and blank lines above the header | The notes became the header: 3 columns and 61 "malformed" rows | Skip notes followed by a blank line, and warn | ✅ Fixed |
+| 11 | Excel's `sep=;` first line wasn't understood | The file was read as one column | Use the delimiter it names, and skip the line | ✅ Fixed |
+
+What stays the same, by design:
+
+- a file containing NUL bytes is refused as "not a plain text CSV";
+- duplicate column names aren't flagged;
+- `#` comment lines are read as data, with the title-line warning;
+- a "TOTAL" row at the end counts as data.
