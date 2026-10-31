@@ -171,7 +171,7 @@ class Dataset:
         if not (has_utf8 and has_other):
             return None
         text = "".join(pieces)
-        if text.startswith("﻿"):
+        if text.startswith("\ufeff"):
             text = text[1:]          # the BOM Excel puts at the start
         return text
 

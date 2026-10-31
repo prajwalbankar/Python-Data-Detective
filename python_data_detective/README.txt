@@ -8,11 +8,15 @@ column, scores the dataset out of 100 and saves a detective-themed case
 report. It is made for students and beginner data analysts who want a
 quick, plain-language answer to "is this data ready to use?".
 
+GitHub repository (code, screenshots and full documentation):
+    https://github.com/prajwalbankar/Python-Data-Detective
+
 
 HOW TO RUN
 ----------
-    python main.py          (Windows)
-    python3 main.py         (Ed, macOS, Linux)
+    python main.py          (Windows; if "python" isn't found, use
+                             py main.py)
+    python3 main.py         (macOS, Linux, Ed)
 
 Run it from inside this folder, or from anywhere with the full path, for
 example  python python_data_detective/main.py . The program finds its
@@ -50,9 +54,23 @@ version of the project.
 
 REQUIREMENTS
 ------------
-Python 3.9 or newer. Only Python's standard library is used, so there
-is nothing to install. The terminal program uses no graphics, audio or
-network access, so it runs in Ed's terminal.
+Python 3.9 or newer, on Windows, macOS or Linux. Nothing else is needed:
+the program uses only Python's standard library, so there are no
+libraries to install (no pip install), no extra software and no
+internet connection. Everything it needs is inside this folder.
+
+The terminal program uses no graphics, audio or network access, so it
+also runs in Ed's terminal. The optional web UI needs only the same
+Python and any web browser, and its page loads nothing from the
+internet.
+
+Checked for crashes:
+  - all 161 tests pass on Python 3.10 and 3.11 (Windows), with
+    deprecation warnings treated as errors;
+  - every file passes Python 3.9's grammar check;
+  - no feature that is deprecated or removed up to Python 3.15 is used;
+  - non-English text and emoji in a dataset print safely, even when the
+    output isn't a normal terminal.
 
 
 WHAT'S IN THE FOLDER
@@ -74,7 +92,7 @@ WHAT'S IN THE FOLDER
     tools/make_datasets.py  Generates the AI-made datasets and prints an
                             answer key. NOT needed to run the program.
     README.txt              This file.
-    AI_Acknowledgement.txt  Acknowledges the use of AI. 
+    AI_Acknowledgement.txt  Acknowledges the use of AI.
 
 
 HOW THE SCORE WORKS

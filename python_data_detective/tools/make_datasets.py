@@ -1,7 +1,7 @@
 """Generate the AI-made sample datasets and print their answer key.
 
-Written with AI assistance (Claude, by Anthropic); see the README's AI
-use acknowledgement. This script is NOT needed to run Python Data
+Written with AI assistance (Claude, by Anthropic); see
+AI_Acknowledgement.txt. This script is NOT needed to run Python Data
 Detective, because the files it makes are already in datasets/. To make
 them again, run:  python tools/make_datasets.py
 

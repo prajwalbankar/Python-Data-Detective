@@ -8,6 +8,8 @@ A menu-driven terminal app that investigates a CSV file's data quality: missing 
 duplicate rows, invalid numbers and broken rows. It profiles every column, scores the
 dataset out of 100 and writes a detective-themed case report.
 
+**GitHub repository: [github.com/prajwalbankar/Python-Data-Detective](https://github.com/prajwalbankar/Python-Data-Detective)**
+
 ![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-3776AB?logo=python&logoColor=white)
 ![No dependencies](https://img.shields.io/badge/dependencies-none-success)
 ![Tests](https://img.shields.io/badge/tests-161%20passing-brightgreen)
@@ -26,16 +28,16 @@ Option 5 puts every dataset in the evidence locker on trial at once:
 ================================================================
   CASE BOARD  -  every dataset in datasets/
 ================================================================
-  Rank  Dataset                 Rows  Score  Verdict
-  1     penguins.csv             344     99  Case closed
-  2     student_grades.csv       120     98  Case closed
-  3     iris.csv                 150     97  Case closed
-  4     tricky_addresses.csv      80     95  Case closed
-  5     old_export_latin1.csv     30     92  Minor clean-up
-  6     messy_sales.csv          200     83  Needs cleaning
-  7     broken_rows.csv           60     13  Unreliable
-  --    empty.csv                  -      -  Could not open
-  --    not_really_a_csv.csv       -      -  Could not open
+  Rank  Dataset                     Rows  Score  Verdict
+  1     penguins.csv                 344     99  Case closed
+  2     student_grades.csv           120     98  Case closed
+  3     iris.csv                     150     97  Case closed
+  4     tricky_addresses.csv          80     95  Case closed
+  5     old_export_latin1.csv         30     92  Minor clean-up
+  6     messy_sales.csv              200     83  Needs cleaning
+  7     broken_rows.csv               60     13  Unreliable
+  --    empty.csv                      -      -  Could not open
+  --    not_really_a_csv.csv           -      -  Could not open
 ----------------------------------------------------------------
   empty.csv: file is empty
   not_really_a_csv.csv: this is a PNG image, not a CSV file
@@ -136,13 +138,32 @@ The penalty was calibrated on the sample datasets: with plain percentages, even
 
 ## 🚀 Quick start
 
+**1. Get the code.** Download it from [the GitHub repository](https://github.com/prajwalbankar/Python-Data-Detective) with **Code → Download ZIP** and unzip it (no git needed), or clone it:
+
 ```bash
 git clone https://github.com/prajwalbankar/Python-Data-Detective.git
-cd Python-Data-Detective/python_data_detective
-python main.py        # or: python3 main.py
 ```
 
-**Nothing to install:** it uses only Python's standard library (Python 3.9+). It can be run from any folder, because it finds `datasets/` and `reports/` by itself.
+**2. Run it** from the `python_data_detective` folder:
+
+```bash
+cd Python-Data-Detective/python_data_detective
+python main.py        # Windows (or: py main.py)
+python3 main.py       # macOS, Linux and Ed
+```
+
+It can be run from any folder, because it finds `datasets/` and `reports/` by itself.
+
+### Requirements
+
+- **Python 3.9 or newer**, on Windows, macOS or Linux, or in Ed's terminal. Nothing else.
+- **No libraries to install:** only Python's standard library is used, so there is no `pip install`, no extra software and no internet connection needed. Everything the program needs is inside the `python_data_detective` folder.
+- **Checked for crashes:**
+  - the full test suite passes on Python 3.10 and 3.11 on Windows, with deprecation warnings treated as errors;
+  - every file passes Python 3.9's grammar check;
+  - no feature that is deprecated or removed up to Python 3.15 is used;
+  - non-English and emoji data prints safely even when output isn't a normal terminal, and in UTF-8 mode (the default from Python 3.15).
+- The optional web UI needs only the same Python and any web browser. Its page loads nothing from the internet.
 
 | Option | What it does |
 |---|---|
@@ -204,6 +225,9 @@ flowchart LR
     M -.-> I
     M -.-> R
     E["DatasetError<br/>errors.py"] -. raised by .-> D
+    W["Optional web UI<br/>web_app.py + web_api.py"] -. uses .-> D
+    W -.-> I
+    W -.-> R
 ```
 
 Each module has one job, and data flows in one direction:
@@ -222,8 +246,12 @@ python_data_detective/
 ├── datasets/          # the evidence locker (9 sample CSVs)
 ├── tools/
 │   └── make_datasets.py   # seeded generator plus answer key (not needed to run)
-└── README.txt         # plain-text guide for markers
+├── README.txt         # plain-text guide for markers
+└── AI_Acknowledgement.txt  # how AI was used in this project
 ```
+
+Only `python_data_detective/` is needed to run the program. The rest of the repository is for development:
+`dev_tests/` (the unit tests), `stress_tests/` (the stress-test scripts) and `docs/` (design documents and the robustness report).
 
 **Design rules:**
 - `main.py` never formats text, and `report.py` never asks for input.
@@ -237,7 +265,7 @@ python_data_detective/
 python -m unittest discover -s dev_tests -v
 ```
 
-There are **161 tests** in [`dev_tests/`](dev_tests). The program was also **stress-tested on 60 kinds of input**, from images, audio, Excel workbooks and JSON to a 1,000,000-row CSV. See the [robustness report](docs/robustness-report.md); it's reproducible with `stress_tests/`. The tests include:
+There are **161 tests** in [`dev_tests/`](dev_tests), and they need only the standard library too. The program was also **stress-tested on 60 kinds of input**, from images, audio, Excel workbooks and JSON to a 1,000,000-row CSV, **plus 20 real-world layouts**: Titanic-style quoting, World Bank downloads, Excel's `sep=;` line, old Mac line endings and numbers near the float limit. Both the terminal program and the web UI were checked. See the [robustness report](docs/robustness-report.md); it's reproducible with `stress_tests/`. Its optional memory measurement uses `psutil` if it's installed and is skipped otherwise; the program itself never needs it. The tests include:
 - **Robustness fuzzing:** 400 randomly generated broken CSV files (mixed delimiters, encodings, ragged rows, stray quotes, NUL bytes, emoji) and 150 random typing sessions at every prompt. Nothing may end in a traceback or print a line wider than 64 characters.
 - **An edge-case matrix** of 34 awkward files, from 300 columns and 200 KB fields to CR-only line endings and UTF-16.
 - **An answer-key integration test:** the generator injects a known number of each problem, and the detective must report exactly those counts and line numbers.
@@ -262,7 +290,7 @@ The whole project was designed before it was coded:
 
 - **Iris:** Fisher, R. A. (1936). *Iris* [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C56C76 (CC BY 4.0; a header row was added).
 - **Palmer Penguins:** Horst, A. M., Hill, A. P., & Gorman, K. B. (2020). *palmerpenguins*. https://allisonhorst.github.io/palmerpenguins/ (CC0). Data collected by Dr. Kristen Gorman and the Palmer Station LTER.
-- **AI use:** this project was built with the help of Claude (Anthropic), which assisted with planning the design, writing and testing the code, and drafting the documentation. The seven AI-generated datasets were made by `tools/make_datasets.py`, which was written with Claude's help.
+- **AI use:** this project was built with the help of Claude (Anthropic), which assisted with planning the design, writing and testing the code, and drafting the documentation. The seven AI-generated datasets were made by `tools/make_datasets.py`, which was written with Claude's help. See [`AI_Acknowledgement.txt`](python_data_detective/AI_Acknowledgement.txt).
 
 ## 👤 Author
 

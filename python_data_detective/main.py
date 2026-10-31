@@ -6,6 +6,8 @@ detective-themed report. Start the program with:
 
     python main.py        (or python3 main.py on Ed or macOS)
 
+It needs only Python 3.9+ and its standard library: nothing to install.
+
 This file only handles the menu, the user's input and the program's
 flow. The other modules do the real work:
     dataset.py       loads and tidies a CSV file
