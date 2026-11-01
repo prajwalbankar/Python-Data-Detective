@@ -154,6 +154,8 @@ python3 main.py       # macOS, Linux and Ed
 
 It can be run from any folder, because it finds `datasets/` and `reports/` by itself.
 
+**On Ed, or wherever the `datasets/` folder is missing**, run `python3 tools/make_datasets.py` first. It recreates 7 of the 9 sample files exactly, from a fixed seed. `iris.csv` and `penguins.csv` are real published data, so they can't be generated; paste them in by hand if you want them. An empty evidence locker also points to this command.
+
 ### Requirements
 
 - **Python 3.9 or newer**, on Windows, macOS or Linux, or in Ed's terminal. Nothing else.

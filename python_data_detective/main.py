@@ -37,6 +37,9 @@ REPORTS_DIR = os.path.join(BASE_DIR, "reports")
 
 # Shown when a file is too big to hold in memory (a MemoryError).
 TOO_BIG = "too large for this computer's memory"
+# Shown under an empty evidence locker, e.g. on Ed if the sample
+# datasets couldn't be uploaded: the generator makes them again.
+MAKE_DATASETS_HINT = "  (run tools/make_datasets.py to create the sample datasets)"
 
 MENU = [("1", "Open a case", "choose a dataset"),
         ("2", "Inspect the evidence", "size, columns, preview"),
@@ -132,6 +135,7 @@ def choose_dataset() -> Optional[Dataset]:
     print("EVIDENCE LOCKER  (datasets/)")
     if not files:
         print("  The evidence locker is empty")
+        print(MAKE_DATASETS_HINT)
     for number, name in enumerate(files, start=1):
         print(f"  {number}. {shorten(name, WIDTH - 6)}")
     print("  P. Enter another file path")
@@ -196,6 +200,7 @@ def investigate_all() -> None:
     files = list_csv_files(DATASETS_DIR)
     if not files:
         print("The evidence locker is empty")
+        print(MAKE_DATASETS_HINT)
         return
     findings_list = []
     failures = []   # (file name, reason) for files that couldn't open

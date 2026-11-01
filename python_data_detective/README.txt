@@ -33,6 +33,21 @@ Menu options:
     0  Close the office       quit (Ctrl+C also quits cleanly)
 
 
+RUNNING ON ED (OR WITHOUT THE DATASETS FOLDER)
+----------------------------------------------
+The program runs in Ed's terminal the same way:  python3 main.py
+If the datasets/ folder couldn't be uploaded, the evidence locker shows
+as empty. Make the sample datasets again from inside this folder:
+
+    python3 tools/make_datasets.py
+
+This recreates 7 of the 9 sample files exactly, because the generator
+uses a fixed seed. iris.csv and penguins.csv are real published data,
+so they can't be generated. To add them, create a file with the same
+name in datasets/ and paste in its contents (both are plain text). Any
+other CSV file can also be opened with option 1, then P and its path.
+
+
 WEB UI (OPTIONAL)
 -----------------
 The same detective also has a web page, for demonstrations:

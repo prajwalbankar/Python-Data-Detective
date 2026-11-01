@@ -152,6 +152,10 @@ class TestMenu(MenuTestCase):
         os.remove(os.path.join(self.datasets, "t.csv"))
         out = self.run_main(["1", "B", "0"])
         self.assertIn("The evidence locker is empty", out)
+        # e.g. on Ed, where the datasets couldn't be uploaded
+        self.assertIn("run tools/make_datasets.py", out)
+        for line in out.splitlines():
+            self.assertLessEqual(len(line), 64, line)
 
     def test_eof_in_chooser(self):
         # Review Focus 4: Ctrl+D inside a nested prompt.
@@ -233,6 +237,7 @@ class TestInvestigateAll(MenuTestCase):
         os.remove(os.path.join(self.datasets, "t.csv"))
         out = self.run_main(["5", "0"])
         self.assertIn("The evidence locker is empty", out)
+        self.assertIn("run tools/make_datasets.py", out)
         self.assertNotIn("CASE BOARD", out)
         self.assertNotIn("Please enter y or n", out)
 
